@@ -1,9 +1,9 @@
-[Ll]ibrary/
-[Tt]emp/
-[Oo]bj/
-[Bb]uild/
-[Bb]uilds/
-Assets/AssetStoreTools*
+BasisUniversalUnity/[Ll]ibrary/
+BasisUniversalUnity/[Tt]emp/
+BasisUniversalUnity/[Oo]bj/
+BasisUniversalUnity/[Bb]uild/
+BasisUniversalUnity/[Bb]uilds/
+BasisUniversalUnity/Assets/AssetStoreTools*
 
 # Visual Studio cache directory
 .vs/
@@ -29,8 +29,11 @@ ExportedObj/
 *.pdb.meta
 
 # Unity3D Generated File On Crash Reports
-sysinfo.txt
+BasisUniversalUnity/sysinfo.txt
 
 # Builds
-*.apk
-*.unitypackage
+BasisUniversalUnity/*.apk
+BasisUniversalUnity/*.unitypackage
+
+# CMake build dir
+build
