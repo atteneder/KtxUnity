@@ -8,13 +8,22 @@ Special thanks to Binomial and everyone involved in making Basis Universal avail
 
 Check out this repository and make sure the sub-module `basis_universal` is also cloned.
 
+### Prerequisites
+
+You'll need [CMake](https://cmake.org)
+
+All build platform variants will have an `install` build target, that does the following:
+
+This does the following:
+- The final library will be installed to the correct place within `BasisUniversalUnity/BasisUniversalUnity/Assets/Plugins`.
+- The source code for the transcoder + wrapper is copied to `BasisUniversalUnity/BasisUniversalUnity/Assets/Plugins/WebGL`. This way it gets compiled and included when you build the Unity project for WebGL.
+- Two sample basis files get copied to the StreamingAssets folder.
+
 ### macOS
 
-#### Prerequisites
+Install Xcode and its command line tools.
 
-You'll need [CMake](https://cmake.org) and Xcode (and its command line tools) installed.
-
-#### Building the native library
+#### Build (for macOS Unity Editor and standalone builds)
 
 Open up a terminal and navigate into the repository.
 
@@ -30,14 +39,37 @@ cd build
 cmake .. -G Xcode
 ```
 
-This will generate an Xcode project called `open basisu_transcoder.xcodeproj`. Open it and build it.
+This will generate an Xcode project called `open basisu_transcoder.xcodeproj`.
 
-This does the following:
-- A library named `basisu.bundle` will be built and installed to `BasisUniversalUnity/BasisUniversalUnity/Assets/Plugins/x86_64`. This one is for usage in the Unity Editor and macOS standalone builds (latter untested).
-- The source code for the transcoder + wrapper is copied to `BasisUniversalUnity/BasisUniversalUnity/Assets/Plugins/WebGL`. This way it gets compiled and included when you build the Unity project for WebGL.
-- Two sample basis files get copied to the StreamingAssets folder.
+Open it and build it (target `ALL_BUILD` or `basisu`).
 
-### Other platforms (Linux,Windows)
+After this was successful, build the target `install`.
+
+### Android
+
+You'll need the Android NDK
+
+Create a subfolder `build_android_arm64`, enter it and call CMake like this:
+
+```
+mkdir build_android_arm64
+cd build_android_arm64
+cmake .. \
+-DANDROID_ABI=arm64-v8a \
+-DCMAKE_BUILD_TYPE=RelWithDebInfo \
+-DANDROID_NDK=/path/to/your/android/sdk/ndk-bundle \
+-DCMAKE_TOOLCHAIN_FILE=/path/to/your/android/sdk/ndk-bundle/build/cmake/android.toolchain.cmake \
+-DANDROID_STL=c++_static
+```
+
+Replace `/path/to/your/android/sdk/ndk-bundle` with the actual path to your Android NDK install.
+
+To build and install
+```
+make && make install
+```
+
+### Other platforms (Linux,Windows,iOS)
 
 Not tested at the moment. Probably needs some minor tweaks to run.
 
@@ -53,7 +85,7 @@ Other than that, open the `SampleScene` and click play. Two basis textures on pl
 
 Just build like a regular project.
 
-Note: Only WebGL is tested at the moment.
+Note: Only WebGL and Android is tested at the moment.
 
 ## Support
 
@@ -64,9 +96,9 @@ Like this demo? You can show your appreciation and ...
 ## TODO
 
 ### Platform support
-- Extending (transcoded) texture format support (now it's just BC1 and BC3)
+- Provide fallback to bitmap format if none of the GPU formats are supported (iOS Safari for example)
+- Provide fallback to separate alpha-channel texture if no alpha channel format is supported.
 - iOS support
-- Android support
 
 ### General
 - Remove memory leaks

@@ -40,7 +40,14 @@ if(APPLE AND NOT APPLE_IOS)
 	set_xcode_property (basisu EXECUTABLE_SUFFIX ".bundle")
 endif()
 
+
+if(ANDROID)
+set(UNITY_PLUGIN_DIR ${CMAKE_SOURCE_DIR}/BasisUniversalUnity/Assets/Plugins/Android/libs/arm64-v8a)
+else()
 set(UNITY_PLUGIN_DIR ${CMAKE_SOURCE_DIR}/BasisUniversalUnity/Assets/Plugins/x86_64)
+endif()
+
+
 set(UNITY_PLUGIN_DIR_WEBGL ${CMAKE_SOURCE_DIR}/BasisUniversalUnity/Assets/Plugins/WebGL)
 set(UNITY_STREAMING_ASSETS_DIR ${CMAKE_SOURCE_DIR}/BasisUniversalUnity/Assets/StreamingAssets)
 
