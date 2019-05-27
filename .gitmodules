@@ -1,0 +1,3 @@
+[submodule "basis_universal"]
+	path = basis_universal
+	url = git@github.com:BinomialLLC/basis_universal.git
