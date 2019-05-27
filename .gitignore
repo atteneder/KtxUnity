@@ -39,3 +39,12 @@ BasisUniversalUnity/*.unitypackage
 
 # CMake build dir
 build
+
+
+BasisUniversalUnity/Assets/StreamingAssets/*.basis
+
+BasisUniversalUnity/Assets/Plugins/x86_64/*.bundle
+
+BasisUniversalUnity/Assets/Plugins/WebGL/*.cpp
+BasisUniversalUnity/Assets/Plugins/WebGL/*.h
+BasisUniversalUnity/Assets/Plugins/WebGL/*.inc
