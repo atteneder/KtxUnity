@@ -90,8 +90,8 @@ public class BasisUniversal
             opaqueFormatDict.Add(TextureFormat.BC7,BasisUniversal.TranscodeFormat.BC7_M6_OPAQUE_ONLY);
             opaqueFormatDict.Add(TextureFormat.DXT1,BasisUniversal.TranscodeFormat.BC1);
             opaqueFormatDict.Add(TextureFormat.PVRTC_RGB4,BasisUniversal.TranscodeFormat.PVRTC1_4_OPAQUE_ONLY);
-            opaqueFormatDict.Add(TextureFormat.ETC_RGB4,BasisUniversal.TranscodeFormat.ETC2);
             opaqueFormatDict.Add(TextureFormat.ETC2_RGB,BasisUniversal.TranscodeFormat.ETC2);
+            opaqueFormatDict.Add(TextureFormat.ETC_RGB4,BasisUniversal.TranscodeFormat.ETC1);
             opaqueFormatDict.Add(TextureFormat.BC4,BasisUniversal.TranscodeFormat.BC4);
             opaqueFormatDict.Add(TextureFormat.BC5,BasisUniversal.TranscodeFormat.BC5);
         }
@@ -102,9 +102,9 @@ public class BasisUniversal
             // alphaFormatDict.Add(TextureFormat.BC7,BasisUniversal.TranscodeFormat.BC7_M6_OPAQUE_ONLY);
             alphaFormatDict.Add(TextureFormat.DXT5,BasisUniversal.TranscodeFormat.BC3);
             alphaFormatDict.Add(TextureFormat.PVRTC_RGB4,BasisUniversal.TranscodeFormat.PVRTC1_4_OPAQUE_ONLY);
-            alphaFormatDict.Add(TextureFormat.ETC_RGB4,BasisUniversal.TranscodeFormat.ETC2);
-            alphaFormatDict.Add(TextureFormat.ETC2_RGBA1,BasisUniversal.TranscodeFormat.ETC2);
             alphaFormatDict.Add(TextureFormat.ETC2_RGBA8,BasisUniversal.TranscodeFormat.ETC2);
+            alphaFormatDict.Add(TextureFormat.ETC2_RGBA1,BasisUniversal.TranscodeFormat.ETC2);
+            alphaFormatDict.Add(TextureFormat.ETC_RGB4,BasisUniversal.TranscodeFormat.ETC1);
         }
     }
 
