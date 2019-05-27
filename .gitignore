@@ -5,6 +5,8 @@ BasisUniversalUnity/[Bb]uild/
 BasisUniversalUnity/[Bb]uilds/
 BasisUniversalUnity/Assets/AssetStoreTools*
 
+.vscode
+
 # Visual Studio cache directory
 .vs/
 
