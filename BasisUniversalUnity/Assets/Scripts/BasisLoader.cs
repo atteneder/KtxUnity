@@ -14,6 +14,8 @@ public class BasisLoader : MonoBehaviour
     public Texture2D texture;
 
     void Start() {
+        BasisUniversal.Init();
+        BasisUniversal.CheckTextureSupport();
         StartCoroutine(LoadBasisFile());
     }
 
@@ -53,24 +55,17 @@ public class BasisLoader : MonoBehaviour
             Debug.LogFormat("level count image {0}: {1}",i,levelCount);
         }
 
-        TextureFormat tf = TextureFormat.DXT1;
-        BasisUniversal.TranscodeFormat transF = BasisUniversal.TranscodeFormat.BC1;
+        TextureFormat tf;
+        BasisUniversal.TranscodeFormat transF;
 
-        if(hasAlpha) {
-            if(SystemInfo.SupportsTextureFormat(TextureFormat.DXT5)) {
-                tf=TextureFormat.DXT5;
-                transF = BasisUniversal.TranscodeFormat.BC3;
-            } else {
-                Debug.LogError("No supported texture format found");
-            }
+        if(!BasisUniversal.GetPreferredFormat(out tf,out transF,hasAlpha)) {
+            Debug.LogError("No supported format found!");
+            BasisUniversal.CheckTextureSupport();
+            yield break;
         } else {
-            if(SystemInfo.SupportsTextureFormat(TextureFormat.DXT1)) {
-                tf=TextureFormat.DXT1;
-                transF = BasisUniversal.TranscodeFormat.BC1;
-            } else {
-                Debug.LogError("No supported texture format found");
-            }
+            Debug.LogFormat("Trying to transcode to {0} ({1})",tf,transF);
         }
+
         byte[] trData;
         if(basis.Transcode(0,0,transF,out trData)) {
             Debug.LogFormat("transcoded {0} bytes", trData.Length);

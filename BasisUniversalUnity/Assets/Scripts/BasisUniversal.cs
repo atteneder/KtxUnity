@@ -73,20 +73,78 @@ public class BasisUniversal
     }
 
     static bool initialized;
+    static Dictionary<TextureFormat,BasisUniversal.TranscodeFormat> opaqueFormatDict;
+    static Dictionary<TextureFormat,BasisUniversal.TranscodeFormat> alphaFormatDict;
 
-    static void Init()
+    public static void Init() {
+        if(!initialized) {
+            InitInternal();
+        }
+    }
+    static void InitInternal()
     {
         initialized=true;
         aa_basis_init();
+        if(opaqueFormatDict==null) {
+            opaqueFormatDict = new Dictionary<TextureFormat, BasisUniversal.TranscodeFormat>();
+            opaqueFormatDict.Add(TextureFormat.BC7,BasisUniversal.TranscodeFormat.BC7_M6_OPAQUE_ONLY);
+            opaqueFormatDict.Add(TextureFormat.DXT1,BasisUniversal.TranscodeFormat.BC1);
+            opaqueFormatDict.Add(TextureFormat.PVRTC_RGB4,BasisUniversal.TranscodeFormat.PVRTC1_4_OPAQUE_ONLY);
+            opaqueFormatDict.Add(TextureFormat.ETC_RGB4,BasisUniversal.TranscodeFormat.ETC2);
+            opaqueFormatDict.Add(TextureFormat.ETC2_RGB,BasisUniversal.TranscodeFormat.ETC2);
+            opaqueFormatDict.Add(TextureFormat.BC4,BasisUniversal.TranscodeFormat.BC4);
+            opaqueFormatDict.Add(TextureFormat.BC5,BasisUniversal.TranscodeFormat.BC5);
+        }
+
+        if(alphaFormatDict==null) {
+            alphaFormatDict = new Dictionary<TextureFormat, BasisUniversal.TranscodeFormat>();
+            // No BC7 alpha support atm
+            // alphaFormatDict.Add(TextureFormat.BC7,BasisUniversal.TranscodeFormat.BC7_M6_OPAQUE_ONLY);
+            alphaFormatDict.Add(TextureFormat.DXT5,BasisUniversal.TranscodeFormat.BC3);
+            alphaFormatDict.Add(TextureFormat.PVRTC_RGB4,BasisUniversal.TranscodeFormat.PVRTC1_4_OPAQUE_ONLY);
+            alphaFormatDict.Add(TextureFormat.ETC_RGB4,BasisUniversal.TranscodeFormat.ETC2);
+            alphaFormatDict.Add(TextureFormat.ETC2_RGBA1,BasisUniversal.TranscodeFormat.ETC2);
+            alphaFormatDict.Add(TextureFormat.ETC2_RGBA8,BasisUniversal.TranscodeFormat.ETC2);
+        }
     }
 
     public static unsafe BasisTexture LoadBytes( byte[] data ) {
         if(!initialized) {
-            Init();
+            InitInternal();
         }
         fixed( void* src = &(data[0]) ) {
             return new BasisTexture(aa_create_basis(src,data.Length));
         }
+    }
+
+    public static void CheckTextureSupport() {
+        foreach(var format in opaqueFormatDict) {
+            var supported = SystemInfo.SupportsTextureFormat(format.Key);
+            Debug.LogFormat("TextureFormat {0} support: {1}",format.Key,supported);
+        }
+        foreach(var format in alphaFormatDict) {
+            var supported = SystemInfo.SupportsTextureFormat(format.Key);
+            Debug.LogFormat("TextureFormat (alpha) {0} support: {1}",format.Key,supported);
+        }
+    }
+
+    public static bool GetPreferredFormat( out TextureFormat unityFormat, out TranscodeFormat transcodeFormat, bool hasAlpha = false ) {
+        unityFormat = TextureFormat.DXT1;
+        transcodeFormat = TranscodeFormat.BC1;
+        
+        var formats = hasAlpha
+            ? alphaFormatDict
+            : opaqueFormatDict;
+
+        foreach(var format in formats) {
+            var supported = SystemInfo.SupportsTextureFormat(format.Key);
+            if (supported) {
+                unityFormat = format.Key;
+                transcodeFormat = format.Value;
+                return true;
+            }
+        }
+        return false;
     }
 
     [DllImport(INTERFACE_DLL)]
