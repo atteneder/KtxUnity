@@ -39,13 +39,32 @@ cd build
 cmake .. -G Xcode
 ```
 
-This will generate an Xcode project called `open basisu_transcoder.xcodeproj`.
+This will generate an Xcode project called `basisu_transcoder.xcodeproj`.
 
 Open it and build it (target `ALL_BUILD` or `basisu`).
 
 After this was successful, build the target `install`.
 
-### Android
+### Build for iOS
+
+You'll need Xcode and its command line tools installed.
+
+Create a subfolder `build_ios`, enter it and call CMake like this:
+
+```
+mkdir build_ios
+cd build_ios
+cmake .. \
+-DCMAKE_TOOLCHAIN_FILE="../cmake/ios.toolchain.cmake"
+```
+
+This will generate an Xcode project called `basisu_transcoder.xcodeproj`.
+
+Open it and build it (target `ALL_BUILD` or `basisu`).
+
+After this was successful, build the target `install`.
+
+### Build for Android
 
 You'll need the Android NDK
 
@@ -110,7 +129,9 @@ limitations under the License.
 
 ## Third party
 
-References [Binomial LLC](http://www.binomial.info)'s [Basis Universal transcoder](https://github.com/BinomialLLC/basis_universal), released under the terms of Apache License 2.0.
+References [Binomial LLC](http://www.binomial.info)'s [Basis Universal transcoder](https://github.com/BinomialLLC/basis_universal) (released under the terms of Apache License 2.0)
+
+Uses Alexander Widerberg's CMake iOS toolchain ( https://github.com/leetal/ios-cmake )
 
 ## TODO
 

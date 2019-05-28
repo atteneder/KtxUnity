@@ -43,6 +43,8 @@ build*
 
 BasisUniversalUnity/Assets/StreamingAssets/*.basis
 
+BasisUniversalUnity/Assets/Plugins/iOS/lib*.a
+
 BasisUniversalUnity/Assets/Plugins/Android/libs/arm64-v8a/lib*.so
 
 BasisUniversalUnity/Assets/Plugins/x86_64/*.bundle

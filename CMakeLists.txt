@@ -14,9 +14,9 @@ set(BASISU_SRC_LIST
 	basisu_wrapper/basisu_wrapper.cpp
 	)
 
-if( APPLE_IOS )
+if( IOS )
 	set( LibType STATIC )
-else( APPLE_IOS )
+else()
 	# Unity Editor (on macOS) requires a dynamic library.
 	set( LibType SHARED )
 endif()
@@ -29,12 +29,11 @@ target_include_directories(
 	basis_universal/transcoder
 )
 
-if(APPLE AND NOT APPLE_IOS)
+if(APPLE AND NOT IOS)
 	# Unity Editor need the library in .bundle format:
 	set (CMAKE_SHARED_LIBRARY_PREFIX "")
     set (CMAKE_SHARED_MODULE_PREFIX "")
 
-    set (CMAKE_STATIC_LIBRARY_SUFFIX ".bundle")
     set (CMAKE_SHARED_LIBRARY_SUFFIX ".bundle")
     
 	set_xcode_property (basisu EXECUTABLE_SUFFIX ".bundle")
@@ -43,6 +42,8 @@ endif()
 
 if(ANDROID)
 set(UNITY_PLUGIN_DIR ${CMAKE_SOURCE_DIR}/BasisUniversalUnity/Assets/Plugins/Android/libs/arm64-v8a)
+elseif(IOS)
+set(UNITY_PLUGIN_DIR ${CMAKE_SOURCE_DIR}/BasisUniversalUnity/Assets/Plugins/iOS)
 else()
 set(UNITY_PLUGIN_DIR ${CMAKE_SOURCE_DIR}/BasisUniversalUnity/Assets/Plugins/x86_64)
 endif()
