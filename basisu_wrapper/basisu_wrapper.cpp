@@ -26,23 +26,22 @@
 using namespace basist;
 
 static basist::etc1_global_selector_codebook *g_pGlobal_codebook;
+basist::basisu_transcoder transcoder(g_pGlobal_codebook);
 
 #define MAGIC 0xDEADBEE1
 
 class basis_file
 {
     int m_magic = 0;
-    basisu_transcoder m_transcoder;
     const uint8_t *m_file;
     size_t byteLength;
     
 public:
     basis_file(const uint8_t *buffer, size_t byteLength)
     : m_file(buffer),
-    byteLength(byteLength),
-    m_transcoder(g_pGlobal_codebook)
+    byteLength(byteLength)
     {
-        if (!m_transcoder.validate_header(buffer, byteLength)) {
+        if (!transcoder.validate_header(buffer, byteLength)) {
             m_file = nullptr;
             byteLength = 0;
         }
@@ -63,7 +62,7 @@ public:
             return 0;
         
         basisu_image_level_info li;
-        if (!m_transcoder.get_image_level_info(m_file, byteLength, li, 0, 0))
+        if (!transcoder.get_image_level_info(m_file, byteLength, li, 0, 0))
             return 0;
         
         return li.m_alpha_flag;
@@ -74,7 +73,7 @@ public:
         if (m_magic != MAGIC)
             return 0;
         
-        return m_transcoder.get_total_images(m_file, byteLength);
+        return transcoder.get_total_images(m_file, byteLength);
     }
     
     uint32_t getNumLevels(uint32_t image_index) {
@@ -83,7 +82,7 @@ public:
             return 0;
         
         basisu_image_info ii;
-        if (!m_transcoder.get_image_info(m_file, byteLength, ii, image_index))
+        if (!transcoder.get_image_info(m_file, byteLength, ii, image_index))
             return 0;
         
         return ii.m_total_levels;
@@ -95,7 +94,7 @@ public:
             return 0;
         
         uint32_t orig_width, orig_height, total_blocks;
-        if (!m_transcoder.get_image_level_desc(m_file, byteLength, image_index, level_index, orig_width, orig_height, total_blocks))
+        if (!transcoder.get_image_level_desc(m_file, byteLength, image_index, level_index, orig_width, orig_height, total_blocks))
             return 0;
         
         return orig_width;
@@ -107,7 +106,7 @@ public:
             return 0;
         
         uint32_t orig_width, orig_height, total_blocks;
-        if (!m_transcoder.get_image_level_desc(m_file, byteLength, image_index, level_index, orig_width, orig_height, total_blocks))
+        if (!transcoder.get_image_level_desc(m_file, byteLength, image_index, level_index, orig_width, orig_height, total_blocks))
             return 0;
         
         return orig_height;
@@ -124,7 +123,7 @@ public:
         uint32_t bytes_per_block = basis_get_bytes_per_block(static_cast<transcoder_texture_format>(format));
         
         uint32_t orig_width, orig_height, total_blocks;
-        if (!m_transcoder.get_image_level_desc(m_file, byteLength, image_index, level_index, orig_width, orig_height, total_blocks))
+        if (!transcoder.get_image_level_desc(m_file, byteLength, image_index, level_index, orig_width, orig_height, total_blocks))
             return 0;
         
         return total_blocks * bytes_per_block;
@@ -135,7 +134,7 @@ public:
         if (m_magic != MAGIC)
             return 0;
         
-        return m_transcoder.start_transcoding(m_file, byteLength);
+        return transcoder.start_transcoding(m_file, byteLength);
     }
     
     uint32_t transcodeImage(void* dst, size_t dst_size, uint32_t image_index, uint32_t level_index, uint32_t format, uint32_t pvrtc_wrap_addressing, uint32_t get_alpha_for_opaque_formats) {
@@ -149,12 +148,12 @@ public:
         uint32_t bytes_per_block = basis_get_bytes_per_block(static_cast<transcoder_texture_format>(format));
         
         uint32_t orig_width, orig_height, total_blocks;
-        if (!m_transcoder.get_image_level_desc(m_file, byteLength, image_index, level_index, orig_width, orig_height, total_blocks))
+        if (!transcoder.get_image_level_desc(m_file, byteLength, image_index, level_index, orig_width, orig_height, total_blocks))
             return 0;
         
         uint32_t required_size = total_blocks * bytes_per_block;
         
-        uint32_t status = m_transcoder.transcode_image_level(
+        uint32_t status = transcoder.transcode_image_level(
                                                              m_file, byteLength, image_index, level_index,
                                                              dst, dst_size / bytes_per_block,
                                                              static_cast<basist::transcoder_texture_format>(format),
