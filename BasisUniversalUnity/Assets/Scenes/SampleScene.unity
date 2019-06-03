@@ -221,7 +221,6 @@ GameObject:
   m_Component:
   - component: {fileID: 963194228}
   - component: {fileID: 963194227}
-  - component: {fileID: 963194226}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -229,14 +228,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &963194226
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 963194225}
-  m_Enabled: 1
 --- !u!20 &963194227
 Camera:
   m_ObjectHideFlags: 0
@@ -305,7 +296,6 @@ GameObject:
   - component: {fileID: 1340793421}
   - component: {fileID: 1340793420}
   - component: {fileID: 1340793419}
-  - component: {fileID: 1340793418}
   - component: {fileID: 1340793417}
   m_Layer: 0
   m_Name: kodim20
@@ -328,20 +318,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   filePath: kodim20.basis
   texture: {fileID: 0}
---- !u!64 &1340793418
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1340793416}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 0
-  m_CookingOptions: 14
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &1340793419
 MeshRenderer:
   m_ObjectHideFlags: 0
@@ -412,7 +388,6 @@ GameObject:
   - component: {fileID: 1441608719}
   - component: {fileID: 1441608718}
   - component: {fileID: 1441608717}
-  - component: {fileID: 1441608716}
   - component: {fileID: 1441608715}
   m_Layer: 0
   m_Name: alpha3
@@ -435,20 +410,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   filePath: alpha3.basis
   texture: {fileID: 0}
---- !u!64 &1441608716
-MeshCollider:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1441608714}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 0
-  m_Enabled: 1
-  serializedVersion: 3
-  m_Convex: 0
-  m_CookingOptions: 14
-  m_Mesh: {fileID: 10209, guid: 0000000000000000e000000000000000, type: 0}
 --- !u!23 &1441608717
 MeshRenderer:
   m_ObjectHideFlags: 0
