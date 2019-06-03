@@ -152,8 +152,6 @@ public:
         if (!m_transcoder.get_image_level_desc(m_file, byteLength, image_index, level_index, orig_width, orig_height, total_blocks))
             return 0;
         
-        uint32_t required_size = total_blocks * bytes_per_block;
-        
         uint32_t status = m_transcoder.transcode_image_level(
                                                              m_file, byteLength, image_index, level_index,
                                                              dst, dst_size / bytes_per_block,
