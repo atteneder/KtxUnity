@@ -38,9 +38,10 @@ class basis_file
     
 public:
     basis_file(const uint8_t *buffer, size_t byteLength)
-    : m_file(buffer),
-    byteLength(byteLength),
-    m_transcoder(g_pGlobal_codebook)
+    :
+    m_transcoder(g_pGlobal_codebook),
+    m_file(buffer),
+    byteLength(byteLength)
     {
         if (!m_transcoder.validate_header(buffer, byteLength)) {
             m_file = nullptr;
