@@ -16,8 +16,6 @@
 #define LOCAL_LOADING
 #endif
 
-// #define BASISU_VERBOSE
-
 using System.Collections;
 using System.IO;
 using UnityEngine;
@@ -78,8 +76,10 @@ namespace BasisUniversalUnity {
             BasisUniversal.TranscodeFormat transF;
 
             if(!BasisUniversal.GetPreferredFormat(out tf,out transF,hasAlpha)) {
-                Debug.LogError("No supported format found!");
+                Debug.LogError("No supported format found!\nRebuild with BASISU_VERBOSE scripting define to debug.");
+                #if BASISU_VERBOSE
                 BasisUniversal.CheckTextureSupport();
+                #endif
                 yield break;
             } else {
                 Log("Trying to transcode to {0} ({1})",tf,transF);

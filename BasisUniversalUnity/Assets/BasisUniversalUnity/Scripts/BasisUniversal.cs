@@ -16,6 +16,10 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System;
 using UnityEngine;
+#if BASISU_VERBOSE
+using System.Text;
+#endif
+
 
 namespace BasisUniversalUnity {
 
@@ -117,6 +121,10 @@ namespace BasisUniversalUnity {
                 alphaFormatDict.Add(TextureFormat.ETC2_RGBA8,BasisUniversal.TranscodeFormat.ETC2);            
                 alphaFormatDict.Add(TextureFormat.ETC2_RGBA1,BasisUniversal.TranscodeFormat.ETC2); // Not sure if this works
             }
+
+#if BASISU_VERBOSE
+            CheckTextureSupport();
+#endif
         }
 
         public static unsafe BasisTexture LoadBytes( byte[] data ) {
@@ -128,17 +136,20 @@ namespace BasisUniversalUnity {
             }
         }
 
+#if BASISU_VERBOSE
         public static void CheckTextureSupport() {
-            Init();
+            var sb = new StringBuilder();
             foreach(var format in opaqueFormatDict) {
                 var supported = SystemInfo.SupportsTextureFormat(format.Key);
-                Debug.LogFormat("TextureFormat {0} support: {1}",format.Key,supported);
+                sb.AppendFormat("{0} support: {1}\n",format.Key,supported);
             }
             foreach(var format in alphaFormatDict) {
                 var supported = SystemInfo.SupportsTextureFormat(format.Key);
-                Debug.LogFormat("TextureFormat (alpha) {0} support: {1}",format.Key,supported);
+                sb.AppendFormat("(alpha) {0} support: {1}\n",format.Key,supported);
             }
+            Debug.Log(sb.ToString());
         }
+#endif
 
         public static bool GetPreferredFormat( out TextureFormat unityFormat, out TranscodeFormat transcodeFormat, bool hasAlpha = false ) {
             unityFormat = TextureFormat.DXT1;
