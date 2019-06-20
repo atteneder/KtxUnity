@@ -634,7 +634,8 @@ PlayerSettings:
   webGLLinkerTarget: 1
   webGLThreadsSupport: 0
   webGLWasmStreaming: 0
-  scriptingDefineSymbols: {}
+  scriptingDefineSymbols:
+    13: BASISU_VERBOSE
   platformArchitecture: {}
   scriptingBackend:
     Android: 1
