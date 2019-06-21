@@ -121,8 +121,8 @@ namespace BasisUniversalUnity {
 
             if(alphaFormatDict==null) {
                 alphaFormatDict = new Dictionary<GraphicsFormat, BasisUniversal.TranscodeFormat>();
-                alphaFormatDict.Add(GraphicsFormat.RGBA_DXT5_SRGB,BasisUniversal.TranscodeFormat.BC3);
                 alphaFormatDict.Add(GraphicsFormat.RGBA_ETC2_SRGB,BasisUniversal.TranscodeFormat.ETC2);
+                alphaFormatDict.Add(GraphicsFormat.RGBA_DXT5_SRGB,BasisUniversal.TranscodeFormat.BC3);
             }
 
             if(opaqueFormatLegacyDict==null) {
