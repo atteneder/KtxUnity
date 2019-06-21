@@ -244,7 +244,7 @@ namespace BasisUniversalUnity {
 
             GraphicsFormat[] allGfxFormats = (GraphicsFormat[]) Enum.GetValues(typeof(GraphicsFormat));
             foreach(var format in allGfxFormats) {
-                sb.AppendFormat(
+                Log(
                     "{0} sample:{1} blend:{2} getpixels:{3} linear:{4} loadstore:{5} aa2:{6} aa4:{7} aa8:{8} readpixels:{9} render:{10} setpixels:{11} sparse:{12}\n"
                     ,format
                     ,SystemInfo.IsFormatSupported(format,FormatUsage.Sample)?"1":"0"
