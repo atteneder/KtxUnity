@@ -1,112 +1,37 @@
 # BasisUniversalUnity
 
-Demo project, integrating [Binomial LLC](http://www.binomial.info)'s [Basis Universal transcoder](https://github.com/BinomialLLC/basis_universal) into a Unity game engine project.
+Unity package that allows users to load [Basis Universal](https://github.com/BinomialLLC/basis_universal) texture files.
 
-Special thanks to Binomial and everyone involved in making Basis Universal available!
+Special thanks to [Binomial](http://www.binomial.info) and everyone involved in making Basis Universal available!
 
-## Building the native library
+## Installing
 
-Check out this repository and make sure the sub-module `basis_universal` is also cloned.
+You have to manually add the package's URL into your [project manifest](https://docs.unity3d.com/Manual/upm-manifestPrj.html)
 
-### Prerequisites
+Inside your Unity project there's the folder `Packages` containing a file called `manifest.json`. You have to open it and add the following line inside the `dependencies` category:
 
-You'll need [CMake](https://cmake.org)
-
-All build platform variants will have an `install` build target, that does the following:
-
-This does the following:
-
-- The final library will be installed to the correct place within `BasisUniversalUnity/BasisUniversalUnity/Assets/Plugins`.
-- The source code for the transcoder + wrapper is copied to `BasisUniversalUnity/BasisUniversalUnity/Assets/Plugins/WebGL`. This way it gets compiled and included when you build the Unity project for WebGL.
-- Two sample basis files get copied to the StreamingAssets folder.
-
-### macOS
-
-Install Xcode and its command line tools.
-
-#### Build (for macOS Unity Editor and standalone builds)
-
-Open up a terminal and navigate into the repository.
-
-```bash
-cd /path/to/BasisUniversalUnity
+```json
+"com.atteneder.basisu": "https://github.com/atteneder/BasisUniversalUnity.git",
 ```
 
-Create a subfolder `build`, enter it and call CMake like this:
+It should look something like this:
 
-```bash
-mkdir build
-cd build
-cmake .. -G Xcode
+```json
+{
+  "dependencies": {
+    "com.atteneder.basisu": "https://github.com/atteneder/BasisUniversalUnity.git",
+    "com.unity.package-manager-ui": "2.1.2",
+    "com.unity.modules.unitywebrequest": "1.0.0"
+    ...
+  }
+}
 ```
 
-This will generate an Xcode project called `basisu_transcoder.xcodeproj`.
+## Demo project
 
-Open it and build it (target `ALL_BUILD` or `basisu`).
+There's a simple demo project that shows how you can use it:
 
-After this was successful, build the target `install`.
-
-### Build for iOS
-
-You'll need Xcode and its command line tools installed.
-
-Create a subfolder `build_ios`, enter it and call CMake like this:
-
-```bash
-mkdir build_ios
-cd build_ios
-cmake .. \
--DCMAKE_TOOLCHAIN_FILE="../cmake/ios.toolchain.cmake"
-```
-
-This will generate an Xcode project called `basisu_transcoder.xcodeproj`.
-
-Open it and build it (target `ALL_BUILD` or `basisu`).
-
-After this was successful, build the target `install`.
-
-### Build for Android
-
-You'll need the Android NDK
-
-Create a subfolder `build_android_arm64`, enter it and call CMake like this:
-
-```bash
-mkdir build_android_arm64
-cd build_android_arm64
-cmake .. \
--DANDROID_ABI=arm64-v8a \
--DCMAKE_BUILD_TYPE=RelWithDebInfo \
--DANDROID_NDK=/path/to/your/android/sdk/ndk-bundle \
--DCMAKE_TOOLCHAIN_FILE=/path/to/your/android/sdk/ndk-bundle/build/cmake/android.toolchain.cmake \
--DANDROID_STL=c++_static
-```
-
-Replace `/path/to/your/android/sdk/ndk-bundle` with the actual path to your Android NDK install.
-
-To build and install
-
-```bash
-make && make install
-```
-
-### Other platforms (Linux,Windows,iOS)
-
-Not tested at the moment. Probably needs some minor tweaks to run.
-
-## Running the Unity project
-
-This can only work if you've build the native library before.
-
-In the project view, navigate to the file `BasisUniversalUnity/BasisUniversalUnity/Assets/Plugins/x86_64/basisu`, select it and make sure the option *Load on startup* is checked.
-
-Other than that, open the `SampleScene` and click play. Two basis textures on planes should appear in front of you.
-
-## Building Unity project
-
-Just build like a regular project.
-
-Note: Only WebGL and Android is tested at the moment.
+<https://github.com/atteneder/BasisUniversalUnityDemo>
 
 ## Support
 
