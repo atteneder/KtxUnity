@@ -133,28 +133,4 @@ limitations under the License.
 
 References [Binomial LLC](http://www.binomial.info)'s [Basis Universal transcoder](https://github.com/BinomialLLC/basis_universal) (released under the terms of Apache License 2.0)
 
-Uses Alexander Widerberg's CMake iOS toolchain ( https://github.com/leetal/ios-cmake )
-
-## TODO
-
-### Platform support
-
-- Provide fallback to bitmap format if none of the GPU formats are supported (iOS Safari for example)
-- Provide fallback to separate alpha-channel texture if no alpha channel format is supported.
-- iOS support
-
-### General
-
-- Remove memory leaks
-- Create proper C# API
-- Create DownloadHandler that provides a Texture2D
-- Make a package (library)
-
-### Basis Universal library
-
-- Build for iOS
-- Build for Android
-- Watch out for useful changes in in Basis Universal project
-  - public C bindings/interface
-  - Separate encoder/transcoder libs
-  - Multi platform support
+Uses Alexander Widerberg's CMake iOS toolchain ( <https://github.com/leetal/ios-cmake> )
