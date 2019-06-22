@@ -1,0 +1,19 @@
+{
+  "name": "com.atteneder.basisu",
+  "version": "0.0.1",
+  "displayName": "Basis Universal",
+  "description": "Load Basis Universal textures at runtime.",
+  "unity": "2019.1",
+  "dependencies": {},
+ "keywords": [
+    "texture",
+    "image",
+    "basis",
+    "universal"
+  ],
+  "author": {
+    "name": "Andreas Atteneder",
+    "email": "andreas.atteneder@gmail.com",
+    "url": "https://atteneder.netlify.com"
+  } 
+}
