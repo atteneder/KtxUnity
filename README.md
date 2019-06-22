@@ -15,6 +15,7 @@ You'll need [CMake](https://cmake.org)
 All build platform variants will have an `install` build target, that does the following:
 
 This does the following:
+
 - The final library will be installed to the correct place within `BasisUniversalUnity/BasisUniversalUnity/Assets/Plugins`.
 - The source code for the transcoder + wrapper is copied to `BasisUniversalUnity/BasisUniversalUnity/Assets/Plugins/WebGL`. This way it gets compiled and included when you build the Unity project for WebGL.
 - Two sample basis files get copied to the StreamingAssets folder.
@@ -27,13 +28,13 @@ Install Xcode and its command line tools.
 
 Open up a terminal and navigate into the repository.
 
-```
+```bash
 cd /path/to/BasisUniversalUnity
 ```
 
 Create a subfolder `build`, enter it and call CMake like this:
 
-```
+```bash
 mkdir build
 cd build
 cmake .. -G Xcode
@@ -51,7 +52,7 @@ You'll need Xcode and its command line tools installed.
 
 Create a subfolder `build_ios`, enter it and call CMake like this:
 
-```
+```bash
 mkdir build_ios
 cd build_ios
 cmake .. \
@@ -70,7 +71,7 @@ You'll need the Android NDK
 
 Create a subfolder `build_android_arm64`, enter it and call CMake like this:
 
-```
+```bash
 mkdir build_android_arm64
 cd build_android_arm64
 cmake .. \
@@ -84,7 +85,8 @@ cmake .. \
 Replace `/path/to/your/android/sdk/ndk-bundle` with the actual path to your Android NDK install.
 
 To build and install
-```
+
+```bash
 make && make install
 ```
 
@@ -119,7 +121,7 @@ Licensed under the Apache License, Version 2.0 (the "License");
 you may not use files in this repository except in compliance with the License.
 You may obtain a copy of the License at
 
-   http://www.apache.org/licenses/LICENSE-2.0
+   <http://www.apache.org/licenses/LICENSE-2.0>
 
 Unless required by applicable law or agreed to in writing, software
 distributed under the License is distributed on an "AS IS" BASIS,
@@ -136,20 +138,23 @@ Uses Alexander Widerberg's CMake iOS toolchain ( https://github.com/leetal/ios-c
 ## TODO
 
 ### Platform support
+
 - Provide fallback to bitmap format if none of the GPU formats are supported (iOS Safari for example)
 - Provide fallback to separate alpha-channel texture if no alpha channel format is supported.
 - iOS support
 
 ### General
+
 - Remove memory leaks
 - Create proper C# API
 - Create DownloadHandler that provides a Texture2D
 - Make a package (library)
 
 ### Basis Universal library
+
 - Build for iOS
 - Build for Android
 - Watch out for useful changes in in Basis Universal project
-  + public C bindings/interface
-  + Separate encoder/transcoder libs
-  + Multi platform support
+  - public C bindings/interface
+  - Separate encoder/transcoder libs
+  - Multi platform support
