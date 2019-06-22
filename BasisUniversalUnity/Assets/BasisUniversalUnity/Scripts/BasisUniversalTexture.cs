@@ -57,6 +57,10 @@ namespace BasisUniversalUnity {
             var webRequest = UnityWebRequest.Get(url);
             yield return webRequest.SendWebRequest();
             if(!string.IsNullOrEmpty(webRequest.error)) {
+                Debug.LogErrorFormat("Error loading {0}: {1}",url,webRequest.error);
+                if(onTextureLoaded!=null) {
+                    onTextureLoaded(null);
+                }
                 yield break;
             }
             var bytes = webRequest.downloadHandler.data;
