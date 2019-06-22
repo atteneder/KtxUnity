@@ -15,21 +15,24 @@
 using UnityEngine;
 using BasisUniversalUnity;
 
-public class BasisLoader : BasisLoaderBase
+public abstract class BasisLoaderBase : MonoBehaviour
 {
-    public string filePath;
-
-    void Start() {
-        DemoLoadFromStreamingAssets();
-    }
+    protected BasisUniversalTexture basisu;
 
     /// <summary>
-    /// Demonstrates how to load a basisu files from the StreamingAssets
-    /// folder (see https://docs.unity3d.com/Manual/StreamingAssets.html)
+    /// Example callback for loading a Basis Universal texture.
     /// </summary>
-    void DemoLoadFromStreamingAssets() {
-        basisu = new BasisUniversalTexture();
-        basisu.onTextureLoaded += OnTextureLoaded;
-        basisu.LoadFromStreamingAssets(filePath,this);
+    /// <param name="texture">If no error occurred, resulting texture. null otherwise</param>
+    protected void OnTextureLoaded(Texture2D texture) {
+        basisu.onTextureLoaded -= OnTextureLoaded;
+        if(texture!=null) {
+            var renderer = GetComponent<Renderer>();
+            if(renderer!=null && renderer.sharedMaterial!=null) {
+                renderer.material.mainTexture = texture;
+            }
+        } else {
+            Debug.LogError("Loading Basis Universal Texture failed!");
+        }
+        basisu = null;
     }
 }

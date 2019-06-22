@@ -15,9 +15,9 @@
 using UnityEngine;
 using BasisUniversalUnity;
 
-public class BasisLoader : BasisLoaderBase
+public class BasisUrlLoader : BasisLoaderBase
 {
-    public string filePath;
+    public string url;
 
     void Start() {
         DemoLoadFromStreamingAssets();
@@ -30,6 +30,6 @@ public class BasisLoader : BasisLoaderBase
     void DemoLoadFromStreamingAssets() {
         basisu = new BasisUniversalTexture();
         basisu.onTextureLoaded += OnTextureLoaded;
-        basisu.LoadFromStreamingAssets(filePath,this);
+        basisu.LoadFromUrl(url,this);
     }
 }

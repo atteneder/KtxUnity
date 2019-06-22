@@ -33,19 +33,28 @@ namespace BasisUniversalUnity {
         }
 
         /// <summary>
-        /// Loads a BasisUniversal texture from the StreamingAssets folder
+        /// Loads a Basis Universal texture from the StreamingAssets folder
         /// see https://docs.unity3d.com/Manual/StreamingAssets.html
         /// </summary>
         /// <param name="filePath">Path to the file, relative to StreamingAssets</param>
         /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
         public void LoadFromStreamingAssets( string filePath, MonoBehaviour monoBehaviour ) {
-            var uri = GetStreamingAssetsPath(filePath);
-            monoBehaviour.StartCoroutine(LoadBasisFile(uri));
+            var url = GetStreamingAssetsUrl(filePath);
+            monoBehaviour.StartCoroutine(LoadBasisFile(url));
         }
 
-        IEnumerator LoadBasisFile(string uri) {
+        /// <summary>
+        /// Loads a Basis Universal texture from an URL
+        /// </summary>
+        /// <param name="url">URL to the basis file to load</param>
+        /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
+        public void LoadFromUrl( string url, MonoBehaviour monoBehaviour ) {
+            monoBehaviour.StartCoroutine(LoadBasisFile(url));
+        }
+
+        IEnumerator LoadBasisFile(string url) {
     
-            var webRequest = UnityWebRequest.Get(uri);
+            var webRequest = UnityWebRequest.Get(url);
             yield return webRequest.SendWebRequest();
             if(!string.IsNullOrEmpty(webRequest.error)) {
                 yield break;
@@ -66,7 +75,7 @@ namespace BasisUniversalUnity {
         /// </summary>
         /// <param name="subPath">Path, relative to StreamingAssets. Example: path/to/file.basis</param>
         /// <returns>Platform independent URI that can be loaded via UnityWebRequest</returns>
-        string GetStreamingAssetsPath( string subPath ) {
+        string GetStreamingAssetsUrl( string subPath ) {
 
             var path = Path.Combine(Application.streamingAssetsPath,subPath);
 
