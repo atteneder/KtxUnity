@@ -32,18 +32,6 @@ namespace BasisUniversalUnity {
         public const string INTERFACE_DLL = "basisu";
     #endif
 
-        // source: C++ enum transcoder_texture_format
-        public enum TranscodeFormat : uint {
-            ETC1,
-            BC1,
-            BC4,
-            PVRTC1_4_OPAQUE_ONLY,
-            BC7_M6_OPAQUE_ONLY,
-            ETC2,
-            BC3,
-            BC5,
-        }
-
         public class BasisTexture {
             IntPtr nativeReference;
 
@@ -97,10 +85,10 @@ namespace BasisUniversalUnity {
         }
 
         static bool initialized;
-        static Dictionary<GraphicsFormat,BasisUniversal.TranscodeFormat> opaqueFormatDict;
-        static Dictionary<GraphicsFormat,BasisUniversal.TranscodeFormat> alphaFormatDict;
-        static Dictionary<TextureFormat,BasisUniversal.TranscodeFormat> opaqueFormatLegacyDict;
-        static Dictionary<TextureFormat,BasisUniversal.TranscodeFormat> alphaFormatLegacyDict;
+        static Dictionary<GraphicsFormat,TranscodeFormat> opaqueFormatDict;
+        static Dictionary<GraphicsFormat,TranscodeFormat> alphaFormatDict;
+        static Dictionary<TextureFormat,TranscodeFormat> opaqueFormatLegacyDict;
+        static Dictionary<TextureFormat,TranscodeFormat> alphaFormatLegacyDict;
 
         public static void Init() {
             if(!initialized) {
@@ -113,40 +101,40 @@ namespace BasisUniversalUnity {
             aa_basis_init();
 
             if(opaqueFormatDict==null) {
-                opaqueFormatDict = new Dictionary<GraphicsFormat, BasisUniversal.TranscodeFormat>();
-                opaqueFormatDict.Add(GraphicsFormat.RGBA_BC7_SRGB,BasisUniversal.TranscodeFormat.BC7_M6_OPAQUE_ONLY);
-                opaqueFormatDict.Add(GraphicsFormat.RGB_PVRTC_4Bpp_SRGB,BasisUniversal.TranscodeFormat.PVRTC1_4_OPAQUE_ONLY);
-                opaqueFormatDict.Add(GraphicsFormat.RGB_ETC_UNorm,BasisUniversal.TranscodeFormat.ETC1);
-                opaqueFormatDict.Add(GraphicsFormat.RGB_ETC2_SRGB,BasisUniversal.TranscodeFormat.ETC2);
-                opaqueFormatDict.Add(GraphicsFormat.RGBA_DXT1_SRGB,BasisUniversal.TranscodeFormat.BC1);
-                opaqueFormatDict.Add(GraphicsFormat.R_BC4_UNorm,BasisUniversal.TranscodeFormat.BC4);
-                opaqueFormatDict.Add(GraphicsFormat.RG_BC5_UNorm,BasisUniversal.TranscodeFormat.BC5);
+                opaqueFormatDict = new Dictionary<GraphicsFormat, TranscodeFormat>();
+                opaqueFormatDict.Add(GraphicsFormat.RGBA_BC7_SRGB,TranscodeFormat.BC7_M6_OPAQUE_ONLY);
+                opaqueFormatDict.Add(GraphicsFormat.RGB_PVRTC_4Bpp_SRGB,TranscodeFormat.PVRTC1_4_OPAQUE_ONLY);
+                opaqueFormatDict.Add(GraphicsFormat.RGB_ETC_UNorm,TranscodeFormat.ETC1);
+                opaqueFormatDict.Add(GraphicsFormat.RGB_ETC2_SRGB,TranscodeFormat.ETC2);
+                opaqueFormatDict.Add(GraphicsFormat.RGBA_DXT1_SRGB,TranscodeFormat.BC1);
+                opaqueFormatDict.Add(GraphicsFormat.R_BC4_UNorm,TranscodeFormat.BC4);
+                opaqueFormatDict.Add(GraphicsFormat.RG_BC5_UNorm,TranscodeFormat.BC5);
             }
 
             if(alphaFormatDict==null) {
-                alphaFormatDict = new Dictionary<GraphicsFormat, BasisUniversal.TranscodeFormat>();
+                alphaFormatDict = new Dictionary<GraphicsFormat,TranscodeFormat>();
 #if PLATFORM_IOS
-                alphaFormatDict.Add(GraphicsFormat.RGBA_ETC2_SRGB,BasisUniversal.TranscodeFormat.ETC2);
+                alphaFormatDict.Add(GraphicsFormat.RGBA_ETC2_SRGB,TranscodeFormat.ETC2);
 #endif
-                alphaFormatDict.Add(GraphicsFormat.RGBA_DXT5_SRGB,BasisUniversal.TranscodeFormat.BC3);
+                alphaFormatDict.Add(GraphicsFormat.RGBA_DXT5_SRGB,TranscodeFormat.BC3);
             }
 
             if(opaqueFormatLegacyDict==null) {
-                opaqueFormatLegacyDict = new Dictionary<TextureFormat, BasisUniversal.TranscodeFormat>();
-                opaqueFormatLegacyDict.Add(TextureFormat.BC7,BasisUniversal.TranscodeFormat.BC7_M6_OPAQUE_ONLY);
-                opaqueFormatLegacyDict.Add(TextureFormat.PVRTC_RGB4,BasisUniversal.TranscodeFormat.PVRTC1_4_OPAQUE_ONLY);
-                opaqueFormatLegacyDict.Add(TextureFormat.ETC_RGB4,BasisUniversal.TranscodeFormat.ETC1);
-                opaqueFormatLegacyDict.Add(TextureFormat.ETC2_RGBA8,BasisUniversal.TranscodeFormat.ETC2);
-                opaqueFormatLegacyDict.Add(TextureFormat.DXT1,BasisUniversal.TranscodeFormat.BC1);
-                opaqueFormatLegacyDict.Add(TextureFormat.BC4,BasisUniversal.TranscodeFormat.BC4);
-                opaqueFormatLegacyDict.Add(TextureFormat.BC5,BasisUniversal.TranscodeFormat.BC5);
+                opaqueFormatLegacyDict = new Dictionary<TextureFormat,TranscodeFormat>();
+                opaqueFormatLegacyDict.Add(TextureFormat.BC7,TranscodeFormat.BC7_M6_OPAQUE_ONLY);
+                opaqueFormatLegacyDict.Add(TextureFormat.PVRTC_RGB4,TranscodeFormat.PVRTC1_4_OPAQUE_ONLY);
+                opaqueFormatLegacyDict.Add(TextureFormat.ETC_RGB4,TranscodeFormat.ETC1);
+                opaqueFormatLegacyDict.Add(TextureFormat.ETC2_RGBA8,TranscodeFormat.ETC2);
+                opaqueFormatLegacyDict.Add(TextureFormat.DXT1,TranscodeFormat.BC1);
+                opaqueFormatLegacyDict.Add(TextureFormat.BC4,TranscodeFormat.BC4);
+                opaqueFormatLegacyDict.Add(TextureFormat.BC5,TranscodeFormat.BC5);
             }
 
             if(alphaFormatLegacyDict==null) {
-                alphaFormatLegacyDict = new Dictionary<TextureFormat, BasisUniversal.TranscodeFormat>();
-                alphaFormatLegacyDict.Add(TextureFormat.DXT5,BasisUniversal.TranscodeFormat.BC3);
-                alphaFormatLegacyDict.Add(TextureFormat.ETC2_RGBA8,BasisUniversal.TranscodeFormat.ETC2);            
-                alphaFormatLegacyDict.Add(TextureFormat.ETC2_RGBA1,BasisUniversal.TranscodeFormat.ETC2); // Not sure if this works
+                alphaFormatLegacyDict = new Dictionary<TextureFormat,TranscodeFormat>();
+                alphaFormatLegacyDict.Add(TextureFormat.DXT5,TranscodeFormat.BC3);
+                alphaFormatLegacyDict.Add(TextureFormat.ETC2_RGBA8,TranscodeFormat.ETC2);            
+                alphaFormatLegacyDict.Add(TextureFormat.ETC2_RGBA1,TranscodeFormat.ETC2); // Not sure if this works
             }
 
 #if BASISU_VERBOSE
