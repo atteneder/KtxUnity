@@ -128,9 +128,3 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
-
-## Third party
-
-References [Binomial LLC](http://www.binomial.info)'s [Basis Universal transcoder](https://github.com/BinomialLLC/basis_universal) (released under the terms of Apache License 2.0)
-
-Uses Alexander Widerberg's CMake iOS toolchain ( <https://github.com/leetal/ios-cmake> )
