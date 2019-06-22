@@ -27,6 +27,8 @@ It should look something like this:
 }
 ```
 
+There's more detail about how to add packages via GIT URLs in the [Unity documentation](https://docs.unity3d.com/Manual/upm-git.html).
+
 ## Demo project
 
 There's a simple demo project that shows how you can use it:
