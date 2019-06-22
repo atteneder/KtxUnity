@@ -4,8 +4,10 @@
   "displayName": "Basis Universal",
   "description": "Load Basis Universal textures at runtime.",
   "unity": "2019.1",
-  "dependencies": {},
- "keywords": [
+  "dependencies": {
+    "com.unity.modules.unitywebrequest": "1.0.0"
+  },
+  "keywords": [
     "texture",
     "image",
     "basis",
