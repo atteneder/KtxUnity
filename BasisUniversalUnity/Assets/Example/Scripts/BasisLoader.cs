@@ -22,9 +22,17 @@ public class BasisLoader : MonoBehaviour
     BasisUniversalTexture basisu;
 
     void Start() {
+        DemoLoadFromStreamingAssets();
+    }
+
+    /// <summary>
+    /// Demonstrates how to load a basisu files from the StreamingAssets
+    /// folder (see https://docs.unity3d.com/Manual/StreamingAssets.html)
+    /// </summary>
+    void DemoLoadFromStreamingAssets() {
         basisu = new BasisUniversalTexture();
         basisu.onTextureLoaded += OnTextureLoaded;
-        basisu.Load(filePath,this);
+        basisu.LoadFromStreamingAssets(filePath,this);
     }
 
     void OnTextureLoaded(Texture2D texture) {

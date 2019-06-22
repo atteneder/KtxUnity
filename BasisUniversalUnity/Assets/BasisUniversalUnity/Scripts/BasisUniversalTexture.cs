@@ -32,19 +32,20 @@ namespace BasisUniversalUnity {
             BasisUniversal.Init();
         }
 
-        public void Load( string filePath, MonoBehaviour monoBehaviour ) {
-            monoBehaviour.StartCoroutine(LoadBasisFile(filePath));
+        /// <summary>
+        /// Loads a BasisUniversal texture from the StreamingAssets folder
+        /// see https://docs.unity3d.com/Manual/StreamingAssets.html
+        /// </summary>
+        /// <param name="filePath">Path to the file, relative to StreamingAssets</param>
+        /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
+        public void LoadFromStreamingAssets( string filePath, MonoBehaviour monoBehaviour ) {
+            var uri = GetStreamingAssetsPath(filePath);
+            monoBehaviour.StartCoroutine(LoadBasisFile(uri));
         }
 
-        IEnumerator LoadBasisFile(string filePath) {
+        IEnumerator LoadBasisFile(string uri) {
     
-            var path = Path.Combine(Application.streamingAssetsPath,filePath);
-
-#if LOCAL_LOADING
-            path = string.Format( "file://{0}", path );
-#endif
-
-            var webRequest = UnityWebRequest.Get(path);
+            var webRequest = UnityWebRequest.Get(uri);
             yield return webRequest.SendWebRequest();
             if(!string.IsNullOrEmpty(webRequest.error)) {
                 yield break;
@@ -56,6 +57,24 @@ namespace BasisUniversalUnity {
             if(onTextureLoaded!=null) {
                 onTextureLoaded(texture);
             }
+        }
+
+        /// <summary>
+        /// Converts a relative sub path within StreamingAssets
+        /// and creates an absolute URI from it. Useful for loading
+        /// via UnityWebRequests.
+        /// </summary>
+        /// <param name="subPath">Path, relative to StreamingAssets. Example: path/to/file.basis</param>
+        /// <returns>Platform independent URI that can be loaded via UnityWebRequest</returns>
+        string GetStreamingAssetsPath( string subPath ) {
+
+            var path = Path.Combine(Application.streamingAssetsPath,subPath);
+
+            #if LOCAL_LOADING
+                        path = string.Format( "file://{0}", path );
+            #endif
+
+            return path;
         }
     }
 }
