@@ -90,6 +90,10 @@ namespace BasisUniversalUnity {
                 transcodedData = data;
                 return result;
             }
+
+            ~BasisTexture() {
+                aa_delete_basis(nativeReference);
+            }
         }
 
         static bool initialized;
