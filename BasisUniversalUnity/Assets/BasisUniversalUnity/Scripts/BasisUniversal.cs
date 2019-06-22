@@ -183,23 +183,26 @@ namespace BasisUniversalUnity {
             TranscodeFormat transF = TranscodeFormat.ETC1;
             Texture2D texture = null;
 
+            bool isPowerOfTwo = IsPowerOfTwo(width) && IsPowerOfTwo(height);
+            bool isSquare = width==height;
+
             if(hasAlpha) {
-                if(BasisUniversal.GetPreferredFormatAlpha(out gf,out transF)) {
+                if(BasisUniversal.GetPreferredFormatAlpha(isPowerOfTwo,isSquare,out gf,out transF)) {
                     Log("Transcode to {0} (alpha)",gf);
                     texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
                 } else
-                if(BasisUniversal.GetPreferredFormatLegacyAlpha(out tf,out transF)) {
+                if(BasisUniversal.GetPreferredFormatLegacyAlpha(isPowerOfTwo,isSquare,out tf,out transF)) {
                     Log("Transcode to {0} (legacy alpha)",tf);
                     texture = new Texture2D((int)width,(int)height,tf,false);
                 }
             }
             
             if( !hasAlpha || texture==null ) {
-                if(BasisUniversal.GetPreferredFormat(out gf,out transF)) {
+                if(BasisUniversal.GetPreferredFormat(isPowerOfTwo,isSquare,out gf,out transF)) {
                     Log("Transcode to {0}",gf);
                     texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
                 } else
-                if(BasisUniversal.GetPreferredFormatLegacy(out tf,out transF)) {
+                if(BasisUniversal.GetPreferredFormatLegacy(isPowerOfTwo,isSquare,out tf,out transF)) {
                     Log("Transcode to {0} (legacy)",tf);
                     texture = new Texture2D((int)width,(int)height,tf,false);
                 }
@@ -268,11 +271,17 @@ namespace BasisUniversalUnity {
         }
 #endif
 
-        public static bool GetPreferredFormat( out GraphicsFormat unityFormat, out TranscodeFormat transcodeFormat ) {
+        public static bool GetPreferredFormat( bool isPowerOfTwo, bool isSquare, out GraphicsFormat unityFormat, out TranscodeFormat transcodeFormat ) {
             unityFormat = GraphicsFormat.RGBA_DXT1_SRGB;
             transcodeFormat = TranscodeFormat.BC1;
 
             foreach(var format in opaqueFormatDict) {
+                if(
+                    format.Key==GraphicsFormat.RGB_PVRTC_4Bpp_SRGB
+                    && ( !isPowerOfTwo || !isSquare )
+                ) {
+                    continue;
+                }
                 var supported = SystemInfo.IsFormatSupported(format.Key,FormatUsage.Sample);
                 if (supported) {
                     unityFormat = format.Key;
@@ -283,7 +292,7 @@ namespace BasisUniversalUnity {
             return false;
         }
 
-        public static bool GetPreferredFormatAlpha( out GraphicsFormat unityFormat, out TranscodeFormat transcodeFormat ) {
+        public static bool GetPreferredFormatAlpha( bool isPowerOfTwo, bool isSquare, out GraphicsFormat unityFormat, out TranscodeFormat transcodeFormat ) {
             unityFormat = GraphicsFormat.RGBA_DXT1_SRGB;
             transcodeFormat = TranscodeFormat.BC1;
 
@@ -298,7 +307,7 @@ namespace BasisUniversalUnity {
             return false;
         }
 
-        public static bool GetPreferredFormatLegacy( out TextureFormat unityFormat, out TranscodeFormat transcodeFormat ) {
+        public static bool GetPreferredFormatLegacy( bool isPowerOfTwo, bool isSquare, out TextureFormat unityFormat, out TranscodeFormat transcodeFormat ) {
             unityFormat = TextureFormat.DXT1;
             transcodeFormat = TranscodeFormat.BC1;
 
@@ -313,7 +322,7 @@ namespace BasisUniversalUnity {
             return false;
         }
 
-        public static bool GetPreferredFormatLegacyAlpha( out TextureFormat unityFormat, out TranscodeFormat transcodeFormat ) {
+        public static bool GetPreferredFormatLegacyAlpha( bool isPowerOfTwo, bool isSquare, out TextureFormat unityFormat, out TranscodeFormat transcodeFormat ) {
             unityFormat = TextureFormat.DXT1;
             transcodeFormat = TranscodeFormat.BC1;
 
@@ -326,6 +335,10 @@ namespace BasisUniversalUnity {
                 }
             }
             return false;
+        }
+
+        static bool IsPowerOfTwo(uint i) {
+            return (i&(i-1))==0;
         }
 
         [System.Diagnostics.Conditional("BASISU_VERBOSE")]
