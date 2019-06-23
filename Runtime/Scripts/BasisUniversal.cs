@@ -26,7 +26,7 @@ namespace BasisUniversalUnity {
 
     public static class BasisUniversal
     {
-    #if UNITY_EDITOR || UNITY_WEBGL || UNITY_IOS
+    #if UNITY_EDITOR_OSX || UNITY_WEBGL || UNITY_IOS
         const string INTERFACE_DLL = "__Internal";
     #elif UNITY_ANDROID || UNITY_STANDALONE
         public const string INTERFACE_DLL = "basisu";
