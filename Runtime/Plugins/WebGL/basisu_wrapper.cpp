@@ -14,10 +14,8 @@
 
 
 #ifdef DLL_EXPORT_FLAG
-#define CALL_CONV __stdcall
-#define DLL_EXPORT __declspec(dllexport) CALL_CONV
+#define DLL_EXPORT __declspec(dllexport)
 #else
-#define CALL_CONV
 #define DLL_EXPORT
 #endif
 
