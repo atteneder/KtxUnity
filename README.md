@@ -29,11 +29,49 @@ It should look something like this:
 
 There's more detail about how to add packages via GIT URLs in the [Unity documentation](https://docs.unity3d.com/Manual/upm-git.html).
 
-## Demo project
+## Using
 
 There's a simple demo project that shows how you can use it:
 
 <https://github.com/atteneder/BasisUniversalUnityDemo>
+
+Excerpt how to load a file from StreamingAssets:
+
+```C#
+using UnityEngine;
+using BasisUniversalUnity;
+
+public class CustomBasisFileLoader : BasisFileLoader
+{
+    protected override void ApplyTexture(Texture2D texture) {
+        var renderer = GetComponent<Renderer>();
+        if(renderer!=null && renderer.sharedMaterial!=null) {
+            renderer.material.mainTexture = texture;
+        }
+    }
+}
+```
+
+In this simple case the base MonoBehaviour `BasisFileLoader` has a public `filePath` member, starts loading in `Start` and  already takes care of all things. You only need to implement the `ApplyTexture` method and do something with your texture.
+
+Loading from URLs is similarly easy:
+
+```C#
+using UnityEngine;
+using BasisUniversalUnity;
+
+public class CustomBasisUrlLoader : BasisUrlLoader
+{
+   protected override void ApplyTexture(Texture2D texture) {
+        var renderer = GetComponent<Renderer>();
+        if(renderer!=null && renderer.sharedMaterial!=null) {
+            renderer.material.mainTexture = texture;
+        }
+    }
+}
+```
+
+Devs who want to create advanced loading code should look into class `BasisUniversal` directly.
 
 ## Support
 
