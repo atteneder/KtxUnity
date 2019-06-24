@@ -79,12 +79,12 @@ namespace BasisUniversalUnity {
         /// </summary>
         /// <param name="subPath">Path, relative to StreamingAssets. Example: path/to/file.basis</param>
         /// <returns>Platform independent URI that can be loaded via UnityWebRequest</returns>
-        string GetStreamingAssetsUrl( string subPath ) {
+        public static string GetStreamingAssetsUrl( string subPath ) {
 
             var path = Path.Combine(Application.streamingAssetsPath,subPath);
 
             #if LOCAL_LOADING
-                        path = string.Format( "file://{0}", path );
+            path = string.Format( "file://{0}", path );
             #endif
 
             return path;
