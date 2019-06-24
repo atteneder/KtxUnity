@@ -16,6 +16,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.Experimental.Rendering;
 #if BASISU_VERBOSE
 using System.Text;
@@ -61,10 +62,11 @@ namespace BasisUniversalUnity {
             }
 
             public unsafe bool Transcode(uint imageIndex,uint levelIndex,TranscodeFormat format,out byte[] transcodedData ) {
-                
+                Profiler.BeginSample("BasisU.Transcode");
                 transcodedData = null;
 
                 if(!aa_startTranscoding(nativeReference)) {
+                    Profiler.EndSample();
                     return false;
                 }
 
@@ -76,6 +78,7 @@ namespace BasisUniversalUnity {
                     result = aa_transcodeImage(nativeReference,dst,size,imageIndex,levelIndex,(uint)format,0,0);
                 }
                 transcodedData = data;
+                Profiler.EndSample();
                 return result;
             }
 
@@ -143,6 +146,7 @@ namespace BasisUniversalUnity {
         }
 
         public static unsafe Texture2D LoadBytes( byte[] data ) {
+            Profiler.BeginSample("BasisU.LoadBytes");
             if(!initialized) {
                 InitInternal();
             }
@@ -205,6 +209,7 @@ namespace BasisUniversalUnity {
                 #if BASISU_VERBOSE
                 BasisUniversal.CheckTextureSupport();
                 #endif
+                Profiler.EndSample();
                 return null;
             }
 
@@ -212,10 +217,16 @@ namespace BasisUniversalUnity {
             byte[] trData;
             if(basis.Transcode(0,0,transF,out trData)) {
                 // Log("transcoded {0} bytes", trData.Length);
+                Profiler.BeginSample("texture.LoadRawTextureData");
                 texture.LoadRawTextureData(trData);
+                Profiler.EndSample();
+                Profiler.BeginSample("texture.Apply");
                 texture.Apply();
+                Profiler.EndSample();
+                Profiler.EndSample();
                 return texture;
             }
+            Profiler.EndSample();
             return null;
         }
 
