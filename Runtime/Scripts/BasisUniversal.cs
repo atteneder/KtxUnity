@@ -14,10 +14,11 @@
 
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
-using System;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.Experimental.Rendering;
+using Unity.Jobs;
+using Unity.Collections;
 #if BASISU_VERBOSE
 using System.Text;
 #endif
@@ -28,64 +29,10 @@ namespace BasisUniversalUnity {
     public static class BasisUniversal
     {
     #if UNITY_EDITOR_OSX || UNITY_WEBGL || UNITY_IOS
-        const string INTERFACE_DLL = "__Internal";
+        public const string INTERFACE_DLL = "__Internal";
     #elif UNITY_ANDROID || UNITY_STANDALONE
         public const string INTERFACE_DLL = "basisu";
     #endif
-
-        public class BasisTexture {
-            IntPtr nativeReference;
-
-            public BasisTexture( IntPtr nativeReference ) {
-                this.nativeReference = nativeReference;
-            }
-
-            public bool GetHasAlpha() {
-                return aa_getHasAlpha(nativeReference);
-            }
-
-            public uint GetImageCount() {
-                return aa_getNumImages(nativeReference);
-            }
-
-            public uint GetLevelCount(uint imageIndex) {
-                return aa_getNumLevels(nativeReference,imageIndex);
-            }
-
-            public void GetImageSize( out uint width, out uint height, System.UInt32 image_index = 0, System.UInt32 level_index = 0) {
-                width = aa_getImageWidth(nativeReference,image_index,level_index);
-                height = aa_getImageHeight(nativeReference,image_index,level_index);
-            }
-
-            uint GetImageTranscodedSize(uint imageIndex, uint levelIndex, TranscodeFormat format) {
-                return aa_getImageTranscodedSizeInBytes(nativeReference,imageIndex,levelIndex,(uint)format);
-            }
-
-            public unsafe bool Transcode(uint imageIndex,uint levelIndex,TranscodeFormat format,out byte[] transcodedData ) {
-                Profiler.BeginSample("BasisU.Transcode");
-                transcodedData = null;
-
-                if(!aa_startTranscoding(nativeReference)) {
-                    Profiler.EndSample();
-                    return false;
-                }
-
-                var size = GetImageTranscodedSize(imageIndex,levelIndex,format);
-                byte[] data = new byte[size];
-
-                bool result = false;
-                fixed( void* dst = &(data[0]) ) {
-                    result = aa_transcodeImage(nativeReference,dst,size,imageIndex,levelIndex,(uint)format,0,0);
-                }
-                transcodedData = data;
-                Profiler.EndSample();
-                return result;
-            }
-
-            ~BasisTexture() {
-                aa_delete_basis(nativeReference);
-            }
-        }
 
         static bool initialized;
         static Dictionary<GraphicsFormat,TranscodeFormat> opaqueFormatDict;
@@ -145,89 +92,205 @@ namespace BasisUniversalUnity {
 #endif
         }
 
-        public static unsafe Texture2D LoadBytes( byte[] data ) {
-            Profiler.BeginSample("BasisU.LoadBytes");
+        static Stack<TranscoderInstance> transcoderPool;
+        public static TranscoderInstance GetTranscoderInstance() {
             if(!initialized) {
                 InitInternal();
             }
+            if(transcoderPool!=null) {
+                return transcoderPool.Pop();
+            }
+            return new TranscoderInstance(aa_create_basis());
+        }
+
+        public static void ReturnTranscoderInstance( TranscoderInstance transcoder ) {
+            if(transcoderPool==null) {
+                transcoderPool = new Stack<TranscoderInstance>();
+            }
+            transcoderPool.Push(transcoder);
+        }
+
+        public unsafe static JobHandle? LoadBytesJob(
+            TranscoderInstance basis,
+            NativeArray<byte> data,
+            NativeArray<bool> result,
+            out Texture2D texture,
+            out byte[] rawTexture
+        ) {
+            
+            Profiler.BeginSample("BasisU.LoadBytesJob");
             
             Log("loading {0} bytes", data.Length);
 
-            BasisTexture basis;
-            fixed( void* src = &(data[0]) ) {
-                basis = new BasisTexture(aa_create_basis(src,data.Length));
-            }
-            uint width;
-            uint height;
+            JobHandle? jobHandle = null;
+            texture = null;
+            rawTexture = null;
 
-            basis.GetImageSize(out width, out height);
-            Log("image size {0} x {1}", width, height);
+            if(basis.Open(data)) {
+                
+                uint width;
+                uint height;
 
-            bool hasAlpha = basis.GetHasAlpha();
-            Log("image has alpha {0}",hasAlpha);
+                basis.GetImageSize(out width, out height);
+                Log("image size {0} x {1}", width, height);
 
-            var imageCount = basis.GetImageCount();
-            Log("image count {0}",imageCount);
+                bool hasAlpha = basis.GetHasAlpha();
+                Log("image has alpha {0}",hasAlpha);
 
-            for(uint i=0; i<imageCount;i++) {
-                var levelCount = basis.GetLevelCount(i);
-                Log("level count image {0}: {1}",i,levelCount);
-            }
+                var imageCount = basis.GetImageCount();
+                Log("image count {0}",imageCount);
 
-            GraphicsFormat gf;
-            TextureFormat tf;
-            TranscodeFormat transF = TranscodeFormat.ETC1;
-            Texture2D texture = null;
-
-            bool isPowerOfTwo = IsPowerOfTwo(width) && IsPowerOfTwo(height);
-            bool isSquare = width==height;
-
-            if(hasAlpha) {
-                if(BasisUniversal.GetPreferredFormatAlpha(isPowerOfTwo,isSquare,out gf,out transF)) {
-                    Log("Transcode to {0} (alpha)",gf);
-                    texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
-                } else
-                if(BasisUniversal.GetPreferredFormatLegacyAlpha(isPowerOfTwo,isSquare,out tf,out transF)) {
-                    Log("Transcode to {0} (legacy alpha)",tf);
-                    texture = new Texture2D((int)width,(int)height,tf,false);
+                for(uint i=0; i<imageCount;i++) {
+                    var levelCount = basis.GetLevelCount(i);
+                    Log("level count image {0}: {1}",i,levelCount);
                 }
-            }
-            
-            if( !hasAlpha || texture==null ) {
-                if(BasisUniversal.GetPreferredFormat(isPowerOfTwo,isSquare,out gf,out transF)) {
-                    Log("Transcode to {0}",gf);
-                    texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
-                } else
-                if(BasisUniversal.GetPreferredFormatLegacy(isPowerOfTwo,isSquare,out tf,out transF)) {
-                    Log("Transcode to {0} (legacy)",tf);
-                    texture = new Texture2D((int)width,(int)height,tf,false);
+
+                GraphicsFormat gf;
+                TextureFormat tf;
+                TranscodeFormat transF = TranscodeFormat.ETC1;
+
+                bool isPowerOfTwo = IsPowerOfTwo(width) && IsPowerOfTwo(height);
+                bool isSquare = width==height;
+
+                if(hasAlpha) {
+                    if(BasisUniversal.GetPreferredFormatAlpha(isPowerOfTwo,isSquare,out gf,out transF)) {
+                        Log("Transcode to {0} (alpha)",gf);
+                        texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
+                    } else
+                    if(BasisUniversal.GetPreferredFormatLegacyAlpha(isPowerOfTwo,isSquare,out tf,out transF)) {
+                        Log("Transcode to {0} (legacy alpha)",tf);
+                        texture = new Texture2D((int)width,(int)height,tf,false);
+                    }
                 }
-            }
+                
+                if( !hasAlpha || texture==null ) {
+                    if(BasisUniversal.GetPreferredFormat(isPowerOfTwo,isSquare,out gf,out transF)) {
+                        Log("Transcode to {0}",gf);
+                        texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
+                    } else
+                    if(BasisUniversal.GetPreferredFormatLegacy(isPowerOfTwo,isSquare,out tf,out transF)) {
+                        Log("Transcode to {0} (legacy)",tf);
+                        texture = new Texture2D((int)width,(int)height,tf,false);
+                    }
+                }
 
-            if(texture==null) {
-                Debug.LogError("No supported format found!\nRebuild with BASISU_VERBOSE scripting define to debug.");
-                #if BASISU_VERBOSE
-                BasisUniversal.CheckTextureSupport();
-                #endif
-                Profiler.EndSample();
-                return null;
-            }
+                if(texture==null) {
+                    Debug.LogError("No supported format found!\nRebuild with BASISU_VERBOSE scripting define to debug.");
+                    #if BASISU_VERBOSE
+                    BasisUniversal.CheckTextureSupport();
+                    #endif
+                } else {
 
-            Log("Transcode to basisu {0}",transF);
-            byte[] trData;
-            if(basis.Transcode(0,0,transF,out trData)) {
-                // Log("transcoded {0} bytes", trData.Length);
-                Profiler.BeginSample("texture.LoadRawTextureData");
-                texture.LoadRawTextureData(trData);
-                Profiler.EndSample();
-                Profiler.BeginSample("texture.Apply");
-                texture.Apply();
-                Profiler.EndSample();
-                Profiler.EndSample();
-                return texture;
+                    Log("Transcode to basisu {0}",transF);
+                    
+                    var size = basis.GetImageTranscodedSize(0,0,transF);
+
+                    var job = new BasisUniversalJob();
+                    job.format = transF;
+                    job.size = size;
+                    job.imageIndex = 0;
+                    job.levelIndex = 0;
+                    job.nativeReference = basis.nativeReference;
+                    
+                    job.result = result;
+
+                    var output = new byte[size];
+
+                    fixed( void* dst = &(output[0]) ) {
+                        job.dst = dst;
+                    }
+                    
+                    rawTexture = output;
+                    jobHandle = job.Schedule();
+                }
             }
             Profiler.EndSample();
-            return null;
+            return jobHandle;
+        }
+
+        public static unsafe Texture2D LoadBytes( byte[] data ) {
+            Profiler.BeginSample("BasisU.LoadBytes");
+            
+            Log("loading {0} bytes", data.Length);
+
+            TranscoderInstance basis = GetTranscoderInstance();
+            bool headerOk;
+            fixed( void* src = &(data[0]) ) {
+                headerOk = basis.Open(src,data.Length);
+            }
+
+            Texture2D texture = null;
+
+            if(headerOk) {
+                uint width;
+                uint height;
+
+                basis.GetImageSize(out width, out height);
+                Log("image size {0} x {1}", width, height);
+
+                bool hasAlpha = basis.GetHasAlpha();
+                Log("image has alpha {0}",hasAlpha);
+
+                var imageCount = basis.GetImageCount();
+                Log("image count {0}",imageCount);
+
+                for(uint i=0; i<imageCount;i++) {
+                    var levelCount = basis.GetLevelCount(i);
+                    Log("level count image {0}: {1}",i,levelCount);
+                }
+
+                GraphicsFormat gf;
+                TextureFormat tf;
+                TranscodeFormat transF = TranscodeFormat.ETC1;
+
+                bool isPowerOfTwo = IsPowerOfTwo(width) && IsPowerOfTwo(height);
+                bool isSquare = width==height;
+
+                if(hasAlpha) {
+                    if(BasisUniversal.GetPreferredFormatAlpha(isPowerOfTwo,isSquare,out gf,out transF)) {
+                        Log("Transcode to {0} (alpha)",gf);
+                        texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
+                    } else
+                    if(BasisUniversal.GetPreferredFormatLegacyAlpha(isPowerOfTwo,isSquare,out tf,out transF)) {
+                        Log("Transcode to {0} (legacy alpha)",tf);
+                        texture = new Texture2D((int)width,(int)height,tf,false);
+                    }
+                }
+                
+                if( !hasAlpha || texture==null ) {
+                    if(BasisUniversal.GetPreferredFormat(isPowerOfTwo,isSquare,out gf,out transF)) {
+                        Log("Transcode to {0}",gf);
+                        texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
+                    } else
+                    if(BasisUniversal.GetPreferredFormatLegacy(isPowerOfTwo,isSquare,out tf,out transF)) {
+                        Log("Transcode to {0} (legacy)",tf);
+                        texture = new Texture2D((int)width,(int)height,tf,false);
+                    }
+                }
+
+                if(texture==null) {
+                    Debug.LogError("No supported format found!\nRebuild with BASISU_VERBOSE scripting define to debug.");
+                    #if BASISU_VERBOSE
+                    BasisUniversal.CheckTextureSupport();
+                    #endif
+                } else {
+                    Log("Transcode to basisu {0}",transF);
+                    byte[] trData;
+                    if(basis.Transcode(0,0,transF,out trData)) {
+                        // Log("transcoded {0} bytes", trData.Length);
+                        Profiler.BeginSample("texture.LoadRawTextureData");
+                        texture.LoadRawTextureData(trData);
+                        Profiler.EndSample();
+                        Profiler.BeginSample("texture.Apply");
+                        texture.Apply();
+                        Profiler.EndSample();
+                    }
+                }
+                basis.Close();
+            }
+            ReturnTranscoderInstance(basis);
+            Profiler.EndSample();
+            return texture;
         }
 
 #if BASISU_VERBOSE
@@ -353,34 +416,6 @@ namespace BasisUniversalUnity {
         private static extern void aa_basis_init();
 
         [DllImport(INTERFACE_DLL)]
-        private static unsafe extern System.IntPtr aa_create_basis( void * data, int length );
-
-        [DllImport(INTERFACE_DLL)]
-        private static extern void aa_delete_basis( IntPtr basis );
-
-        [DllImport(INTERFACE_DLL)]
-        private static extern bool aa_getHasAlpha( IntPtr basis );
-
-        [DllImport(INTERFACE_DLL)]
-        private static extern System.UInt32 aa_getNumImages( IntPtr basis );
-
-        [DllImport(INTERFACE_DLL)]
-        private static extern System.UInt32 aa_getNumLevels( IntPtr basis, System.UInt32 image_index);
-
-        [DllImport(INTERFACE_DLL)]
-        private static extern System.UInt32 aa_getImageWidth( IntPtr basis, System.UInt32 image_index, System.UInt32 level_index);
-
-        [DllImport(INTERFACE_DLL)]
-        private static extern System.UInt32 aa_getImageHeight( IntPtr basis, System.UInt32 image_index, System.UInt32 level_index);
-
-        [DllImport(INTERFACE_DLL)]
-        private static extern System.UInt32 aa_getImageTranscodedSizeInBytes( IntPtr basis, System.UInt32 image_index, System.UInt32 level_index, System.UInt32 format);
-
-        [DllImport(INTERFACE_DLL)]
-        private static extern bool aa_startTranscoding( IntPtr basis );
-
-        [DllImport(INTERFACE_DLL)]
-        private static unsafe extern bool aa_transcodeImage( IntPtr basis, void * dst, uint dst_size, System.UInt32 image_index, System.UInt32 level_index, System.UInt32 format, System.UInt32 pvrtc_wrap_addressing, System.UInt32 get_alpha_for_opaque_formats);
-
+        private static unsafe extern System.IntPtr aa_create_basis();
     }
 }

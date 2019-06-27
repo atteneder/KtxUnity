@@ -35,19 +35,24 @@ class basis_file
     size_t byteLength;
     
 public:
-    basis_file(const uint8_t *buffer, size_t byteLength)
+    basis_file()
     :
-    m_transcoder(g_pGlobal_codebook),
-    m_file(buffer),
-    byteLength(byteLength)
-    {
-        if (!m_transcoder.validate_header(buffer, byteLength)) {
+    m_transcoder(g_pGlobal_codebook)
+    {}
+    
+    bool open(const uint8_t *buffer, size_t newByteLength) {
+        m_file = buffer;
+        byteLength = newByteLength;
+    
+        if (!m_transcoder.validate_header(buffer, newByteLength)) {
             m_file = nullptr;
             byteLength = 0;
+            return false;
         }
         
         // Initialized after validation
         m_magic = MAGIC;
+        return true;
     }
     
     void close() {
@@ -173,11 +178,19 @@ DLL_EXPORT void aa_basis_init()
         g_pGlobal_codebook = new basist::etc1_global_selector_codebook(g_global_selector_cb_size, g_global_selector_cb);
 }
 
-DLL_EXPORT basis_file* aa_create_basis( const uint8_t * data, size_t length ) {
-    basis_file* new_basis = new basis_file(data,length);
+DLL_EXPORT basis_file* aa_create_basis() {
+    basis_file* new_basis = new basis_file();
     return new_basis;
 }
+    
+DLL_EXPORT bool aa_open_basis( basis_file* basis, const uint8_t * data, size_t length ) {
+    return basis->open(data,length);
+}
 
+DLL_EXPORT void aa_close_basis( basis_file* basis ) {
+    basis->close();
+}
+    
 DLL_EXPORT void aa_delete_basis( basis_file* basis ) {
     delete basis;
 }

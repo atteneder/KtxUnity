@@ -19,8 +19,11 @@
 using System.Collections;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Profiling;
 using UnityEngine.Events;
 using UnityEngine.Networking;
+using Unity.Collections;
+using Unity.Jobs;
 
 namespace BasisUniversalUnity {
 
@@ -67,6 +70,51 @@ namespace BasisUniversalUnity {
 
             var texture = BasisUniversal.LoadBytes(bytes);
 
+            if(onTextureLoaded!=null) {
+                onTextureLoaded(texture);
+            }
+        }
+
+        public void LoadBytes( NativeArray<byte> data, MonoBehaviour monoBehaviour ) {
+            monoBehaviour.StartCoroutine(LoadBytesRoutine(data));
+        }
+
+        IEnumerator LoadBytesRoutine(NativeArray<byte> data) {
+
+            Texture2D texture;
+            byte[] rawTexture;
+            var result = new NativeArray<bool>(1,Allocator.TempJob);
+            TranscoderInstance transcoder = BasisUniversal.GetTranscoderInstance();
+
+            var jobHandle = BasisUniversal.LoadBytesJob(
+                transcoder,
+                data,
+                result,
+                out texture,
+                out rawTexture
+                );
+
+            if(jobHandle.HasValue) {
+                while(!jobHandle.Value.IsCompleted) {
+                    yield return null;
+                }
+                jobHandle.Value.Complete();
+
+                BasisUniversal.ReturnTranscoderInstance(transcoder);
+
+                if(result[0]) {
+                    Profiler.BeginSample("texture.LoadRawTextureData");
+                    texture.LoadRawTextureData(rawTexture);
+                    Profiler.EndSample();
+                    Profiler.BeginSample("texture.Apply");
+                    texture.Apply();
+                    Profiler.EndSample();
+                }
+            } else {
+                BasisUniversal.ReturnTranscoderInstance(transcoder);
+            }
+            result.Dispose();
+            
             if(onTextureLoaded!=null) {
                 onTextureLoaded(texture);
             }
