@@ -21,6 +21,7 @@ using Unity.Jobs;
 using Unity.Collections;
 #if BASISU_VERBOSE
 using System.Text;
+using Enum = System.Enum;
 #endif
 
 
