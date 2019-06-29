@@ -19,9 +19,6 @@ using UnityEngine;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.Profiling;
-#if BASISU_VERBOSE
-using System.Text;
-#endif
 
 
 namespace BasisUniversalUnity {
@@ -48,6 +45,28 @@ namespace BasisUniversalUnity {
                 Debug.LogError("Couldn't validate BasisU header!");
             }
             return success;
+        }
+
+        public MetaData LoadMetaData() {
+            Profiler.BeginSample("LoadMetaData");
+            MetaData meta = new MetaData();
+            meta.hasAlpha = GetHasAlpha();
+            var imageCount = GetImageCount();
+            meta.images = new ImageInfo[imageCount];
+            for(uint i=0; i<imageCount;i++) {
+                var ii = new ImageInfo();
+                var levelCount = GetLevelCount(i);
+                ii.levels = new LevelInfo[levelCount];
+                for (uint l = 0; l < levelCount; l++)
+                {
+                    var li = new LevelInfo();
+                    GetImageSize(out li.width, out li.height,i,l);
+                    ii.levels[l] = li;
+                }
+                meta.images[i] = ii;
+            }
+            Profiler.EndSample();
+            return meta;
         }
 
         public void Close() {

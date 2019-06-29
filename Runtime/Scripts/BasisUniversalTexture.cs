@@ -19,6 +19,7 @@
 using System.Collections;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
 using UnityEngine.Events;
 using UnityEngine.Networking;
@@ -73,51 +74,83 @@ namespace BasisUniversalUnity {
 
             var buffer = webRequest.downloadHandler.data;
 
-            var na = new NativeArray<byte>(buffer,Allocator.TempJob);
+            var na = new NativeArray<byte>(buffer,BasisUniversal.defaultAllocator);
             yield return monoBehaviour.StartCoroutine(LoadBytesRoutine(na));
             na.Dispose();
         }
 
         IEnumerator LoadBytesRoutine(NativeArray<byte> data) {
 
-            Texture2D texture;
+            uint imageIndex = 0;
+
+            Texture2D texture = null;
+            
             var transcoder = BasisUniversal.GetTranscoderInstance();
 
-            var job = new BasisUniversalJob();
-            job.result = new NativeArray<bool>(1,Allocator.TempJob);
-
-            var jobHandle = BasisUniversal.LoadBytesJob(
-                ref job,
-                transcoder,
-                data,
-                out texture
-                );
-
-            if(jobHandle.HasValue) {
-                while(!jobHandle.Value.IsCompleted) {
-                    yield return null;
-                }
-                jobHandle.Value.Complete();
-
-                BasisUniversal.ReturnTranscoderInstance(transcoder);
-
-                if(job.result[0]) {
-                    Profiler.BeginSample("texture.LoadRawTextureData");
-                    texture.LoadRawTextureData(job.textureData);
-                    Profiler.EndSample();
-                    Profiler.BeginSample("texture.Apply");
-                    texture.Apply();
-                    Profiler.EndSample();
-                } else {
-                    Debug.LogError("Transcoding failed!");
-                    texture = null;
-                }
-            } else {
-                BasisUniversal.ReturnTranscoderInstance(transcoder);
+            while(transcoder==null) {
+                yield return null;
+                transcoder = BasisUniversal.GetTranscoderInstance();
             }
-            job.textureData.Dispose();
-            job.result.Dispose();
+
+            if(transcoder.Open(data)) {
+                var meta = transcoder.LoadMetaData();
+
+                GraphicsFormat gf;
+                TextureFormat? tf;
+                TranscodeFormat transF;
+
+                if(BasisUniversal.GetFormats(
+                    meta,
+                    imageIndex,
+                    out gf,
+                    out tf,
+                    out transF
+                )) {
+                    Profiler.BeginSample("BasisUniversalJob");
+                    var job = new BasisUniversalJob();
+
+                    job.imageIndex = imageIndex;
+                    job.levelIndex = 0;
+
+                    job.result = new NativeArray<bool>(1,BasisUniversal.defaultAllocator);
+
+                    var jobHandle = BasisUniversal.LoadBytesJob(
+                        ref job,
+                        transcoder,
+                        data,
+                        transF
+                        );
+
+                    Profiler.EndSample();
+                    
+                    while(!jobHandle.IsCompleted) {
+                        yield return null;
+                    }
+                    jobHandle.Complete();
+
+                    if(job.result[0]) {
+                        Profiler.BeginSample("LoadBytesRoutineGPUupload");
+                        uint width;
+                        uint height;
+                        meta.GetSize(out width,out height);
+                        if(tf.HasValue) {
+                            texture = new Texture2D((int)width,(int)height,tf.Value,false);
+                        } else {
+                            texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
+                        }
+                        texture.LoadRawTextureData(job.textureData);
+                        texture.Apply();
+                        Profiler.EndSample();
+                    } else {
+                        Debug.LogError("Transcoding failed!");
+                    }
+                    job.textureData.Dispose();
+                    job.result.Dispose();
+                }
+            }
             
+            BasisUniversal.ReturnTranscoderInstance(transcoder);
+
             if(onTextureLoaded!=null) {
                 onTextureLoaded(texture);
             }
