@@ -154,7 +154,7 @@ namespace BasisUniversalUnity {
                 }
             }
             
-            if( !meta.hasAlpha || match ) {
+            if( !meta.hasAlpha || !match ) {
                 if(GetPreferredFormat(li.isPowerOfTwo,li.isSquare,out graphicsFormat,out transF)) {
                     match = true;
                 } else
