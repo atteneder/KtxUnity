@@ -1,6 +1,6 @@
 {
   "name": "com.atteneder.basisu",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "displayName": "Basis Universal",
   "description": "Load Basis Universal textures at runtime.",
   "unity": "2019.1",

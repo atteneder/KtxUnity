@@ -71,7 +71,7 @@ public class CustomBasisUrlLoader : BasisUrlLoader
 }
 ```
 
-Devs who want to create advanced loading code should look into class `BasisUniversal` directly.
+Devs who want to create advanced loading code should look into classes `BasisUniversalTexture` and `BasisUniversal` directly.
 
 ## Support
 
