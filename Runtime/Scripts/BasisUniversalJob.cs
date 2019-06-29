@@ -25,30 +25,30 @@ namespace BasisUniversalUnity {
         [WriteOnly]
         public NativeArray<bool> result;
 
-        // [ReadOnly]
+        [ReadOnly]
         public TranscodeFormat format;
 
-        // [ReadOnly]
+        [ReadOnly]
         [NativeDisableUnsafePtrRestriction]
         public IntPtr nativeReference;
 
-        // [ReadOnly]
+        [ReadOnly]
         public uint size;
 
-        // [ReadOnly]
+        [ReadOnly]
         public uint imageIndex;
 
-        // [ReadOnly]
+        [ReadOnly]
         public uint levelIndex;
 
-        // [ReadOnly]
-        [NativeDisableUnsafePtrRestriction]
-        public void* dst;
+        [WriteOnly]
+        public NativeArray<byte> textureData;
 
         public void Execute()
         {
             bool success = aa_startTranscoding(nativeReference);
-            success = success && aa_transcodeImage(nativeReference,dst,size,imageIndex,levelIndex,(uint)format,0,0);
+            void* textureDataPtr = NativeArrayUnsafeUtility.GetUnsafePtr<byte>(textureData);
+            success = success && aa_transcodeImage(nativeReference,textureDataPtr,size,imageIndex,levelIndex,(uint)format,0,0);
             result[0] = success;
         }
 

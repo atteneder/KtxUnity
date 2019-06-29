@@ -12,6 +12,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+/// TODO: Re-using transcoders does not work consistently. Fix and enable!
+// #define POOL_TRANSCODERS
+
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
@@ -41,11 +44,10 @@ namespace BasisUniversalUnity {
         static Dictionary<TextureFormat,TranscodeFormat> opaqueFormatLegacyDict;
         static Dictionary<TextureFormat,TranscodeFormat> alphaFormatLegacyDict;
 
-        public static void Init() {
-            if(!initialized) {
-                InitInternal();
-            }
-        }
+#if POOL_TRANSCODERS
+        static Stack<TranscoderInstance> transcoderPool;
+#endif
+
         static void InitInternal()
         {
             initialized=true;
@@ -92,42 +94,42 @@ namespace BasisUniversalUnity {
             CheckTextureSupport();
 #endif
         }
-
-        static Stack<TranscoderInstance> transcoderPool;
         public static TranscoderInstance GetTranscoderInstance() {
             if(!initialized) {
                 InitInternal();
             }
+#if POOL_TRANSCODERS
             if(transcoderPool!=null) {
                 return transcoderPool.Pop();
             }
+#endif
             return new TranscoderInstance(aa_create_basis());
         }
 
         public static void ReturnTranscoderInstance( TranscoderInstance transcoder ) {
+#if POOL_TRANSCODERS
             if(transcoderPool==null) {
                 transcoderPool = new Stack<TranscoderInstance>();
             }
             transcoderPool.Push(transcoder);
+#endif
         }
 
         public unsafe static JobHandle? LoadBytesJob(
+            ref BasisUniversalJob job,
             TranscoderInstance basis,
-            NativeArray<byte> data,
-            NativeArray<bool> result,
-            out Texture2D texture,
-            out byte[] rawTexture
+            NativeArray<byte> basisuData,
+            out Texture2D texture
         ) {
             
             Profiler.BeginSample("BasisU.LoadBytesJob");
             
-            Log("loading {0} bytes", data.Length);
+            Log("loading {0} basisu bytes", basisuData.Length);
 
             JobHandle? jobHandle = null;
             texture = null;
-            rawTexture = null;
 
-            if(basis.Open(data)) {
+            if(basis.Open(basisuData)) {
                 
                 uint width;
                 uint height;
@@ -186,22 +188,14 @@ namespace BasisUniversalUnity {
                     
                     var size = basis.GetImageTranscodedSize(0,0,transF);
 
-                    var job = new BasisUniversalJob();
                     job.format = transF;
                     job.size = size;
                     job.imageIndex = 0;
                     job.levelIndex = 0;
                     job.nativeReference = basis.nativeReference;
                     
-                    job.result = result;
+                    job.textureData = new NativeArray<byte>((int)size,Allocator.TempJob);
 
-                    var output = new byte[size];
-
-                    fixed( void* dst = &(output[0]) ) {
-                        job.dst = dst;
-                    }
-                    
-                    rawTexture = output;
                     jobHandle = job.Schedule();
                 }
             }

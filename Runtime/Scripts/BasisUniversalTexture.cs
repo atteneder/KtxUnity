@@ -23,17 +23,12 @@ using UnityEngine.Profiling;
 using UnityEngine.Events;
 using UnityEngine.Networking;
 using Unity.Collections;
-using Unity.Jobs;
 
 namespace BasisUniversalUnity {
 
     public class BasisUniversalTexture
     {
         public event UnityAction<Texture2D> onTextureLoaded;
-
-        public BasisUniversalTexture() {
-            BasisUniversal.Init();
-        }
 
         /// <summary>
         /// Loads a Basis Universal texture from the StreamingAssets folder
@@ -43,7 +38,7 @@ namespace BasisUniversalUnity {
         /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
         public void LoadFromStreamingAssets( string filePath, MonoBehaviour monoBehaviour ) {
             var url = GetStreamingAssetsUrl(filePath);
-            monoBehaviour.StartCoroutine(LoadBasisFile(url));
+            monoBehaviour.StartCoroutine(LoadBasisFile(url,monoBehaviour));
         }
 
         /// <summary>
@@ -52,10 +47,19 @@ namespace BasisUniversalUnity {
         /// <param name="url">URL to the basis file to load</param>
         /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
         public void LoadFromUrl( string url, MonoBehaviour monoBehaviour ) {
-            monoBehaviour.StartCoroutine(LoadBasisFile(url));
+            monoBehaviour.StartCoroutine(LoadBasisFile(url,monoBehaviour));
         }
 
-        IEnumerator LoadBasisFile(string url) {
+        /// <summary>
+        /// Load a Basis Universal texture from a buffer
+        /// </summary>
+        /// <param name="data">Native buffer that holds the basisu file</param>
+        /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
+        public void LoadFromBytes( NativeArray<byte> data, MonoBehaviour monoBehaviour ) {
+            monoBehaviour.StartCoroutine(LoadBytesRoutine(data));
+        }
+
+        IEnumerator LoadBasisFile( string url, MonoBehaviour monoBehaviour ) {
     
             var webRequest = UnityWebRequest.Get(url);
             yield return webRequest.SendWebRequest();
@@ -66,32 +70,27 @@ namespace BasisUniversalUnity {
                 }
                 yield break;
             }
-            var bytes = webRequest.downloadHandler.data;
 
-            var texture = BasisUniversal.LoadBytes(bytes);
+            var buffer = webRequest.downloadHandler.data;
 
-            if(onTextureLoaded!=null) {
-                onTextureLoaded(texture);
-            }
-        }
-
-        public void LoadBytes( NativeArray<byte> data, MonoBehaviour monoBehaviour ) {
-            monoBehaviour.StartCoroutine(LoadBytesRoutine(data));
+            var na = new NativeArray<byte>(buffer,Allocator.TempJob);
+            yield return monoBehaviour.StartCoroutine(LoadBytesRoutine(na));
+            na.Dispose();
         }
 
         IEnumerator LoadBytesRoutine(NativeArray<byte> data) {
 
             Texture2D texture;
-            byte[] rawTexture;
-            var result = new NativeArray<bool>(1,Allocator.TempJob);
-            TranscoderInstance transcoder = BasisUniversal.GetTranscoderInstance();
+            var transcoder = BasisUniversal.GetTranscoderInstance();
+
+            var job = new BasisUniversalJob();
+            job.result = new NativeArray<bool>(1,Allocator.TempJob);
 
             var jobHandle = BasisUniversal.LoadBytesJob(
+                ref job,
                 transcoder,
                 data,
-                result,
-                out texture,
-                out rawTexture
+                out texture
                 );
 
             if(jobHandle.HasValue) {
@@ -102,18 +101,22 @@ namespace BasisUniversalUnity {
 
                 BasisUniversal.ReturnTranscoderInstance(transcoder);
 
-                if(result[0]) {
+                if(job.result[0]) {
                     Profiler.BeginSample("texture.LoadRawTextureData");
-                    texture.LoadRawTextureData(rawTexture);
+                    texture.LoadRawTextureData(job.textureData);
                     Profiler.EndSample();
                     Profiler.BeginSample("texture.Apply");
                     texture.Apply();
                     Profiler.EndSample();
+                } else {
+                    Debug.LogError("Transcoding failed!");
+                    texture = null;
                 }
             } else {
                 BasisUniversal.ReturnTranscoderInstance(transcoder);
             }
-            result.Dispose();
+            job.textureData.Dispose();
+            job.result.Dispose();
             
             if(onTextureLoaded!=null) {
                 onTextureLoaded(texture);
