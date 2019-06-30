@@ -2,6 +2,17 @@
 
 Unity package that allows users to load [Basis Universal](https://github.com/BinomialLLC/basis_universal) texture files.
 
+Following build targets are supported
+
+- WebGL
+- iOS
+- Android (arm64, armv7a and x86)
+- Windows (32 and 64 bit)
+- macOS
+- Linux (32 and 64 bit)
+
+![Screenshot of loaded fish textures](https://github.com/atteneder/BasisUniversalUnityDemo/raw/master/Images/fishes.png "Lots of fish basis universal textures loaded via BasisUniversalUnity")
+
 Special thanks to [Binomial](http://www.binomial.info) and everyone involved in making Basis Universal available!
 
 ## Installing
@@ -27,7 +38,7 @@ It should look something like this:
 }
 ```
 
-There's more detail about how to add packages via GIT URLs in the [Unity documentation](https://docs.unity3d.com/Manual/upm-git.html).
+Next time you open your project in Unity, it will download the package automatically. There's more detail about how to add packages via GIT URLs in the [Unity documentation](https://docs.unity3d.com/Manual/upm-git.html).
 
 ## Using
 
