@@ -13,9 +13,19 @@
 // limitations under the License.
 
 namespace BasisUniversalUnity {
-    public class MetaData
+
+    public interface IMetaData {
+        bool hasAlpha {get;}
+    }
+
+    public interface ILevelInfo {
+        bool isPowerOfTwo {get;}
+        bool isSquare {get;}
+    }
+
+    public class MetaData : IMetaData
     {
-        public bool hasAlpha;
+        public bool hasAlpha {get;set;}
 
         public ImageInfo[] images;
 
@@ -37,11 +47,11 @@ namespace BasisUniversalUnity {
         }
     }
 
-    public class LevelInfo {
+    public class LevelInfo : ILevelInfo {
         public uint width;
         public uint height;
 
-        static bool IsPowerOfTwo(uint i) {
+        public static bool IsPowerOfTwo(uint i) {
             return (i&(i-1))==0;
         }
 
