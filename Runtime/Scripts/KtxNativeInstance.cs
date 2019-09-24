@@ -38,8 +38,7 @@ namespace BasisUniversalUnity {
 
         public bool hasAlpha {
             get {
-                //TODO: implement
-                return false;
+                return aa_ktx_get_has_alpha(nativeReference);
             }
         }
         public bool isPowerOfTwo {
@@ -193,6 +192,9 @@ namespace BasisUniversalUnity {
 
         [DllImport(BasisUniversal.INTERFACE_DLL)]
         static extern void aa_ktx_get_orientation ( System.IntPtr ktxTexture, out KtxOrientation x );
+
+        [DllImport(BasisUniversal.INTERFACE_DLL)]
+         static extern bool aa_ktx_get_has_alpha( System.IntPtr ktxTexture );
 
         [DllImport(BasisUniversal.INTERFACE_DLL)]
         static extern KtxErrorCode aa_transcode_ktx(System.IntPtr ktxTexture, TranscodeFormat outputFormat, uint transcodeFlags);
