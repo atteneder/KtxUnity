@@ -26,12 +26,6 @@ namespace BasisUniversalUnity {
 
     public static class BasisUniversal
     {
-    #if UNITY_EDITOR_OSX || UNITY_WEBGL || UNITY_IOS
-        public const string INTERFACE_DLL = "__Internal";
-    #elif UNITY_ANDROID || UNITY_STANDALONE
-        public const string INTERFACE_DLL = "ktx_unity";
-    #endif
-
         /// <summary>
         /// Benchmarks have shown that the 4 frame limit until disposal that
         /// Allocator.TempJob grants is sometimes not enough, so I chose Persistent.
@@ -166,10 +160,10 @@ namespace BasisUniversalUnity {
             return jobHandle;
         }
 
-        [DllImport(INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static extern void aa_basis_init();
 
-        [DllImport(INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static unsafe extern System.IntPtr aa_create_basis();
     }
 }

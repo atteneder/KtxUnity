@@ -119,37 +119,37 @@ namespace BasisUniversalUnity {
             aa_delete_basis(nativeReference);
         }
 
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static unsafe extern bool aa_open_basis( IntPtr basis, void * data, int length );
 
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static unsafe extern void aa_close_basis( IntPtr basis );
 
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static extern void aa_delete_basis( IntPtr basis );
 
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static extern bool aa_getHasAlpha( IntPtr basis );
 
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static extern System.UInt32 aa_getNumImages( IntPtr basis );
 
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static extern System.UInt32 aa_getNumLevels( IntPtr basis, System.UInt32 image_index);
 
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static extern System.UInt32 aa_getImageWidth( IntPtr basis, System.UInt32 image_index, System.UInt32 level_index);
 
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static extern System.UInt32 aa_getImageHeight( IntPtr basis, System.UInt32 image_index, System.UInt32 level_index);
 
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static extern System.UInt32 aa_getImageTranscodedSizeInBytes( IntPtr basis, System.UInt32 image_index, System.UInt32 level_index, System.UInt32 format);
 
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static extern bool aa_startTranscoding( IntPtr basis );
 
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static unsafe extern bool aa_transcodeImage( IntPtr basis, void * dst, uint dst_size, System.UInt32 image_index, System.UInt32 level_index, System.UInt32 format, System.UInt32 pvrtc_wrap_addressing, System.UInt32 get_alpha_for_opaque_formats);
     }
 }

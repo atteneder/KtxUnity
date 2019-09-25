@@ -52,10 +52,10 @@ namespace BasisUniversalUnity {
             result[0] = success;
         }
 
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static extern bool aa_startTranscoding( IntPtr basis );
 
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static unsafe extern bool aa_transcodeImage( IntPtr basis, void * dst, uint dst_size, System.UInt32 image_index, System.UInt32 level_index, System.UInt32 format, System.UInt32 pvrtc_wrap_addressing, System.UInt32 get_alpha_for_opaque_formats);
     }
 
