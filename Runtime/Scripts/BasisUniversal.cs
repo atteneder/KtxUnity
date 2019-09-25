@@ -83,7 +83,7 @@ namespace BasisUniversalUnity {
             ImageInfo ii = meta.images[imageIndex];
             LevelInfo li = ii.levels[0];
 
-            bool match = GetFormatsForImage(meta,li,out graphicsFormat,out textureFormat,out transF);
+            bool match = TranscodeFormatHelper.GetFormatsForImage(meta,li,out graphicsFormat,out textureFormat,out transF);
             
             if(!match) {
                 Debug.LogError("No supported format found!\nRebuild with BASISU_VERBOSE scripting define to debug.");
@@ -92,42 +92,6 @@ namespace BasisUniversalUnity {
                 #endif
             }
 
-            return match;
-        }
-
-        public static bool GetFormatsForImage(
-            IMetaData meta,
-            ILevelInfo li,
-            out GraphicsFormat graphicsFormat,
-            out TextureFormat? textureFormat,
-            out TranscodeFormat transF
-            )
-        {
-            TextureFormat tf;
-            bool match = false;
-            graphicsFormat = GraphicsFormat.None;
-            textureFormat = null;
-            transF = TranscodeFormat.ETC1;
-
-            if(meta.hasAlpha) {
-                if(TranscodeFormatHelper.GetPreferredFormatAlpha(li.isPowerOfTwo,li.isSquare,out graphicsFormat,out transF)) {
-                    match = true;
-                } else
-                if(TranscodeFormatHelper.GetPreferredFormatLegacyAlpha(li.isPowerOfTwo,li.isSquare,out tf,out transF)) {
-                    match = true;
-                    textureFormat = tf;
-                }
-            }
-            
-            if( !meta.hasAlpha || !match ) {
-                if(TranscodeFormatHelper.GetPreferredFormat(li.isPowerOfTwo,li.isSquare,out graphicsFormat,out transF)) {
-                    match = true;
-                } else
-                if(TranscodeFormatHelper.GetPreferredFormatLegacy(li.isPowerOfTwo,li.isSquare,out tf,out transF)) {
-                    match = true;
-                    textureFormat = tf;
-                }
-            }
             return match;
         }
 

@@ -36,7 +36,7 @@ namespace BasisUniversalUnity {
                 TextureFormat? tf;
                 TranscodeFormat transF;
 
-                if(BasisUniversal.GetFormatsForImage(
+                if(TranscodeFormatHelper.GetFormatsForImage(
                     ktx,
                     ktx,
                     out gf,
