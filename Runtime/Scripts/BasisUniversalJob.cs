@@ -58,4 +58,25 @@ namespace BasisUniversalUnity {
         [DllImport(BasisUniversal.INTERFACE_DLL)]
         private static unsafe extern bool aa_transcodeImage( IntPtr basis, void * dst, uint dst_size, System.UInt32 image_index, System.UInt32 level_index, System.UInt32 format, System.UInt32 pvrtc_wrap_addressing, System.UInt32 get_alpha_for_opaque_formats);
     }
+
+    public unsafe struct KtxTranscodeJob : IJob {
+
+        [WriteOnly]
+        public NativeArray<KtxErrorCode> result;
+
+        [ReadOnly]
+        [NativeDisableUnsafePtrRestriction]
+        public IntPtr nativeReference;
+
+        [ReadOnly]
+        public TranscodeFormat outputFormat;
+
+        public void Execute() {
+            result[0] = KtxNativeInstance.aa_transcode_ktx(
+                nativeReference,
+                outputFormat,
+                0 // transcodeFlags
+                );
+        }
+    }
 }

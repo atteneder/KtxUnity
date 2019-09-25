@@ -20,7 +20,6 @@ using UnityEngine.Profiling;
 using UnityEngine.Events;
 using UnityEngine.Networking;
 using Unity.Collections;
-using Unity.Collections.LowLevel.Unsafe;
 
 namespace BasisUniversalUnity {
     public class KtxTexture
@@ -77,15 +76,11 @@ namespace BasisUniversalUnity {
 
         IEnumerator LoadBytesRoutine(NativeArray<byte> data) {
 
-            uint imageIndex = 0;
-
             Texture2D texture = null;
-            int status;
 
             var ktx = new KtxNativeInstance();
 
             if(ktx.Load(data)) {
-                // var meta = transcoder.LoadMetaData();
 
                 // TODO: Maybe do this somewhere more central
                 TranscodeFormatHelper.Init();
@@ -102,32 +97,22 @@ namespace BasisUniversalUnity {
                     out transF
                 )) {
                     Profiler.BeginSample("KtxTranscode");
-                    // var job = new BasisUniversalJob();
 
-                    // job.imageIndex = imageIndex;
-                    // job.levelIndex = 0;
+                    var job = new KtxTranscodeJob();
+                    
+                    var jobHandle = ktx.LoadBytesJob(
+                        ref job,
+                        transF
+                        );
 
-                    // job.result = new NativeArray<bool>(1,BasisUniversal.defaultAllocator);
-
-                    // var jobHandle = BasisUniversal.LoadBytesJob(
-                    //     ref job,
-                    //     transcoder,
-                    //     data,
-                    //     transF
-                    //     );
-
-                    var transcodeResult = ktx.Transcode(transF);
-                    if(transcodeResult) {
-                        Debug.Log("Transcode worked!");
-                    }
                     Profiler.EndSample();
                     
-                    // while(!jobHandle.IsCompleted) {
+                    while(!jobHandle.IsCompleted) {
                         yield return null;
-                    // }
-                    // jobHandle.Complete();
+                    }
+                    jobHandle.Complete();
 
-                    if(transcodeResult /*job.result[0]*/) {
+                    if(job.result[0] == KtxErrorCode.KTX_SUCCESS) {
                         Profiler.BeginSample("LoadBytesRoutineGPUupload");
                         uint width = ktx.baseWidth;
                         uint height = ktx.baseHeight;
@@ -137,20 +122,15 @@ namespace BasisUniversalUnity {
                         } else {
                             texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
                         }
-                        // texture.LoadRawTextureData(job.textureData);
                         ktx.LoadRawTextureData(texture);
                         texture.Apply();
                         Profiler.EndSample();
                     } else {
                         Debug.LogError("Transcoding failed!");
                     }
-                    // job.textureData.Dispose();
-                    // job.result.Dispose();
+                    job.result.Dispose();
                 }
             }
-            
-            // BasisUniversal.ReturnTranscoderInstance(transcoder);
-
             if(onTextureLoaded!=null) {
                 onTextureLoaded(texture);
             }

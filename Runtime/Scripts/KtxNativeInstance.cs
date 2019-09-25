@@ -12,25 +12,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections;
-using System.IO;
 using System.Runtime.InteropServices;
 using UnityEngine;
-using UnityEngine.Experimental.Rendering;
-using UnityEngine.Profiling;
-using UnityEngine.Events;
-using UnityEngine.Networking;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
+using Unity.Jobs;
 using IntPtr=System.IntPtr;
 
 namespace BasisUniversalUnity {
 
+    /*
     struct KtxOrientation {
         public KtxOrientationX x;
         public KtxOrientationY y;
         public KtxOrientationY z;
     }
+    //*/
 
     public class KtxNativeInstance : IMetaData, ILevelInfo
     {
@@ -41,16 +38,32 @@ namespace BasisUniversalUnity {
                 return aa_ktx_get_has_alpha(nativeReference);
             }
         }
+
         public bool isPowerOfTwo {
             get {
                 return LevelInfo.IsPowerOfTwo(baseWidth) && LevelInfo.IsPowerOfTwo(baseHeight);
             }
         }
+
         public bool isSquare {
             get {
                 return baseWidth==baseHeight;
             }
         }
+
+        public uint baseWidth {
+            get {
+                return aa_ktx_get_baseWidth(nativeReference);
+            }
+        }
+
+        public uint baseHeight {
+            get {
+                return aa_ktx_get_baseHeight(nativeReference);
+            }
+        }
+
+        /*
         KtxClassId classId {
             get {
                 return aa_ktx_get_classId(nativeReference);
@@ -69,16 +82,6 @@ namespace BasisUniversalUnity {
         bool isCompressed {
             get {
                 return aa_ktx_get_isCompressed(nativeReference);
-            }
-        }
-        public uint baseWidth {
-            get {
-                return aa_ktx_get_baseWidth(nativeReference);
-            }
-        }
-        public uint baseHeight {
-            get {
-                return aa_ktx_get_baseHeight(nativeReference);
             }
         }
         uint numDimensions {
@@ -118,25 +121,12 @@ namespace BasisUniversalUnity {
                 return orientation;
             }
         }
-        
+        //*/
+
         public unsafe bool Load(NativeArray<byte> data) {
             var src = NativeArrayUnsafeUtility.GetUnsafePtr(data);
             KtxErrorCode status;
             nativeReference = aa_load_ktx(src, data.Length, out status);
-            if(status!=KtxErrorCode.KTX_SUCCESS) {
-                Debug.LogErrorFormat("KTX error code {0}",status);
-                return false;
-            }
-            return true;
-        }
-
-        public bool Transcode(TranscodeFormat outputFormat) {
-            KtxErrorCode status;
-            status = aa_transcode_ktx(
-                nativeReference,
-                outputFormat,
-                0 // transcodeFlags
-                );
             if(status!=KtxErrorCode.KTX_SUCCESS) {
                 Debug.LogErrorFormat("KTX error code {0}",status);
                 return false;
@@ -151,9 +141,40 @@ namespace BasisUniversalUnity {
             texture.LoadRawTextureData(data,(int)length);
         }
 
+        public unsafe JobHandle LoadBytesJob(
+            ref KtxTranscodeJob job,
+            TranscodeFormat transF
+        ) {
+            UnityEngine.Profiling.Profiler.BeginSample("Ktx.LoadBytesJob");
+
+            job.result = new NativeArray<KtxErrorCode>(1,BasisUniversal.defaultAllocator);
+            job.nativeReference = nativeReference;
+            job.outputFormat = transF;
+
+            var jobHandle = job.Schedule();
+
+            UnityEngine.Profiling.Profiler.EndSample();
+            return jobHandle;
+        }
+
         [DllImport(BasisUniversal.INTERFACE_DLL)]
         unsafe static extern System.IntPtr aa_load_ktx(void * data, int length, out KtxErrorCode status);
 
+        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        static extern uint aa_ktx_get_baseWidth ( System.IntPtr ktxTexture );
+
+        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        static extern uint aa_ktx_get_baseHeight ( System.IntPtr ktxTexture );
+        [DllImport(BasisUniversal.INTERFACE_DLL)]
+         static extern bool aa_ktx_get_has_alpha( System.IntPtr ktxTexture );
+
+        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        public static extern KtxErrorCode aa_transcode_ktx(System.IntPtr ktxTexture, TranscodeFormat outputFormat, uint transcodeFlags);
+
+        [DllImport(BasisUniversal.INTERFACE_DLL)]
+        unsafe static extern void aa_ktx_get_data(System.IntPtr ktxTexture, out System.IntPtr data, out uint length);
+
+        /*
         [DllImport(BasisUniversal.INTERFACE_DLL)]
         static extern KtxClassId aa_ktx_get_classId ( System.IntPtr ktxTexture );
 
@@ -165,12 +186,6 @@ namespace BasisUniversalUnity {
 
         [DllImport(BasisUniversal.INTERFACE_DLL)]
         static extern bool aa_ktx_get_isCompressed ( System.IntPtr ktxTexture );
-
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
-        static extern uint aa_ktx_get_baseWidth ( System.IntPtr ktxTexture );
-
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
-        static extern uint aa_ktx_get_baseHeight ( System.IntPtr ktxTexture );
 
         [DllImport(BasisUniversal.INTERFACE_DLL)]
         static extern uint aa_ktx_get_numDimensions ( System.IntPtr ktxTexture );
@@ -194,15 +209,7 @@ namespace BasisUniversalUnity {
         static extern void aa_ktx_get_orientation ( System.IntPtr ktxTexture, out KtxOrientation x );
 
         [DllImport(BasisUniversal.INTERFACE_DLL)]
-         static extern bool aa_ktx_get_has_alpha( System.IntPtr ktxTexture );
-
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
-        static extern KtxErrorCode aa_transcode_ktx(System.IntPtr ktxTexture, TranscodeFormat outputFormat, uint transcodeFlags);
-
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
-        unsafe static extern void aa_ktx_get_data(System.IntPtr ktxTexture, out System.IntPtr data, out uint length);
-
-        [DllImport(BasisUniversal.INTERFACE_DLL)]
         static extern int aa_unload_ktx(System.IntPtr ktxTexture);
+        //*/
     }
 } 

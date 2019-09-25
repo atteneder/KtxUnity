@@ -15,7 +15,6 @@
 /// TODO: Re-using transcoders does not work consistently. Fix and enable!
 // #define POOL_TRANSCODERS
 
-using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Profiling;
@@ -96,7 +95,6 @@ namespace BasisUniversalUnity {
             ImageInfo ii = meta.images[imageIndex];
             LevelInfo li = ii.levels[0];
 
-            TextureFormat tf;
             bool match = false;
 
             GetFormatsForImage(meta,li,out graphicsFormat,out textureFormat,out transF);
