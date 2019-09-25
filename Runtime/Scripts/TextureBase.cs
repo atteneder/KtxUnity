@@ -87,7 +87,7 @@ namespace BasisUniversalUnity {
 
             var buffer = webRequest.downloadHandler.data;
 
-            var na = new NativeArray<byte>(buffer,BasisUniversal.defaultAllocator);
+            var na = new NativeArray<byte>(buffer,KtxNativeInstance.defaultAllocator);
             yield return monoBehaviour.StartCoroutine(LoadBytesRoutine(na));
             na.Dispose();
         }

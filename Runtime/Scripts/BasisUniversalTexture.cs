@@ -56,7 +56,7 @@ namespace BasisUniversalUnity {
                     job.imageIndex = imageIndex;
                     job.levelIndex = 0;
 
-                    job.result = new NativeArray<bool>(1,BasisUniversal.defaultAllocator);
+                    job.result = new NativeArray<bool>(1,KtxNativeInstance.defaultAllocator);
 
                     var jobHandle = BasisUniversal.LoadBytesJob(
                         ref job,

@@ -37,6 +37,12 @@ namespace BasisUniversalUnity {
         public const string INTERFACE_DLL = "ktx_unity";
 #endif
 
+        /// <summary>
+        /// Benchmarks have shown that the 4 frame limit until disposal that
+        /// Allocator.TempJob grants is sometimes not enough, so I chose Persistent.
+        /// </summary>
+        public const Allocator defaultAllocator = Allocator.Persistent;
+
         public IntPtr nativeReference;
 
         public bool hasAlpha {
@@ -153,7 +159,7 @@ namespace BasisUniversalUnity {
         ) {
             UnityEngine.Profiling.Profiler.BeginSample("Ktx.LoadBytesJob");
 
-            job.result = new NativeArray<KtxErrorCode>(1,BasisUniversal.defaultAllocator);
+            job.result = new NativeArray<KtxErrorCode>(1,defaultAllocator);
             job.nativeReference = nativeReference;
             job.outputFormat = transF;
 

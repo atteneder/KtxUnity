@@ -26,12 +26,6 @@ namespace BasisUniversalUnity {
 
     public static class BasisUniversal
     {
-        /// <summary>
-        /// Benchmarks have shown that the 4 frame limit until disposal that
-        /// Allocator.TempJob grants is sometimes not enough, so I chose Persistent.
-        /// </summary>
-        public const Allocator defaultAllocator = Allocator.Persistent;
-
         static bool initialized;
         static int transcoderCountAvailable = 8;
         
@@ -152,7 +146,7 @@ namespace BasisUniversalUnity {
             job.size = size;
             job.nativeReference = basis.nativeReference;
             
-            job.textureData = new NativeArray<byte>((int)size,defaultAllocator);
+            job.textureData = new NativeArray<byte>((int)size,KtxNativeInstance.defaultAllocator);
 
             var jobHandle = job.Schedule();
 
