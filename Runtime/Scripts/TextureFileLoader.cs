@@ -22,10 +22,10 @@ namespace BasisUniversalUnity {
         }
 
         /// <summary>
-        /// Demonstrates how to load a basisu files from the StreamingAssets
+        /// Demonstrates how to load a texture file from the StreamingAssets
         /// folder (see https://docs.unity3d.com/Manual/StreamingAssets.html)
         /// </summary>
-        protected void LoadFromStreamingAssets() {
+        void LoadFromStreamingAssets() {
             texture = new TextureType();
             texture.onTextureLoaded += OnTextureLoaded;
             texture.LoadFromStreamingAssets(filePath,this);

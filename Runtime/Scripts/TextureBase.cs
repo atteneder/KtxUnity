@@ -29,7 +29,7 @@ namespace BasisUniversalUnity {
         public event UnityAction<Texture2D> onTextureLoaded;
 
         /// <summary>
-        /// Loads a Basis Universal texture from the StreamingAssets folder
+        /// Loads a KTX or Basis Universal texture from the StreamingAssets folder
         /// see https://docs.unity3d.com/Manual/StreamingAssets.html
         /// </summary>
         /// <param name="filePath">Path to the file, relative to StreamingAssets</param>
@@ -40,18 +40,18 @@ namespace BasisUniversalUnity {
         }
 
         /// <summary>
-        /// Loads a Basis Universal texture from an URL
+        /// Loads a KTX or Basis Universal texture from an URL
         /// </summary>
-        /// <param name="url">URL to the basis file to load</param>
+        /// <param name="url">URL to the ktx/basis file to load</param>
         /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
         public void LoadFromUrl( string url, MonoBehaviour monoBehaviour ) {
             monoBehaviour.StartCoroutine(LoadFile(url,monoBehaviour));
         }
 
         /// <summary>
-        /// Load a Basis Universal texture from a buffer
+        /// Load a KTX or Basis Universal texture from a buffer
         /// </summary>
-        /// <param name="data">Native buffer that holds the basisu file</param>
+        /// <param name="data">Native buffer that holds the ktx/basisu file</param>
         /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
         public void LoadFromBytes( NativeArray<byte> data, MonoBehaviour monoBehaviour ) {
             monoBehaviour.StartCoroutine(LoadBytesRoutine(data));
@@ -62,7 +62,7 @@ namespace BasisUniversalUnity {
         /// and creates an absolute URI from it. Useful for loading
         /// via UnityWebRequests.
         /// </summary>
-        /// <param name="subPath">Path, relative to StreamingAssets. Example: path/to/file.basis</param>
+        /// <param name="subPath">Path, relative to StreamingAssets. Example: path/to/file.ktx</param>
         /// <returns>Platform independent URI that can be loaded via UnityWebRequest</returns>
         public static string GetStreamingAssetsUrl( string subPath ) {
 

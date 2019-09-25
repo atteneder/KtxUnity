@@ -1,8 +1,7 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
-#if BASISU_VERBOSE
+#if KTX_VERBOSE
 using System.Text;
 using Enum = System.Enum;
 #endif
@@ -166,7 +165,7 @@ namespace BasisUniversalUnity {
             return false;
         }
 
-#if BASISU_VERBOSE
+#if KTX_VERBOSE
         public static void CheckTextureSupport() {
             var sb = new StringBuilder();
             foreach(var format in opaqueFormatDict) {
@@ -209,7 +208,7 @@ namespace BasisUniversalUnity {
             Debug.Log(sb.ToString());
         }
 
-        [System.Diagnostics.Conditional("BASISU_VERBOSE")]
+        [System.Diagnostics.Conditional("KTX_VERBOSE")]
         static void Log(string format, params object[] args) {
             Debug.LogFormat(format,args);
         }

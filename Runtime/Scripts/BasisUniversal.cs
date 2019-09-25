@@ -42,7 +42,7 @@ namespace BasisUniversalUnity {
             transcoderCountAvailable = UnityEngine.SystemInfo.processorCount;
         }
         
-        public static TranscoderInstance GetTranscoderInstance() {
+        public static BasisUniversalTranscoderInstance GetTranscoderInstance() {
             if(!initialized) {
                 InitInternal();
             }
@@ -53,13 +53,13 @@ namespace BasisUniversalUnity {
 #endif
             if(transcoderCountAvailable>0) {
                 transcoderCountAvailable--;
-                return new TranscoderInstance(aa_create_basis());
+                return new BasisUniversalTranscoderInstance(aa_create_basis());
             } else {
                 return null;
             }
         }
 
-        public static void ReturnTranscoderInstance( TranscoderInstance transcoder ) {
+        public static void ReturnTranscoderInstance( BasisUniversalTranscoderInstance transcoder ) {
 #if POOL_TRANSCODERS
             if(transcoderPool==null) {
                 transcoderPool = new Stack<TranscoderInstance>();
@@ -87,7 +87,7 @@ namespace BasisUniversalUnity {
             
             if(!match) {
                 Debug.LogError("No supported format found!\nRebuild with BASISU_VERBOSE scripting define to debug.");
-                #if BASISU_VERBOSE
+                #if KTX_VERBOSE
                 TranscodeFormatHelper.CheckTextureSupport();
                 #endif
             }
@@ -97,7 +97,7 @@ namespace BasisUniversalUnity {
 
         public unsafe static JobHandle LoadBytesJob(
             ref BasisUniversalJob job,
-            TranscoderInstance basis,
+            BasisUniversalTranscoderInstance basis,
             NativeArray<byte> basisuData,
             TranscodeFormat transF
         ) {

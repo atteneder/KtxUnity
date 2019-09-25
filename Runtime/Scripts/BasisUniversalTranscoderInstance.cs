@@ -23,10 +23,10 @@ using UnityEngine.Profiling;
 
 namespace BasisUniversalUnity {
 
-    public class TranscoderInstance {
+    public class BasisUniversalTranscoderInstance {
         public IntPtr nativeReference;
 
-        public TranscoderInstance( IntPtr nativeReference ) {
+        public BasisUniversalTranscoderInstance( IntPtr nativeReference ) {
             this.nativeReference = nativeReference;
         }
 
@@ -115,7 +115,7 @@ namespace BasisUniversalUnity {
             return result;
         }
 
-        ~TranscoderInstance() {
+        ~BasisUniversalTranscoderInstance() {
             aa_delete_basis(nativeReference);
         }
 

@@ -20,7 +20,7 @@ namespace BasisUniversalUnity {
         protected TextureBase texture;
 
         /// <summary>
-        /// Example callback for loading a Basis Universal texture.
+        /// Example callback for loading a texture.
         /// </summary>
         /// <param name="loadedTexture">If no error occurred, resulting texture. null otherwise</param>
         protected void OnTextureLoaded(Texture2D loadedTexture) {
@@ -28,7 +28,7 @@ namespace BasisUniversalUnity {
             if(loadedTexture!=null) {
                 ApplyTexture(loadedTexture);
             } else {
-                Debug.LogError("Loading Basis Universal Texture failed!");
+                Debug.LogError("Loading Texture failed!");
             }
             texture = null;
         }
