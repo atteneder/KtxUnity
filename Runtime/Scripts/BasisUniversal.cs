@@ -95,9 +95,7 @@ namespace BasisUniversalUnity {
             ImageInfo ii = meta.images[imageIndex];
             LevelInfo li = ii.levels[0];
 
-            bool match = false;
-
-            GetFormatsForImage(meta,li,out graphicsFormat,out textureFormat,out transF);
+            bool match = GetFormatsForImage(meta,li,out graphicsFormat,out textureFormat,out transF);
             
             if(!match) {
                 Debug.LogError("No supported format found!\nRebuild with BASISU_VERBOSE scripting define to debug.");
