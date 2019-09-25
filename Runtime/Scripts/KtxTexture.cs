@@ -13,68 +13,15 @@
 // limitations under the License.
 
 using System.Collections;
-using System.IO;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
-using UnityEngine.Events;
-using UnityEngine.Networking;
 using Unity.Collections;
 
 namespace BasisUniversalUnity {
-    public class KtxTexture
+    public class KtxTexture : TextureBase
     {
-        public event UnityAction<Texture2D> onTextureLoaded;
-
-        /// <summary>
-        /// Loads a KTX texture from the StreamingAssets folder
-        /// see https://docs.unity3d.com/Manual/StreamingAssets.html
-        /// </summary>
-        /// <param name="filePath">Path to the file, relative to StreamingAssets</param>
-        /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
-        public void LoadFromStreamingAssets( string filePath, MonoBehaviour monoBehaviour ) {
-            var url = BasisUniversalTexture.GetStreamingAssetsUrl(filePath);
-            monoBehaviour.StartCoroutine(LoadFile(url,monoBehaviour));
-        }
-
-        /// <summary>
-        /// Loads a KTX texture from an URL
-        /// </summary>
-        /// <param name="url">URL to the basis file to load</param>
-        /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
-        public void LoadFromUrl( string url, MonoBehaviour monoBehaviour ) {
-            monoBehaviour.StartCoroutine(LoadFile(url,monoBehaviour));
-        }
-
-        /// <summary>
-        /// Load a KTX texture from a buffer
-        /// </summary>
-        /// <param name="data">Native buffer that holds the basisu file</param>
-        /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
-        public void LoadFromBytes( NativeArray<byte> data, MonoBehaviour monoBehaviour ) {
-            monoBehaviour.StartCoroutine(LoadBytesRoutine(data));
-        }
-
-        IEnumerator LoadFile( string url, MonoBehaviour monoBehaviour ) {
-    
-            var webRequest = UnityWebRequest.Get(url);
-            yield return webRequest.SendWebRequest();
-            if(!string.IsNullOrEmpty(webRequest.error)) {
-                Debug.LogErrorFormat("Error loading {0}: {1}",url,webRequest.error);
-                if(onTextureLoaded!=null) {
-                    onTextureLoaded(null);
-                }
-                yield break;
-            }
-
-            var buffer = webRequest.downloadHandler.data;
-
-            var na = new NativeArray<byte>(buffer,BasisUniversal.defaultAllocator);
-            yield return monoBehaviour.StartCoroutine(LoadBytesRoutine(na));
-            na.Dispose();
-        }
-
-        IEnumerator LoadBytesRoutine(NativeArray<byte> data) {
+        protected override IEnumerator LoadBytesRoutine(NativeArray<byte> data) {
 
             Texture2D texture = null;
 
@@ -131,27 +78,7 @@ namespace BasisUniversalUnity {
                     job.result.Dispose();
                 }
             }
-            if(onTextureLoaded!=null) {
-                onTextureLoaded(texture);
-            }
-        }
-
-        /// <summary>
-        /// Converts a relative sub path within StreamingAssets
-        /// and creates an absolute URI from it. Useful for loading
-        /// via UnityWebRequests.
-        /// </summary>
-        /// <param name="subPath">Path, relative to StreamingAssets. Example: path/to/file.basis</param>
-        /// <returns>Platform independent URI that can be loaded via UnityWebRequest</returns>
-        public static string GetStreamingAssetsUrl( string subPath ) {
-
-            var path = Path.Combine(Application.streamingAssetsPath,subPath);
-
-            #if LOCAL_LOADING
-            path = string.Format( "file://{0}", path );
-            #endif
-
-            return path;
+            OnTextureLoaded(texture);
         }
     }
 }

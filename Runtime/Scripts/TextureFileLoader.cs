@@ -12,13 +12,10 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using UnityEngine;
-using BasisUniversalUnity;
-
 namespace BasisUniversalUnity {
-    public abstract class BasisUrlLoader : BasisLoaderBase
+    public abstract class TextureFileLoader<TextureType> : TextureLoaderBase where TextureType:TextureBase,new()
     {
-        public string url;
+        public string filePath;
 
         protected virtual void Start() {
             LoadFromStreamingAssets();
@@ -29,9 +26,9 @@ namespace BasisUniversalUnity {
         /// folder (see https://docs.unity3d.com/Manual/StreamingAssets.html)
         /// </summary>
         protected void LoadFromStreamingAssets() {
-            basisu = new BasisUniversalTexture();
-            basisu.onTextureLoaded += OnTextureLoaded;
-            basisu.LoadFromUrl(url,this);
+            texture = new TextureType();
+            texture.onTextureLoaded += OnTextureLoaded;
+            texture.LoadFromStreamingAssets(filePath,this);
         }
     }
 }

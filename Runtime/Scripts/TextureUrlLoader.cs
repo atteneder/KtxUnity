@@ -12,28 +12,23 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using UnityEngine;
-using BasisUniversalUnity;
-
 namespace BasisUniversalUnity {
-    public abstract class BasisLoaderBase : MonoBehaviour
+    public abstract class TextureUrlLoader<TextureType> : TextureLoaderBase where TextureType:TextureBase,new()
     {
-        protected BasisUniversalTexture basisu;
+        public string url;
 
-        /// <summary>
-        /// Example callback for loading a Basis Universal texture.
-        /// </summary>
-        /// <param name="texture">If no error occurred, resulting texture. null otherwise</param>
-        protected void OnTextureLoaded(Texture2D texture) {
-            basisu.onTextureLoaded -= OnTextureLoaded;
-            if(texture!=null) {
-                ApplyTexture(texture);
-            } else {
-                Debug.LogError("Loading Basis Universal Texture failed!");
-            }
-            basisu = null;
+        protected virtual void Start() {
+            LoadFromStreamingAssets();
         }
 
-        protected abstract void ApplyTexture(Texture2D texture);
+        /// <summary>
+        /// Demonstrates how to load a basisu files from the StreamingAssets
+        /// folder (see https://docs.unity3d.com/Manual/StreamingAssets.html)
+        /// </summary>
+        protected void LoadFromStreamingAssets() {
+            texture = new TextureType();
+            texture.onTextureLoaded += OnTextureLoaded;
+            texture.LoadFromUrl(url,this);
+        }
     }
 }
