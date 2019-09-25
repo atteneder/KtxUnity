@@ -6,7 +6,7 @@ using System.Text;
 using Enum = System.Enum;
 #endif
 
-namespace BasisUniversalUnity {
+namespace KtxUnity {
     public static class TranscodeFormatHelper
     {
         static bool initialized;

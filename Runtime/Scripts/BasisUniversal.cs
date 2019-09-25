@@ -22,7 +22,7 @@ using UnityEngine.Experimental.Rendering;
 using Unity.Jobs;
 using Unity.Collections;
 
-namespace BasisUniversalUnity {
+namespace KtxUnity {
 
     public static class BasisUniversal
     {
@@ -86,7 +86,7 @@ namespace BasisUniversalUnity {
             bool match = TranscodeFormatHelper.GetFormatsForImage(meta,li,out graphicsFormat,out textureFormat,out transF);
             
             if(!match) {
-                Debug.LogError("No supported format found!\nRebuild with BASISU_VERBOSE scripting define to debug.");
+                Debug.LogError("No supported format found!\nRebuild with KTX_VERBOSE scripting define to debug.");
                 #if KTX_VERBOSE
                 TranscodeFormatHelper.CheckTextureSupport();
                 #endif

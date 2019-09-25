@@ -21,7 +21,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using UnityEngine.Profiling;
 
 
-namespace BasisUniversalUnity {
+namespace KtxUnity {
 
     public class BasisUniversalTranscoderInstance {
         public IntPtr nativeReference;

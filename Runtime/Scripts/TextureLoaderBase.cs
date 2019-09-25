@@ -14,7 +14,7 @@
 
 using UnityEngine;
 
-namespace BasisUniversalUnity {
+namespace KtxUnity {
     public abstract class TextureLoaderBase : MonoBehaviour
     {
         protected TextureBase texture;

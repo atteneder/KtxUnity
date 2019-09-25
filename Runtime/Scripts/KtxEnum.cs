@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace BasisUniversalUnity {
+namespace KtxUnity {
 
     enum KtxOrientationX {
         KTX_ORIENT_X_LEFT = 'l',

@@ -23,7 +23,7 @@ using UnityEngine.Events;
 using UnityEngine.Networking;
 using Unity.Collections;
 
-namespace BasisUniversalUnity {
+namespace KtxUnity {
     public abstract class TextureBase
     {
         public event UnityAction<Texture2D> onTextureLoaded;

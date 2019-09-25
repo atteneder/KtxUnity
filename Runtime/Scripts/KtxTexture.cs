@@ -18,7 +18,7 @@ using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
 using Unity.Collections;
 
-namespace BasisUniversalUnity {
+namespace KtxUnity {
     public class KtxTexture : TextureBase
     {
         protected override IEnumerator LoadBytesRoutine(NativeArray<byte> data) {

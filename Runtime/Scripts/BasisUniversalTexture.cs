@@ -19,7 +19,7 @@ using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
 using Unity.Collections;
 
-namespace BasisUniversalUnity {
+namespace KtxUnity {
 
     public class BasisUniversalTexture : TextureBase
     {

@@ -1,7 +1,6 @@
 {
-    "name": "BasisUniversal",
+    "name": "Ktx",
     "references": [],
-    "optionalUnityReferences": [],
     "includePlatforms": [],
     "excludePlatforms": [],
     "allowUnsafeCode": true,

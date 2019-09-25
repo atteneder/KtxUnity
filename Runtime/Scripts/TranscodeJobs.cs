@@ -18,7 +18,7 @@ using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using IntPtr = System.IntPtr;
 
-namespace BasisUniversalUnity {
+namespace KtxUnity {
 
     public unsafe struct BasisUniversalJob : IJob
     {

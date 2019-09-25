@@ -19,7 +19,7 @@ using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
 using IntPtr=System.IntPtr;
 
-namespace BasisUniversalUnity {
+namespace KtxUnity {
 
     /*
     struct KtxOrientation {

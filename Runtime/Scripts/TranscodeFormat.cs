@@ -12,7 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-namespace BasisUniversalUnity {
+namespace KtxUnity {
 
     // source: C++ enum transcoder_texture_format
     public enum TranscodeFormat : uint {
