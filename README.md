@@ -1,6 +1,6 @@
-# BasisUniversalUnity
+# KtxUnity
 
-Unity package that allows users to load [Basis Universal](https://github.com/BinomialLLC/basis_universal) texture files.
+Unity package that allows users to load [KTX 2.0](https://github.com/KhronosGroup/KTX-Software) files with [Basis Universal](https://github.com/BinomialLLC/basis_universal) super compression or [Basis Universal](https://github.com/BinomialLLC/basis_universal) texture files directly.
 
 Following build targets are supported
 
@@ -13,7 +13,7 @@ Following build targets are supported
 
 ![Screenshot of loaded fish textures](https://github.com/atteneder/BasisUniversalUnityDemo/raw/master/Images/fishes.png "Lots of fish basis universal textures loaded via BasisUniversalUnity")
 
-Special thanks to [Binomial](http://www.binomial.info) and everyone involved in making Basis Universal available!
+Special thanks to [Khronos](https://www.khronos.org), [Binomial](http://www.binomial.info) and everyone involved in making KTX and Basis Universal available!
 
 ## Installing
 
@@ -22,7 +22,7 @@ You have to manually add the package's URL into your [project manifest](https://
 Inside your Unity project there's the folder `Packages` containing a file called `manifest.json`. You have to open it and add the following line inside the `dependencies` category:
 
 ```json
-"com.atteneder.basisu": "https://github.com/atteneder/BasisUniversalUnity.git",
+"com.atteneder.ktx": "https://github.com/atteneder/KtxUnity.git",
 ```
 
 It should look something like this:
@@ -30,7 +30,7 @@ It should look something like this:
 ```json
 {
   "dependencies": {
-    "com.atteneder.basisu": "https://github.com/atteneder/BasisUniversalUnity.git",
+    "com.atteneder.ktx": "https://github.com/atteneder/KtxUnity.git",
     "com.unity.package-manager-ui": "2.1.2",
     "com.unity.modules.unitywebrequest": "1.0.0"
     ...
@@ -44,15 +44,15 @@ Next time you open your project in Unity, it will download the package automatic
 
 There's a simple demo project that shows how you can use it:
 
-<https://github.com/atteneder/BasisUniversalUnityDemo>
+<https://github.com/atteneder/KtxUnityDemo>
 
 Excerpt how to load a file from StreamingAssets:
 
 ```C#
 using UnityEngine;
-using BasisUniversalUnity;
+using KtxUnity;
 
-public class CustomBasisFileLoader : BasisFileLoader
+public class CustomKtxFileLoader : TextureFileLoader<KtxTexture>
 {
     protected override void ApplyTexture(Texture2D texture) {
         var renderer = GetComponent<Renderer>();
@@ -63,15 +63,17 @@ public class CustomBasisFileLoader : BasisFileLoader
 }
 ```
 
-In this simple case the base MonoBehaviour `BasisFileLoader` has a public `filePath` member, starts loading in `Start` and  already takes care of all things. You only need to implement the `ApplyTexture` method and do something with your texture.
+In this simple case the base MonoBehaviour `TextureFileLoader` has a public `filePath` member, starts loading in `Start` and  already takes care of all things. You only need to implement the `ApplyTexture` method and do something with your texture.
 
-Loading from URLs is similarly easy:
+`TextureFileLoader` is generic and can load KTX or Basis Universal files. Depending on what you need, pass `KtxTexture` or `BasisUniversalTexture` into its type parameter.
+
+Loading from URLs is similarly easy, just use `TextureUrlLoader`, which has the exact same interface. In this example we load a Basis Universal texture via URL:
 
 ```C#
 using UnityEngine;
-using BasisUniversalUnity;
+using KtxUnity;
 
-public class CustomBasisUrlLoader : BasisUrlLoader
+public class CustomBasisUniversalUrlLoader : TextureUrlLoader<BasisUniversalTexture>
 {
    protected override void ApplyTexture(Texture2D texture) {
         var renderer = GetComponent<Renderer>();
@@ -82,7 +84,7 @@ public class CustomBasisUrlLoader : BasisUrlLoader
 }
 ```
 
-Devs who want to create advanced loading code should look into classes `BasisUniversalTexture` and `BasisUniversal` directly.
+Devs who want to create advanced loading code should look into classes `KtxTexture`/`BasisUniversalTexture` and `TextureBase` directly.
 
 ## Support
 
