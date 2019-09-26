@@ -25,9 +25,9 @@ namespace KtxUnity {
 
             Texture2D texture = null;
 
-            var ktx = new KtxNativeInstance();
+            var ktx = new KtxNativeInstance(data);
 
-            if(ktx.Load(data)) {
+            if(ktx.valid) {
 
                 // TODO: Maybe do this somewhere more central
                 TranscodeFormatHelper.Init();
@@ -69,11 +69,17 @@ namespace KtxUnity {
                         } else {
                             texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
                         }
-                        ktx.LoadRawTextureData(texture);
-                        texture.Apply();
+                        try {
+                            ktx.LoadRawTextureData(texture);
+                            texture.Apply();
+                        }
+                        catch (UnityException) {
+                            Debug.LogError(ERR_MSG_TRANSCODE_FAILED);
+                            texture = null;
+                        }
                         Profiler.EndSample();
                     } else {
-                        Debug.LogError("Transcoding failed!");
+                        Debug.LogError(ERR_MSG_TRANSCODE_FAILED);
                     }
                     job.result.Dispose();
                 }

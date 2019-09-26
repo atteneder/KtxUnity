@@ -86,7 +86,7 @@ namespace KtxUnity {
                         texture.Apply();
                         Profiler.EndSample();
                     } else {
-                        Debug.LogError("Transcoding failed!");
+                        Debug.LogError(ERR_MSG_TRANSCODE_FAILED);
                     }
                     job.textureData.Dispose();
                     job.result.Dispose();

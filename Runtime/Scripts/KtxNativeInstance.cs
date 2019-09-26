@@ -45,6 +45,16 @@ namespace KtxUnity {
 
         public IntPtr nativeReference;
 
+        public KtxNativeInstance(NativeArray<byte> data) {
+            Load(data);
+        }
+
+        public bool valid {
+            get {
+                return nativeReference != System.IntPtr.Zero;
+            }
+        }
+
         public bool hasAlpha {
             get {
                 return aa_ktx_get_has_alpha(nativeReference);

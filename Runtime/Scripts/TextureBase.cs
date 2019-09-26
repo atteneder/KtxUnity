@@ -26,6 +26,8 @@ using Unity.Collections;
 namespace KtxUnity {
     public abstract class TextureBase
     {
+        protected const string ERR_MSG_TRANSCODE_FAILED = "Transcoding failed!";
+
         public event UnityAction<Texture2D> onTextureLoaded;
 
         /// <summary>
