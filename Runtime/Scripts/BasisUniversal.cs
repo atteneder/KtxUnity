@@ -69,32 +69,6 @@ namespace KtxUnity {
             transcoderCountAvailable++;
         }
 
-        public static bool GetFormats(
-            MetaData meta,
-            uint imageIndex,
-            out GraphicsFormat graphicsFormat,
-            out TextureFormat? textureFormat,
-            out TranscodeFormat transF
-        ) {
-            graphicsFormat = GraphicsFormat.None;
-            textureFormat = null;
-            transF = TranscodeFormat.BC7_M6_RGB;
-
-            ImageInfo ii = meta.images[imageIndex];
-            LevelInfo li = ii.levels[0];
-
-            bool match = TranscodeFormatHelper.GetFormatsForImage(meta,li,out graphicsFormat,out textureFormat,out transF);
-            
-            if(!match) {
-                Debug.LogError("No supported format found!\nRebuild with KTX_VERBOSE scripting define to debug.");
-                #if KTX_VERBOSE
-                TranscodeFormatHelper.CheckTextureSupport();
-                #endif
-            }
-
-            return match;
-        }
-
         public unsafe static JobHandle LoadBytesJob(
             ref BasisUniversalJob job,
             BasisUniversalTranscoderInstance basis,

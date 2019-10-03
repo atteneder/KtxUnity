@@ -43,9 +43,9 @@ namespace KtxUnity {
                 TextureFormat? tf;
                 TranscodeFormat transF;
 
-                if(BasisUniversal.GetFormats(
+                if(GetFormat(
                     meta,
-                    imageIndex,
+                    meta.images[imageIndex].levels[0],
                     out gf,
                     out tf,
                     out transF
