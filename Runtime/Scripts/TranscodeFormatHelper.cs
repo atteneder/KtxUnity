@@ -21,39 +21,79 @@ namespace KtxUnity {
             
             if(opaqueFormatDict==null) {
                 opaqueFormatDict = new Dictionary<GraphicsFormat, TranscodeFormat>();
-                opaqueFormatDict.Add(GraphicsFormat.RGBA_BC7_SRGB,TranscodeFormat.BC7_M6_OPAQUE_ONLY);
-                opaqueFormatDict.Add(GraphicsFormat.RGB_PVRTC_4Bpp_SRGB,TranscodeFormat.PVRTC1_4_OPAQUE_ONLY);
-                opaqueFormatDict.Add(GraphicsFormat.RGB_ETC_UNorm,TranscodeFormat.ETC1);
-                opaqueFormatDict.Add(GraphicsFormat.RGB_ETC2_SRGB,TranscodeFormat.ETC2);
-                opaqueFormatDict.Add(GraphicsFormat.RGBA_DXT1_SRGB,TranscodeFormat.BC1);
-                opaqueFormatDict.Add(GraphicsFormat.R_BC4_UNorm,TranscodeFormat.BC4);
-                opaqueFormatDict.Add(GraphicsFormat.RG_BC5_UNorm,TranscodeFormat.BC5);
+                
+                // Compressed
+                opaqueFormatDict.Add(GraphicsFormat.RGBA_BC7_SRGB,TranscodeFormat.BC7_M6_RGB);
+                opaqueFormatDict.Add(GraphicsFormat.RGB_PVRTC_4Bpp_SRGB,TranscodeFormat.PVRTC1_4_RGB);
+                opaqueFormatDict.Add(GraphicsFormat.RGB_ETC_UNorm,TranscodeFormat.ETC1_RGB);
+                opaqueFormatDict.Add(GraphicsFormat.RGBA_DXT1_SRGB,TranscodeFormat.BC1_RGB);
+                opaqueFormatDict.Add(GraphicsFormat.R_BC4_UNorm,TranscodeFormat.BC4_R);
+                opaqueFormatDict.Add(GraphicsFormat.RG_BC5_UNorm,TranscodeFormat.BC5_RG);
+                // opaqueFormatDict.Add(GraphicsFormat.?,TranscodeFormat.ATC_RGB);
+                // opaqueFormatDict.Add(GraphicsFormat.?,TranscodeFormat.FXT1_RGB);
+                // opaqueFormatDict.Add(GraphicsFormat.?,TranscodeFormat.PVRTC2_4_RGB);
+                // opaqueFormatDict.Add(GraphicsFormat.?,TranscodeFormat.ETC2_EAC_R11);
+                // opaqueFormatDict.Add(GraphicsFormat.?,TranscodeFormat.ETC2_EAC_RG11);
+                
+                // Uncompressed
+                opaqueFormatDict.Add(GraphicsFormat.R5G6B5_UNormPack16,TranscodeFormat.RGB565);
+                opaqueFormatDict.Add(GraphicsFormat.B5G6R5_UNormPack16,TranscodeFormat.BGR565);
             }
 
             if(alphaFormatDict==null) {
                 alphaFormatDict = new Dictionary<GraphicsFormat,TranscodeFormat>();
-#if PLATFORM_IOS
-                alphaFormatDict.Add(GraphicsFormat.RGBA_ETC2_SRGB,TranscodeFormat.ETC2);
-#endif
-                alphaFormatDict.Add(GraphicsFormat.RGBA_DXT5_SRGB,TranscodeFormat.BC3);
+
+                // Compressed
+                alphaFormatDict.Add(GraphicsFormat.RGBA_BC7_SRGB,TranscodeFormat.BC7_M5_RGBA); // Did not work in editor
+                alphaFormatDict.Add(GraphicsFormat.RGBA_PVRTC_4Bpp_SRGB,TranscodeFormat.PVRTC1_4_RGBA);
+                alphaFormatDict.Add(GraphicsFormat.RGBA_ETC2_SRGB,TranscodeFormat.ETC2_RGBA);
+                alphaFormatDict.Add(GraphicsFormat.RGBA_ASTC4X4_SRGB,TranscodeFormat.ASTC_4x4_RGBA);
+                alphaFormatDict.Add(GraphicsFormat.RGBA_DXT5_SRGB,TranscodeFormat.BC3_RGBA);
+                // alphaFormatDict.Add(GraphicsFormat.?,TranscodeFormat.ATC_RGBA);
+                // alphaFormatDict.Add(GraphicsFormat.?,TranscodeFormat.PVRTC2_4_RGBA);
+
+                // Uncompressed
+                alphaFormatDict.Add(GraphicsFormat.R8G8B8A8_SRGB,TranscodeFormat.RGBA32);
+                alphaFormatDict.Add(GraphicsFormat.R4G4B4A4_UNormPack16,TranscodeFormat.RGBA4444);
             }
 
             if(opaqueFormatLegacyDict==null) {
                 opaqueFormatLegacyDict = new Dictionary<TextureFormat,TranscodeFormat>();
-                opaqueFormatLegacyDict.Add(TextureFormat.BC7,TranscodeFormat.BC7_M6_OPAQUE_ONLY);
-                opaqueFormatLegacyDict.Add(TextureFormat.PVRTC_RGB4,TranscodeFormat.PVRTC1_4_OPAQUE_ONLY);
-                opaqueFormatLegacyDict.Add(TextureFormat.ETC_RGB4,TranscodeFormat.ETC1);
-                opaqueFormatLegacyDict.Add(TextureFormat.ETC2_RGBA8,TranscodeFormat.ETC2);
-                opaqueFormatLegacyDict.Add(TextureFormat.DXT1,TranscodeFormat.BC1);
-                opaqueFormatLegacyDict.Add(TextureFormat.BC4,TranscodeFormat.BC4);
-                opaqueFormatLegacyDict.Add(TextureFormat.BC5,TranscodeFormat.BC5);
+                
+                // Compressed
+                opaqueFormatLegacyDict.Add(TextureFormat.BC7,TranscodeFormat.BC7_M6_RGB);
+                opaqueFormatLegacyDict.Add(TextureFormat.PVRTC_RGB4,TranscodeFormat.PVRTC1_4_RGB);
+                opaqueFormatLegacyDict.Add(TextureFormat.ETC_RGB4,TranscodeFormat.ETC1_RGB);
+                opaqueFormatLegacyDict.Add(TextureFormat.DXT1,TranscodeFormat.BC1_RGB);
+                opaqueFormatLegacyDict.Add(TextureFormat.BC4,TranscodeFormat.BC4_R);
+                opaqueFormatLegacyDict.Add(TextureFormat.BC5,TranscodeFormat.BC5_RG);
+                // opaqueFormatLegacyDict.Add(TextureFormat.ETC_RGB4,TranscodeFormat.ATC_RGB);//Not sure if it works
+                // opaqueFormatLegacyDict.Add(TextureFormat.?,TranscodeFormat.FXT1_RGB);
+                // opaqueFormatLegacyDict.Add(TextureFormat.PVRTC_RGB4?,TranscodeFormat.PVRTC2_4_RGB);
+                // opaqueFormatLegacyDict.Add(TextureFormat.?,TranscodeFormat.ETC2_EAC_R11);
+                // opaqueFormatLegacyDict.Add(TextureFormat.?,TranscodeFormat.ETC2_EAC_RG11);
+
+                // Uncompressed
+                opaqueFormatLegacyDict.Add(TextureFormat.RGB565,TranscodeFormat.RGB565);
+                // opaqueFormatLegacyDict.Add(TextureFormat.?,TranscodeFormat.BGR565);
             }
 
             if(alphaFormatLegacyDict==null) {
                 alphaFormatLegacyDict = new Dictionary<TextureFormat,TranscodeFormat>();
-                alphaFormatLegacyDict.Add(TextureFormat.DXT5,TranscodeFormat.BC3);
-                alphaFormatLegacyDict.Add(TextureFormat.ETC2_RGBA8,TranscodeFormat.ETC2);            
-                alphaFormatLegacyDict.Add(TextureFormat.ETC2_RGBA1,TranscodeFormat.ETC2); // Not sure if this works
+
+                // Compressed
+                alphaFormatLegacyDict.Add(TextureFormat.BC7,TranscodeFormat.BC7_M5_RGBA);
+                alphaFormatLegacyDict.Add(TextureFormat.PVRTC_RGB4,TranscodeFormat.PVRTC1_4_RGBA);
+                alphaFormatLegacyDict.Add(TextureFormat.ETC2_RGBA8,TranscodeFormat.ETC2_RGBA);
+                alphaFormatLegacyDict.Add(TextureFormat.ETC2_RGBA1,TranscodeFormat.ETC2_RGBA); // Not sure if this works
+                alphaFormatLegacyDict.Add(TextureFormat.ASTC_4x4,TranscodeFormat.ASTC_4x4_RGBA);
+                alphaFormatLegacyDict.Add(TextureFormat.DXT5,TranscodeFormat.BC3_RGBA);
+                // alphaFormatLegacyDict.Add(TextureFormat.ETC2_RGBA8,TranscodeFormat.ATC_RGBA); // Not sure if this works
+                // alphaFormatLegacyDict.Add(TextureFormat.?,TranscodeFormat.PVRTC2_4_RGBA);
+
+                // Uncompressed
+                alphaFormatLegacyDict.Add(TextureFormat.RGBA4444,TranscodeFormat.RGBA4444);
+                alphaFormatLegacyDict.Add(TextureFormat.RGBA32,TranscodeFormat.RGBA32);
             }
         }
 
@@ -75,7 +115,7 @@ namespace KtxUnity {
             bool match = false;
             graphicsFormat = GraphicsFormat.None;
             textureFormat = null;
-            transF = TranscodeFormat.ETC1;
+            transF = meta.hasAlpha ? TranscodeFormat.RGBA32 : TranscodeFormat.RGB565;
 
             if(meta.hasAlpha) {
                 if(TranscodeFormatHelper.GetPreferredFormatAlpha(li.isPowerOfTwo,li.isSquare,out graphicsFormat,out transF)) {
@@ -101,7 +141,7 @@ namespace KtxUnity {
         
         public static bool GetPreferredFormat( bool isPowerOfTwo, bool isSquare, out GraphicsFormat unityFormat, out TranscodeFormat transcodeFormat ) {
             unityFormat = GraphicsFormat.RGBA_DXT1_SRGB;
-            transcodeFormat = TranscodeFormat.BC1;
+            transcodeFormat = TranscodeFormat.BC1_RGB;
 
             foreach(var format in opaqueFormatDict) {
                 if(
@@ -122,7 +162,7 @@ namespace KtxUnity {
 
         public static bool GetPreferredFormatAlpha( bool isPowerOfTwo, bool isSquare, out GraphicsFormat unityFormat, out TranscodeFormat transcodeFormat ) {
             unityFormat = GraphicsFormat.RGBA_DXT1_SRGB;
-            transcodeFormat = TranscodeFormat.BC1;
+            transcodeFormat = TranscodeFormat.BC1_RGB;
 
             foreach(var format in alphaFormatDict) {
                 var supported = SystemInfo.IsFormatSupported(format.Key,FormatUsage.Sample);
@@ -137,7 +177,7 @@ namespace KtxUnity {
 
         public static bool GetPreferredFormatLegacy( bool isPowerOfTwo, bool isSquare, out TextureFormat unityFormat, out TranscodeFormat transcodeFormat ) {
             unityFormat = TextureFormat.DXT1;
-            transcodeFormat = TranscodeFormat.BC1;
+            transcodeFormat = TranscodeFormat.BC1_RGB;
 
             foreach(var format in opaqueFormatLegacyDict) {
                 var supported = SystemInfo.SupportsTextureFormat(format.Key);
@@ -152,7 +192,7 @@ namespace KtxUnity {
 
         public static bool GetPreferredFormatLegacyAlpha( bool isPowerOfTwo, bool isSquare, out TextureFormat unityFormat, out TranscodeFormat transcodeFormat ) {
             unityFormat = TextureFormat.DXT1;
-            transcodeFormat = TranscodeFormat.BC1;
+            transcodeFormat = TranscodeFormat.BC1_RGB;
 
             foreach(var format in alphaFormatLegacyDict) {
                 var supported = SystemInfo.SupportsTextureFormat(format.Key);

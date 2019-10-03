@@ -78,7 +78,7 @@ namespace KtxUnity {
         ) {
             graphicsFormat = GraphicsFormat.None;
             textureFormat = null;
-            transF = TranscodeFormat.ETC1;
+            transF = TranscodeFormat.BC7_M6_RGB;
 
             ImageInfo ii = meta.images[imageIndex];
             LevelInfo li = ii.levels[0];
