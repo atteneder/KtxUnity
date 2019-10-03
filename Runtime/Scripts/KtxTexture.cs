@@ -59,8 +59,16 @@ namespace KtxUnity {
                         uint height = ktx.baseHeight;
                         
                         if(tf.HasValue) {
+                            if(tf== TextureFormat.DXT5 && !ktx.hasAlpha) {
+                                // ktx library automatically decides to use the smaller DXT1 instead of DXT5 if no alpha
+                                tf = TextureFormat.DXT1;
+                            }
                             texture = new Texture2D((int)width,(int)height,tf.Value,false);
                         } else {
+                            if(gf== GraphicsFormat.RGBA_DXT5_SRGB && !ktx.hasAlpha) {
+                                // ktx library automatically decides to use the smaller DXT1 instead of DXT5 if no alpha
+                                gf = GraphicsFormat.RGBA_DXT1_SRGB;
+                            }
                             texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
                         }
                         try {
