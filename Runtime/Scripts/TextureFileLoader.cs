@@ -25,8 +25,8 @@ namespace KtxUnity {
         /// Demonstrates how to load a texture file from the StreamingAssets
         /// folder (see https://docs.unity3d.com/Manual/StreamingAssets.html)
         /// </summary>
-        void LoadFromStreamingAssets() {
-            texture = new TextureType();
+        protected void LoadFromStreamingAssets(TextureType txt = null) {
+            texture = txt==null ? new TextureType() : txt;
             texture.onTextureLoaded += OnTextureLoaded;
             texture.LoadFromStreamingAssets(filePath,this);
         }

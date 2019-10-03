@@ -209,22 +209,49 @@ namespace KtxUnity {
         }
 
 #if KTX_VERBOSE
-        public static void CheckTextureSupport() {
+        public static void CheckTextureSupport (
+            
+        ) {
+            List<KeyValuePair<GraphicsFormat,TranscodeFormat>> graphicsFormats;
+            List<KeyValuePair<TextureFormat,TranscodeFormat>> textureFormats;
+            GetSupportedTextureFormats(out graphicsFormats,out textureFormats);
+        }
+
+        public static void GetSupportedTextureFormats (
+            out List<KeyValuePair<GraphicsFormat,TranscodeFormat>> graphicsFormats,
+            out List<KeyValuePair<TextureFormat,TranscodeFormat>> textureFormats
+        )
+        {
+            graphicsFormats = new List<KeyValuePair<GraphicsFormat,TranscodeFormat>>();
+            textureFormats = new List<KeyValuePair<TextureFormat,TranscodeFormat>>();
+
             var sb = new StringBuilder();
             foreach(var format in opaqueFormatDict) {
                 var supported = SystemInfo.IsFormatSupported(format.Key,FormatUsage.Sample);
+                if(supported) {
+                    graphicsFormats.Add(format);
+                }
                 sb.AppendFormat("{0} support: {1}\n",format.Key,supported);
             }
             foreach(var format in alphaFormatDict) {
                 var supported = SystemInfo.IsFormatSupported(format.Key,FormatUsage.Sample);
+                if(supported) {
+                    graphicsFormats.Add(format);
+                }
                 sb.AppendFormat("(alpha) {0} support: {1}\n",format.Key,supported);
             }
             foreach(var format in opaqueFormatLegacyDict) {
                 var supported = SystemInfo.SupportsTextureFormat(format.Key);
+                if(supported) {
+                    textureFormats.Add(format);
+                }
                 sb.AppendFormat("legacy {0} support: {1}\n",format.Key,supported);
             }
             foreach(var format in alphaFormatLegacyDict) {
                 var supported = SystemInfo.SupportsTextureFormat(format.Key);
+                if(supported) {
+                    textureFormats.Add(format);
+                }
                 sb.AppendFormat("legacy (alpha) {0} support: {1}\n",format.Key,supported);
             }
 

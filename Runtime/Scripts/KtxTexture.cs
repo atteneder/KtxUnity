@@ -36,13 +36,7 @@ namespace KtxUnity {
                 TextureFormat? tf;
                 TranscodeFormat transF;
 
-                if(TranscodeFormatHelper.GetFormatsForImage(
-                    ktx,
-                    ktx,
-                    out gf,
-                    out tf,
-                    out transF
-                )) {
+                if(GetFormat(ktx,ktx,out gf,out tf,out transF)) {
                     Profiler.BeginSample("KtxTranscode");
 
                     var job = new KtxTranscodeJob();

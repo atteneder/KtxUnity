@@ -20,6 +20,7 @@ using System.Collections;
 using System.IO;
 using UnityEngine;
 using UnityEngine.Events;
+using UnityEngine.Experimental.Rendering;
 using UnityEngine.Networking;
 using Unity.Collections;
 
@@ -100,6 +101,16 @@ namespace KtxUnity {
             if(onTextureLoaded!=null) {
                 onTextureLoaded(texture);
             }
+        }
+
+        protected virtual bool GetFormat(
+            IMetaData meta,
+            ILevelInfo li,
+            out GraphicsFormat graphicsFormat,
+            out TextureFormat? textureFormat,
+            out TranscodeFormat transF
+        ) {
+            return TranscodeFormatHelper.GetFormatsForImage(meta,li,out graphicsFormat,out textureFormat,out transF);
         }
     }
 }
