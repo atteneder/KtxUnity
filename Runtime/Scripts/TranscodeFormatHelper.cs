@@ -100,6 +100,9 @@ namespace KtxUnity {
         public static void Init() {
             if(!initialized) {
                 InitInternal();
+#if KTX_VERBOSE
+                CheckTextureSupport();
+#endif
             }
         }
 
@@ -225,9 +228,13 @@ namespace KtxUnity {
                 sb.AppendFormat("legacy (alpha) {0} support: {1}\n",format.Key,supported);
             }
 
+            Debug.Log(sb.ToString());
+
+            sb.Clear();
+
             GraphicsFormat[] allGfxFormats = (GraphicsFormat[]) Enum.GetValues(typeof(GraphicsFormat));
             foreach(var format in allGfxFormats) {
-                Log(
+                sb.AppendFormat(
                     "{0} sample:{1} blend:{2} getpixels:{3} linear:{4} loadstore:{5} aa2:{6} aa4:{7} aa8:{8} readpixels:{9} render:{10} setpixels:{11} sparse:{12}\n"
                     ,format
                     ,SystemInfo.IsFormatSupported(format,FormatUsage.Sample)?"1":"0"
