@@ -37,6 +37,13 @@ namespace KtxUnity {
                 TranscodeFormat transF;
 
                 if(GetFormat(ktx,ktx,out gf,out tf,out transF)) {
+#if KTX_VERBOSE
+                    if(tf.HasValue) {
+                        Debug.LogFormat("Transcode to TextureFormat {0} ({1})",tf.Value,transF);
+                    } else {
+                        Debug.LogFormat("Transcode to GraphicsFormat {0} ({1})",gf,transF);
+                    }
+#endif
                     Profiler.BeginSample("KtxTranscode");
 
                     var job = new KtxTranscodeJob();
