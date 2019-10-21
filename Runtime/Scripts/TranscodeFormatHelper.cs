@@ -99,7 +99,9 @@ namespace KtxUnity {
                 alphaFormatLegacyDict.Add(TextureFormat.BC7,TranscodeFormat.BC7_M5_RGBA);
                 alphaFormatLegacyDict.Add(TextureFormat.PVRTC_RGBA4,TranscodeFormat.PVRTC1_4_RGBA);
                 alphaFormatLegacyDict.Add(TextureFormat.ETC2_RGBA8,TranscodeFormat.ETC2_RGBA);
-                alphaFormatLegacyDict.Add(TextureFormat.ETC2_RGBA1,TranscodeFormat.ETC2_RGBA); // Not sure if this works
+
+                // alphaFormatLegacyDict.Add(TextureFormat.ETC2_RGBA1,TranscodeFormat.ETC2_RGBA); // Does not work; transcodes 8-bit alpha
+
                 alphaFormatLegacyDict.Add(TextureFormat.ASTC_4x4,TranscodeFormat.ASTC_4x4_RGBA);
                 alphaFormatLegacyDict.Add(TextureFormat.DXT5,TranscodeFormat.BC3_RGBA);
                 // alphaFormatLegacyDict.Add(TextureFormat.ETC2_RGBA8,TranscodeFormat.ATC_RGBA); // Not sure if this works
