@@ -41,8 +41,11 @@ namespace KtxUnity {
                 opaqueFormatDict.Add(GraphicsFormat.RGB_PVRTC_4Bpp_SRGB,TranscodeFormat.PVRTC1_4_RGB);
                 opaqueFormatDict.Add(GraphicsFormat.RGB_ETC_UNorm,TranscodeFormat.ETC1_RGB);
                 opaqueFormatDict.Add(GraphicsFormat.RGBA_DXT1_SRGB,TranscodeFormat.BC1_RGB);
-                opaqueFormatDict.Add(GraphicsFormat.R_BC4_UNorm,TranscodeFormat.BC4_R);
-                opaqueFormatDict.Add(GraphicsFormat.RG_BC5_UNorm,TranscodeFormat.BC5_RG);
+
+                // Not supported via KTX atm
+                // opaqueFormatDict.Add(GraphicsFormat.R_BC4_UNorm,TranscodeFormat.BC4_R);
+                // opaqueFormatDict.Add(GraphicsFormat.RG_BC5_UNorm,TranscodeFormat.BC5_RG);
+
                 // opaqueFormatDict.Add(GraphicsFormat.?,TranscodeFormat.ATC_RGB);
                 // opaqueFormatDict.Add(GraphicsFormat.?,TranscodeFormat.FXT1_RGB);
                 // opaqueFormatDict.Add(GraphicsFormat.?,TranscodeFormat.PVRTC2_4_RGB);
@@ -79,8 +82,11 @@ namespace KtxUnity {
                 opaqueFormatLegacyDict.Add(TextureFormat.PVRTC_RGB4,TranscodeFormat.PVRTC1_4_RGB);
                 opaqueFormatLegacyDict.Add(TextureFormat.ETC_RGB4,TranscodeFormat.ETC1_RGB);
                 opaqueFormatLegacyDict.Add(TextureFormat.DXT1,TranscodeFormat.BC1_RGB);
-                opaqueFormatLegacyDict.Add(TextureFormat.BC4,TranscodeFormat.BC4_R);
-                opaqueFormatLegacyDict.Add(TextureFormat.BC5,TranscodeFormat.BC5_RG);
+
+                // Not supported via KTX atm
+                // opaqueFormatLegacyDict.Add(TextureFormat.BC4,TranscodeFormat.BC4_R);
+                // opaqueFormatLegacyDict.Add(TextureFormat.BC5,TranscodeFormat.BC5_RG);
+                
                 // opaqueFormatLegacyDict.Add(TextureFormat.ETC_RGB4,TranscodeFormat.ATC_RGB);//Not sure if it works
                 // opaqueFormatLegacyDict.Add(TextureFormat.?,TranscodeFormat.FXT1_RGB);
                 // opaqueFormatLegacyDict.Add(TextureFormat.PVRTC_RGB4?,TranscodeFormat.PVRTC2_4_RGB);
