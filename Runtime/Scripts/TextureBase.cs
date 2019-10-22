@@ -103,14 +103,8 @@ namespace KtxUnity {
             }
         }
 
-        protected virtual bool GetFormat(
-            IMetaData meta,
-            ILevelInfo li,
-            out GraphicsFormat graphicsFormat,
-            out TextureFormat? textureFormat,
-            out TranscodeFormat transF
-        ) {
-            return TranscodeFormatHelper.GetFormatsForImage(meta,li,out graphicsFormat,out textureFormat,out transF);
+        protected virtual TranscodeFormatTuple? GetFormat( IMetaData meta, ILevelInfo li ) {
+            return TranscodeFormatHelper.GetFormatsForImage(meta,li);
         }
     }
 }

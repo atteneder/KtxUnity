@@ -32,17 +32,12 @@ namespace KtxUnity {
                 // TODO: Maybe do this somewhere more central
                 TranscodeFormatHelper.Init();
 
-                GraphicsFormat gf;
-                TextureFormat? tf;
-                TranscodeFormat transF;
+                var formats = GetFormat(ktx,ktx);
 
-                if(GetFormat(ktx,ktx,out gf,out tf,out transF)) {
+                if(formats.HasValue) {
+                    var gf = formats.Value.format;
 #if KTX_VERBOSE
-                    if(tf.HasValue) {
-                        Debug.LogFormat("Transcode to TextureFormat {0} ({1})",tf.Value,transF);
-                    } else {
-                        Debug.LogFormat("Transcode to GraphicsFormat {0} ({1})",gf,transF);
-                    }
+                    Debug.LogFormat("Transcode to GraphicsFormat {0} ({1})",gf,formats.Value.transcodeFormat);
 #endif
                     Profiler.BeginSample("KtxTranscode");
 
@@ -50,7 +45,7 @@ namespace KtxUnity {
                     
                     var jobHandle = ktx.LoadBytesJob(
                         ref job,
-                        transF
+                        formats.Value.transcodeFormat
                         );
 
                     Profiler.EndSample();
@@ -64,20 +59,13 @@ namespace KtxUnity {
                         Profiler.BeginSample("LoadBytesRoutineGPUupload");
                         uint width = ktx.baseWidth;
                         uint height = ktx.baseHeight;
-                        
-                        if(tf.HasValue) {
-                            if(tf== TextureFormat.DXT5 && !ktx.hasAlpha) {
-                                // ktx library automatically decides to use the smaller DXT1 instead of DXT5 if no alpha
-                                tf = TextureFormat.DXT1;
-                            }
-                            texture = new Texture2D((int)width,(int)height,tf.Value,false);
-                        } else {
-                            if(gf== GraphicsFormat.RGBA_DXT5_SRGB && !ktx.hasAlpha) {
-                                // ktx library automatically decides to use the smaller DXT1 instead of DXT5 if no alpha
-                                gf = GraphicsFormat.RGBA_DXT1_SRGB;
-                            }
-                            texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
+
+                        if(formats.Value.format== GraphicsFormat.RGBA_DXT5_SRGB && !ktx.hasAlpha) {
+                            // ktx library automatically decides to use the smaller DXT1 instead of DXT5 if no alpha
+                            gf = GraphicsFormat.RGBA_DXT1_SRGB;
                         }
+                        texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
+                        
                         try {
                             ktx.LoadRawTextureData(texture);
                             texture.Apply();

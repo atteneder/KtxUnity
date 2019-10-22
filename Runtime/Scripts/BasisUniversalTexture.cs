@@ -39,23 +39,11 @@ namespace KtxUnity {
             if(transcoder.Open(data)) {
                 var meta = transcoder.LoadMetaData();
 
-                GraphicsFormat gf;
-                TextureFormat? tf;
-                TranscodeFormat transF;
+                var formats = GetFormat( meta, meta.images[imageIndex].levels[0] );
 
-                if(GetFormat(
-                    meta,
-                    meta.images[imageIndex].levels[0],
-                    out gf,
-                    out tf,
-                    out transF
-                )) {
+                if(formats.HasValue) {
 #if KTX_VERBOSE
-                    if(tf.HasValue) {
-                        Debug.LogFormat("Transcode to TextureFormat {0} ({1})",tf.Value,transF);
-                    } else {
-                        Debug.LogFormat("Transcode to GraphicsFormat {0} ({1})",gf,transF);
-                    }
+                    Debug.LogFormat("Transcode to GraphicsFormat {0} ({1})",formats.Value.format,formats.Value.transcodeFormat);
 #endif
                     Profiler.BeginSample("BasisUniversalJob");
                     var job = new BasisUniversalJob();
@@ -69,7 +57,7 @@ namespace KtxUnity {
                         ref job,
                         transcoder,
                         data,
-                        transF
+                        formats.Value.transcodeFormat
                         );
 
                     Profiler.EndSample();
@@ -84,11 +72,7 @@ namespace KtxUnity {
                         uint width;
                         uint height;
                         meta.GetSize(out width,out height);
-                        if(tf.HasValue) {
-                            texture = new Texture2D((int)width,(int)height,tf.Value,false);
-                        } else {
-                            texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
-                        }
+                        texture = new Texture2D((int)width,(int)height,formats.Value.format,TextureCreationFlags.None);
                         texture.LoadRawTextureData(job.textureData);
                         texture.Apply();
                         Profiler.EndSample();
