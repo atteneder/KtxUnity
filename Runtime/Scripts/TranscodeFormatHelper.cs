@@ -85,14 +85,11 @@ namespace KtxUnity {
                 allFormats = new List<FormatInfo>();
                 
                 // Add all formats into the List ordered. First supported match will be used.
-                // This particular order is based on memory size
+                // This particular order is based on memory size (1st degree)
+                // and a combination of quality and transcode speed (2nd degree)
+                // source <http://richg42.blogspot.com/2018/05/basis-universal-gpu-texture-format.html>
 
                 // Compressed
-                allFormats.Add( new FormatInfo(
-                    TextureFeatures.None,
-                    GraphicsFormat.RGB_PVRTC_4Bpp_SRGB,
-                    TranscodeFormat.PVRTC1_4_RGB));
-
                 allFormats.Add( new FormatInfo(
                     TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.RGB_ETC_UNorm,
@@ -103,16 +100,21 @@ namespace KtxUnity {
                     GraphicsFormat.RGBA_DXT1_SRGB,
                     TranscodeFormat.BC1_RGB));
 
-                // Compressed with alpha channel
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
-                    GraphicsFormat.RGBA_BC7_SRGB,
-                    TranscodeFormat.BC7_M5_RGBA));
+                    TextureFeatures.None,
+                    GraphicsFormat.RGB_PVRTC_4Bpp_SRGB,
+                    TranscodeFormat.PVRTC1_4_RGB));
 
+                // Compressed with alpha channel
                 allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel,
                     GraphicsFormat.RGBA_PVRTC_4Bpp_SRGB,
                     TranscodeFormat.PVRTC1_4_RGBA));
+
+                allFormats.Add( new FormatInfo(
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
+                    GraphicsFormat.RGBA_ASTC4X4_SRGB,
+                    TranscodeFormat.ASTC_4x4_RGBA));
 
                 allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
@@ -121,8 +123,8 @@ namespace KtxUnity {
 
                 allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
-                    GraphicsFormat.RGBA_ASTC4X4_SRGB,
-                    TranscodeFormat.ASTC_4x4_RGBA));
+                    GraphicsFormat.RGBA_BC7_SRGB,
+                    TranscodeFormat.BC7_M5_RGBA));
 
                 allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
