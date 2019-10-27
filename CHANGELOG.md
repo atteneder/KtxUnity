@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.4.0] - Unreleased
 ### Changed
 - Renamed project to KtxUnity
+- Using less memory by freeing up texture after GPU upload
 ### Added
 - Support for loading KTX 2.0 files with Basis Universal super-compression
 

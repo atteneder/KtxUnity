@@ -74,7 +74,7 @@ namespace KtxUnity {
                         meta.GetSize(out width,out height);
                         texture = new Texture2D((int)width,(int)height,formats.Value.format,TextureCreationFlags.None);
                         texture.LoadRawTextureData(job.textureData);
-                        texture.Apply();
+                        texture.Apply(false,true);
                         Profiler.EndSample();
                     } else {
                         Debug.LogError(ERR_MSG_TRANSCODE_FAILED);

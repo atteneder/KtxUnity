@@ -68,7 +68,6 @@ namespace KtxUnity {
                         
                         try {
                             ktx.LoadRawTextureData(texture);
-                            texture.Apply();
                         }
                         catch (UnityException) {
                             Debug.LogError(ERR_MSG_TRANSCODE_FAILED);

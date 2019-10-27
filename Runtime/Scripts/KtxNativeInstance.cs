@@ -161,6 +161,7 @@ namespace KtxUnity {
             uint length;
             ktx_get_data(nativeReference,out data,out length);
             texture.LoadRawTextureData((IntPtr)data,(int)length);
+            texture.Apply(false,true);
         }
 
         public unsafe JobHandle LoadBytesJob(
