@@ -81,6 +81,7 @@ namespace KtxUnity {
                     job.result.Dispose();
                 }
             }
+            ktx.Unload();
             OnTextureLoaded(texture);
         }
     }

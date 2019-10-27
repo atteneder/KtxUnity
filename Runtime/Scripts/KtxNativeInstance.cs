@@ -145,7 +145,7 @@ namespace KtxUnity {
         }
         //*/
 
-        public unsafe bool Load(NativeArray<byte> data) {
+        unsafe bool Load(NativeArray<byte> data) {
             var src = NativeArrayUnsafeUtility.GetUnsafePtr(data);
             KtxErrorCode status;
             nativeReference = ktx_load_ktx(src, data.Length, out status);
@@ -179,6 +179,20 @@ namespace KtxUnity {
             return jobHandle;
         }
 
+        /// <summary>
+        /// Removes the native KTX object and frees up the memory
+        /// </summary>
+        public void Unload() {
+            if(valid) {
+                ktx_unload_ktx(nativeReference);
+                nativeReference = IntPtr.Zero;
+            }
+        }
+
+        ~KtxNativeInstance() {
+            Unload();
+        }
+
         [DllImport(INTERFACE_DLL)]
         unsafe static extern System.IntPtr ktx_load_ktx(void * data, int length, out KtxErrorCode status);
 
@@ -195,6 +209,9 @@ namespace KtxUnity {
 
         [DllImport(INTERFACE_DLL)]
         unsafe static extern void ktx_get_data(System.IntPtr ktxTexture, out byte* data, out uint length);
+
+        [DllImport(INTERFACE_DLL)]
+        static extern void ktx_unload_ktx(System.IntPtr ktxTexture);
 
         /*
         [DllImport(INTERFACE_DLL)]
@@ -229,9 +246,6 @@ namespace KtxUnity {
 
         [DllImport(INTERFACE_DLL)]
         static extern void ktx_get_orientation ( System.IntPtr ktxTexture, out KtxOrientation x );
-
-        [DllImport(INTERFACE_DLL)]
-        static extern int ktx_unload_ktx(System.IntPtr ktxTexture);
         //*/
     }
 } 
