@@ -38,7 +38,7 @@ namespace KtxUnity {
         {
             initialized=true;
             TranscodeFormatHelper.Init();
-            aa_basis_init();
+            ktx_basisu_basis_init();
             transcoderCountAvailable = UnityEngine.SystemInfo.processorCount;
         }
         
@@ -53,7 +53,7 @@ namespace KtxUnity {
 #endif
             if(transcoderCountAvailable>0) {
                 transcoderCountAvailable--;
-                return new BasisUniversalTranscoderInstance(aa_create_basis());
+                return new BasisUniversalTranscoderInstance(ktx_basisu_create_basis());
             } else {
                 return null;
             }
@@ -93,9 +93,9 @@ namespace KtxUnity {
         }
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static extern void aa_basis_init();
+        private static extern void ktx_basisu_basis_init();
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static unsafe extern System.IntPtr aa_create_basis();
+        private static unsafe extern System.IntPtr ktx_basisu_create_basis();
     }
 }

@@ -32,7 +32,7 @@ namespace KtxUnity {
 
         public unsafe bool Open(NativeArray<byte> data) {
             void* src = NativeArrayUnsafeUtility.GetUnsafePtr(data);
-            bool success = aa_open_basis(nativeReference,src,data.Length);
+            bool success = ktx_basisu_open_basis(nativeReference,src,data.Length);
             if(!success) {
                 Debug.LogError("Couldn't validate BasisU header!");
             }
@@ -40,7 +40,7 @@ namespace KtxUnity {
         }
 
         public unsafe bool Open( void* src, int size ) {
-            bool success = aa_open_basis(nativeReference,src,size);
+            bool success = ktx_basisu_open_basis(nativeReference,src,size);
             if(!success) {
                 Debug.LogError("Couldn't validate BasisU header!");
             }
@@ -70,35 +70,35 @@ namespace KtxUnity {
         }
 
         public void Close() {
-            aa_close_basis(nativeReference);
+            ktx_basisu_close_basis(nativeReference);
         }
 
         public bool GetHasAlpha() {
-            return aa_getHasAlpha(nativeReference);
+            return ktx_basisu_getHasAlpha(nativeReference);
         }
 
         public uint GetImageCount() {
-            return aa_getNumImages(nativeReference);
+            return ktx_basisu_getNumImages(nativeReference);
         }
 
         public uint GetLevelCount(uint imageIndex) {
-            return aa_getNumLevels(nativeReference,imageIndex);
+            return ktx_basisu_getNumLevels(nativeReference,imageIndex);
         }
 
         public void GetImageSize( out uint width, out uint height, System.UInt32 image_index = 0, System.UInt32 level_index = 0) {
-            width = aa_getImageWidth(nativeReference,image_index,level_index);
-            height = aa_getImageHeight(nativeReference,image_index,level_index);
+            width = ktx_basisu_getImageWidth(nativeReference,image_index,level_index);
+            height = ktx_basisu_getImageHeight(nativeReference,image_index,level_index);
         }
 
         public uint GetImageTranscodedSize(uint imageIndex, uint levelIndex, TranscodeFormat format) {
-            return aa_getImageTranscodedSizeInBytes(nativeReference,imageIndex,levelIndex,(uint)format);
+            return ktx_basisu_getImageTranscodedSizeInBytes(nativeReference,imageIndex,levelIndex,(uint)format);
         }
 
         public unsafe bool Transcode(uint imageIndex,uint levelIndex,TranscodeFormat format,out byte[] transcodedData ) {
             Profiler.BeginSample("BasisU.Transcode");
             transcodedData = null;
 
-            if(!aa_startTranscoding(nativeReference)) {
+            if(!ktx_basisu_startTranscoding(nativeReference)) {
                 Profiler.EndSample();
                 return false;
             }
@@ -108,7 +108,7 @@ namespace KtxUnity {
 
             bool result = false;
             fixed( void* dst = &(data[0]) ) {
-                result = aa_transcodeImage(nativeReference,dst,size,imageIndex,levelIndex,(uint)format,0,0);
+                result = ktx_basisu_transcodeImage(nativeReference,dst,size,imageIndex,levelIndex,(uint)format,0,0);
             }
             transcodedData = data;
             Profiler.EndSample();
@@ -116,40 +116,40 @@ namespace KtxUnity {
         }
 
         ~BasisUniversalTranscoderInstance() {
-            aa_delete_basis(nativeReference);
+            ktx_basisu_delete_basis(nativeReference);
         }
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static unsafe extern bool aa_open_basis( IntPtr basis, void * data, int length );
+        private static unsafe extern bool ktx_basisu_open_basis( IntPtr basis, void * data, int length );
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static unsafe extern void aa_close_basis( IntPtr basis );
+        private static unsafe extern void ktx_basisu_close_basis( IntPtr basis );
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static extern void aa_delete_basis( IntPtr basis );
+        private static extern void ktx_basisu_delete_basis( IntPtr basis );
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static extern bool aa_getHasAlpha( IntPtr basis );
+        private static extern bool ktx_basisu_getHasAlpha( IntPtr basis );
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static extern System.UInt32 aa_getNumImages( IntPtr basis );
+        private static extern System.UInt32 ktx_basisu_getNumImages( IntPtr basis );
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static extern System.UInt32 aa_getNumLevels( IntPtr basis, System.UInt32 image_index);
+        private static extern System.UInt32 ktx_basisu_getNumLevels( IntPtr basis, System.UInt32 image_index);
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static extern System.UInt32 aa_getImageWidth( IntPtr basis, System.UInt32 image_index, System.UInt32 level_index);
+        private static extern System.UInt32 ktx_basisu_getImageWidth( IntPtr basis, System.UInt32 image_index, System.UInt32 level_index);
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static extern System.UInt32 aa_getImageHeight( IntPtr basis, System.UInt32 image_index, System.UInt32 level_index);
+        private static extern System.UInt32 ktx_basisu_getImageHeight( IntPtr basis, System.UInt32 image_index, System.UInt32 level_index);
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static extern System.UInt32 aa_getImageTranscodedSizeInBytes( IntPtr basis, System.UInt32 image_index, System.UInt32 level_index, System.UInt32 format);
+        private static extern System.UInt32 ktx_basisu_getImageTranscodedSizeInBytes( IntPtr basis, System.UInt32 image_index, System.UInt32 level_index, System.UInt32 format);
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static extern bool aa_startTranscoding( IntPtr basis );
+        private static extern bool ktx_basisu_startTranscoding( IntPtr basis );
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static unsafe extern bool aa_transcodeImage( IntPtr basis, void * dst, uint dst_size, System.UInt32 image_index, System.UInt32 level_index, System.UInt32 format, System.UInt32 pvrtc_wrap_addressing, System.UInt32 get_alpha_for_opaque_formats);
+        private static unsafe extern bool ktx_basisu_transcodeImage( IntPtr basis, void * dst, uint dst_size, System.UInt32 image_index, System.UInt32 level_index, System.UInt32 format, System.UInt32 pvrtc_wrap_addressing, System.UInt32 get_alpha_for_opaque_formats);
     }
 }

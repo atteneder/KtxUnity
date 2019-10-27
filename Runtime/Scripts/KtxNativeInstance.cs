@@ -57,7 +57,7 @@ namespace KtxUnity {
 
         public bool hasAlpha {
             get {
-                return aa_ktx_get_has_alpha(nativeReference);
+                return ktx_get_has_alpha(nativeReference);
             }
         }
 
@@ -75,71 +75,71 @@ namespace KtxUnity {
 
         public uint baseWidth {
             get {
-                return aa_ktx_get_baseWidth(nativeReference);
+                return ktx_get_baseWidth(nativeReference);
             }
         }
 
         public uint baseHeight {
             get {
-                return aa_ktx_get_baseHeight(nativeReference);
+                return ktx_get_baseHeight(nativeReference);
             }
         }
 
         /*
         KtxClassId classId {
             get {
-                return aa_ktx_get_classId(nativeReference);
+                return ktx_get_classId(nativeReference);
             }
         }
         bool isArray {
             get {
-                return aa_ktx_get_isArray(nativeReference);
+                return ktx_get_isArray(nativeReference);
             }
         }
         bool isCubemap {
             get {
-                return aa_ktx_get_isCubemap(nativeReference);
+                return ktx_get_isCubemap(nativeReference);
             }
         }
         bool isCompressed {
             get {
-                return aa_ktx_get_isCompressed(nativeReference);
+                return ktx_get_isCompressed(nativeReference);
             }
         }
         uint numDimensions {
             get {
-                return aa_ktx_get_numDimensions(nativeReference);
+                return ktx_get_numDimensions(nativeReference);
             }
         }
         uint numLevels {
             get {
-                return aa_ktx_get_numLevels(nativeReference);
+                return ktx_get_numLevels(nativeReference);
             }
         }
         uint numLayers {
             get {
-                return aa_ktx_get_numLayers(nativeReference);
+                return ktx_get_numLayers(nativeReference);
             }
         }
         uint numFaces {
             get {
-                return aa_ktx_get_numFaces(nativeReference);
+                return ktx_get_numFaces(nativeReference);
             }
         }
         uint vkFormat {
             get {
-                return aa_ktx_get_vkFormat(nativeReference);
+                return ktx_get_vkFormat(nativeReference);
             }
         }
         KtxSupercmpScheme supercompressionScheme {
             get {
-                return aa_ktx_get_supercompressionScheme(nativeReference);
+                return ktx_get_supercompressionScheme(nativeReference);
             }
         }
         KtxOrientation orientation {
             get {
                 KtxOrientation orientation;
-                aa_ktx_get_orientation(nativeReference,out orientation);
+                ktx_get_orientation(nativeReference,out orientation);
                 return orientation;
             }
         }
@@ -148,7 +148,7 @@ namespace KtxUnity {
         public unsafe bool Load(NativeArray<byte> data) {
             var src = NativeArrayUnsafeUtility.GetUnsafePtr(data);
             KtxErrorCode status;
-            nativeReference = aa_load_ktx(src, data.Length, out status);
+            nativeReference = ktx_load_ktx(src, data.Length, out status);
             if(status!=KtxErrorCode.KTX_SUCCESS) {
                 Debug.LogErrorFormat("KTX error code {0}",status);
                 return false;
@@ -157,10 +157,10 @@ namespace KtxUnity {
         }
 
         public unsafe void LoadRawTextureData(Texture2D texture) {
-            System.IntPtr data;
+            byte* data;
             uint length;
-            aa_ktx_get_data(nativeReference,out data,out length);
-            texture.LoadRawTextureData(data,(int)length);
+            ktx_get_data(nativeReference,out data,out length);
+            texture.LoadRawTextureData((IntPtr)data,(int)length);
         }
 
         public unsafe JobHandle LoadBytesJob(
@@ -180,58 +180,58 @@ namespace KtxUnity {
         }
 
         [DllImport(INTERFACE_DLL)]
-        unsafe static extern System.IntPtr aa_load_ktx(void * data, int length, out KtxErrorCode status);
+        unsafe static extern System.IntPtr ktx_load_ktx(void * data, int length, out KtxErrorCode status);
 
         [DllImport(INTERFACE_DLL)]
-        static extern uint aa_ktx_get_baseWidth ( System.IntPtr ktxTexture );
+        static extern uint ktx_get_baseWidth ( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        static extern uint aa_ktx_get_baseHeight ( System.IntPtr ktxTexture );
+        static extern uint ktx_get_baseHeight ( System.IntPtr ktxTexture );
         [DllImport(INTERFACE_DLL)]
-         static extern bool aa_ktx_get_has_alpha( System.IntPtr ktxTexture );
+         static extern bool ktx_get_has_alpha( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        public static extern KtxErrorCode aa_transcode_ktx(System.IntPtr ktxTexture, TranscodeFormat outputFormat, uint transcodeFlags);
+        public static extern KtxErrorCode ktx_transcode_ktx(System.IntPtr ktxTexture, TranscodeFormat outputFormat, uint transcodeFlags);
 
         [DllImport(INTERFACE_DLL)]
-        unsafe static extern void aa_ktx_get_data(System.IntPtr ktxTexture, out System.IntPtr data, out uint length);
+        unsafe static extern void ktx_get_data(System.IntPtr ktxTexture, out byte* data, out uint length);
 
         /*
         [DllImport(INTERFACE_DLL)]
-        static extern KtxClassId aa_ktx_get_classId ( System.IntPtr ktxTexture );
+        static extern KtxClassId ktx_get_classId ( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        static extern bool aa_ktx_get_isArray ( System.IntPtr ktxTexture );
+        static extern bool ktx_get_isArray ( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        static extern bool aa_ktx_get_isCubemap ( System.IntPtr ktxTexture );
+        static extern bool ktx_get_isCubemap ( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        static extern bool aa_ktx_get_isCompressed ( System.IntPtr ktxTexture );
+        static extern bool ktx_get_isCompressed ( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        static extern uint aa_ktx_get_numDimensions ( System.IntPtr ktxTexture );
+        static extern uint ktx_get_numDimensions ( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        static extern uint aa_ktx_get_numLevels ( System.IntPtr ktxTexture );
+        static extern uint ktx_get_numLevels ( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        static extern uint aa_ktx_get_numLayers ( System.IntPtr ktxTexture );
+        static extern uint ktx_get_numLayers ( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        static extern uint aa_ktx_get_numFaces ( System.IntPtr ktxTexture );
+        static extern uint ktx_get_numFaces ( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        static extern uint aa_ktx_get_vkFormat ( System.IntPtr ktxTexture );
+        static extern uint ktx_get_vkFormat ( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        static extern KtxSupercmpScheme aa_ktx_get_supercompressionScheme ( System.IntPtr ktxTexture );
+        static extern KtxSupercmpScheme ktx_get_supercompressionScheme ( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        static extern void aa_ktx_get_orientation ( System.IntPtr ktxTexture, out KtxOrientation x );
+        static extern void ktx_get_orientation ( System.IntPtr ktxTexture, out KtxOrientation x );
 
         [DllImport(INTERFACE_DLL)]
-        static extern int aa_unload_ktx(System.IntPtr ktxTexture);
+        static extern int ktx_unload_ktx(System.IntPtr ktxTexture);
         //*/
     }
 } 

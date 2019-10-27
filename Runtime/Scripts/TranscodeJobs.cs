@@ -46,17 +46,17 @@ namespace KtxUnity {
 
         public void Execute()
         {
-            bool success = aa_startTranscoding(nativeReference);
+            bool success = ktx_basisu_startTranscoding(nativeReference);
             void* textureDataPtr = NativeArrayUnsafeUtility.GetUnsafePtr<byte>(textureData);
-            success = success && aa_transcodeImage(nativeReference,textureDataPtr,size,imageIndex,levelIndex,(uint)format,0,0);
+            success = success && ktx_basisu_transcodeImage(nativeReference,textureDataPtr,size,imageIndex,levelIndex,(uint)format,0,0);
             result[0] = success;
         }
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static extern bool aa_startTranscoding( IntPtr basis );
+        private static extern bool ktx_basisu_startTranscoding( IntPtr basis );
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
-        private static unsafe extern bool aa_transcodeImage( IntPtr basis, void * dst, uint dst_size, System.UInt32 image_index, System.UInt32 level_index, System.UInt32 format, System.UInt32 pvrtc_wrap_addressing, System.UInt32 get_alpha_for_opaque_formats);
+        private static unsafe extern bool ktx_basisu_transcodeImage( IntPtr basis, void * dst, uint dst_size, System.UInt32 image_index, System.UInt32 level_index, System.UInt32 format, System.UInt32 pvrtc_wrap_addressing, System.UInt32 get_alpha_for_opaque_formats);
     }
 
     public unsafe struct KtxTranscodeJob : IJob {
@@ -72,7 +72,7 @@ namespace KtxUnity {
         public TranscodeFormat outputFormat;
 
         public void Execute() {
-            result[0] = KtxNativeInstance.aa_transcode_ktx(
+            result[0] = KtxNativeInstance.ktx_transcode_ktx(
                 nativeReference,
                 outputFormat,
                 0 // transcodeFlags
