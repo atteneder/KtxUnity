@@ -107,11 +107,6 @@ namespace KtxUnity {
 
                 // Compressed with alpha channel
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel,
-                    GraphicsFormat.RGBA_PVRTC_4Bpp_SRGB,
-                    TranscodeFormat.PVRTC1_4_RGBA));
-
-                allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
                     GraphicsFormat.RGBA_ASTC4X4_SRGB,
                     TranscodeFormat.ASTC_4x4_RGBA));
@@ -130,6 +125,11 @@ namespace KtxUnity {
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
                     GraphicsFormat.RGBA_DXT5_SRGB,
                     TranscodeFormat.BC3_RGBA));
+
+                allFormats.Add( new FormatInfo(
+                    TextureFeatures.AlphaChannel,
+                    GraphicsFormat.RGBA_PVRTC_4Bpp_SRGB,
+                    TranscodeFormat.PVRTC1_4_RGBA));
 
                 // Uncompressed
                 allFormats.Add( new FormatInfo(
