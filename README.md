@@ -6,14 +6,14 @@ Following build targets are supported
 
 - WebGL
 - iOS
-- Android (arm64, armv7a and x86)
+- Android (arm64 and armv7a)
 - Windows (32 and 64 bit)
-- macOS
+- macOS (64 bit)
 - Linux (32 and 64 bit)
 
 ![Screenshot of loaded fish textures](https://github.com/atteneder/BasisUniversalUnityDemo/raw/master/Images/fishes.png "Lots of fish basis universal textures loaded via BasisUniversalUnity")
 
-Special thanks to [Khronos](https://www.khronos.org), [Binomial](http://www.binomial.info) and everyone involved in making KTX and Basis Universal available!
+Thanks to [Khronos](https://www.khronos.org), [Binomial](http://www.binomial.info) and everyone involved in making KTX and Basis Universal available!
 
 ## Installing
 
@@ -22,7 +22,7 @@ You have to manually add the package's URL into your [project manifest](https://
 Inside your Unity project there's the folder `Packages` containing a file called `manifest.json`. You have to open it and add the following line inside the `dependencies` category:
 
 ```json
-"com.atteneder.ktx": "https://github.com/atteneder/KtxUnity.git",
+"com.atteneder.ktx": "https://gitlab.com/atteneder/ktxunity.git",
 ```
 
 It should look something like this:
@@ -30,7 +30,7 @@ It should look something like this:
 ```json
 {
   "dependencies": {
-    "com.atteneder.ktx": "https://github.com/atteneder/KtxUnity.git",
+    "com.atteneder.ktx": "https://gitlab.com/atteneder/ktxunity.git",
     "com.unity.package-manager-ui": "2.1.2",
     "com.unity.modules.unitywebrequest": "1.0.0"
     ...
@@ -38,7 +38,7 @@ It should look something like this:
 }
 ```
 
-Next time you open your project in Unity, it will download the package automatically. There's more detail about how to add packages via GIT URLs in the [Unity documentation](https://docs.unity3d.com/Manual/upm-git.html).
+Next time you open your project in Unity, it will download the package automatically. You have to have a GIT LFS client (large file support) installed on your system. Otherwise you will get an error that the native library file (dll on Windows) is corrupt. There's more detail about how to add packages via GIT URLs in the [Unity documentation](https://docs.unity3d.com/Manual/upm-git.html).
 
 ## Using
 
@@ -84,7 +84,7 @@ public class CustomBasisUniversalUrlLoader : TextureUrlLoader<BasisUniversalText
 }
 ```
 
-Devs who want to create advanced loading code should look into classes `KtxTexture`/`BasisUniversalTexture` and `TextureBase` directly.
+Developers who want to create advanced loading code should look into classes `KtxTexture`/`BasisUniversalTexture` and `TextureBase` directly.
 
 ## Support
 
