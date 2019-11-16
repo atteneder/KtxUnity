@@ -95,7 +95,7 @@ namespace KtxUnity {
             na.Dispose();
         }
 
-        protected abstract IEnumerator LoadBytesRoutine( NativeArray<byte> data );
+        public abstract IEnumerator LoadBytesRoutine( NativeArray<byte> data );
 
         protected void OnTextureLoaded(Texture2D texture) {
             if(onTextureLoaded!=null) {
