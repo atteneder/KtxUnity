@@ -72,7 +72,7 @@ namespace KtxUnity {
         public unsafe static JobHandle LoadBytesJob(
             ref BasisUniversalJob job,
             BasisUniversalTranscoderInstance basis,
-            NativeArray<byte> basisuData,
+            NativeSlice<byte> basisuData,
             TranscodeFormat transF
         ) {
             

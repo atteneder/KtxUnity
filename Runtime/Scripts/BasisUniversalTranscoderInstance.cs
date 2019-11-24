@@ -30,8 +30,8 @@ namespace KtxUnity {
             this.nativeReference = nativeReference;
         }
 
-        public unsafe bool Open(NativeArray<byte> data) {
-            void* src = NativeArrayUnsafeUtility.GetUnsafePtr(data);
+        public unsafe bool Open(NativeSlice<byte> data) {
+            void* src = data.GetUnsafeReadOnlyPtr();
             bool success = ktx_basisu_open_basis(nativeReference,src,data.Length);
             if(!success) {
                 Debug.LogError("Couldn't validate BasisU header!");

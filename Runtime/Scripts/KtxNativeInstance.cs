@@ -45,7 +45,7 @@ namespace KtxUnity {
 
         public IntPtr nativeReference;
 
-        public KtxNativeInstance(NativeArray<byte> data) {
+        public KtxNativeInstance(NativeSlice<byte> data) {
             Load(data);
         }
 
@@ -145,8 +145,8 @@ namespace KtxUnity {
         }
         //*/
 
-        unsafe bool Load(NativeArray<byte> data) {
-            var src = NativeArrayUnsafeUtility.GetUnsafePtr(data);
+        unsafe bool Load(NativeSlice<byte> data) {
+            var src = data.GetUnsafeReadOnlyPtr();
             KtxErrorCode status;
             nativeReference = ktx_load_ktx(src, data.Length, out status);
             if(status!=KtxErrorCode.KTX_SUCCESS) {

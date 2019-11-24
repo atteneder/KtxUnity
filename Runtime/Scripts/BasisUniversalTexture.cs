@@ -23,7 +23,7 @@ namespace KtxUnity {
 
     public class BasisUniversalTexture : TextureBase
     {
-        public override IEnumerator LoadBytesRoutine(NativeArray<byte> data) {
+        public override IEnumerator LoadBytesRoutine(NativeSlice<byte> data) {
 
             uint imageIndex = 0;
 

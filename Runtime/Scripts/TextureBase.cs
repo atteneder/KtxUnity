@@ -56,7 +56,7 @@ namespace KtxUnity {
         /// </summary>
         /// <param name="data">Native buffer that holds the ktx/basisu file</param>
         /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
-        public void LoadFromBytes( NativeArray<byte> data, MonoBehaviour monoBehaviour ) {
+        public void LoadFromBytes( NativeSlice<byte> data, MonoBehaviour monoBehaviour ) {
             monoBehaviour.StartCoroutine(LoadBytesRoutine(data));
         }
 
@@ -95,7 +95,7 @@ namespace KtxUnity {
             na.Dispose();
         }
 
-        public abstract IEnumerator LoadBytesRoutine( NativeArray<byte> data );
+        public abstract IEnumerator LoadBytesRoutine( NativeSlice<byte> data );
 
         protected void OnTextureLoaded(Texture2D texture) {
             if(onTextureLoaded!=null) {

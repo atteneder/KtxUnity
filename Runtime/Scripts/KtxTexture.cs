@@ -21,7 +21,7 @@ using Unity.Collections;
 namespace KtxUnity {
     public class KtxTexture : TextureBase
     {
-        public override IEnumerator LoadBytesRoutine(NativeArray<byte> data) {
+        public override IEnumerator LoadBytesRoutine(NativeSlice<byte> data) {
 
             Texture2D texture = null;
 
