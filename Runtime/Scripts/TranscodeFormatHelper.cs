@@ -97,7 +97,11 @@ namespace KtxUnity {
 
                 allFormats.Add( new FormatInfo(
                     TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
+#if UNITY_2018_3_OR_NEWER
                     GraphicsFormat.RGBA_DXT1_SRGB,
+#else
+                    GraphicsFormat.RGB_DXT1_SRGB,
+#endif
                     TranscodeFormat.BC1_RGB));
 
                 allFormats.Add( new FormatInfo(
