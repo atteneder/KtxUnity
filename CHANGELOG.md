@@ -9,6 +9,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for Universal Windows Platform (not verified/tested myself)
 ### Changed
 - `TextureBase.LoadBytesRoutine` is public now to allow deeper integration
+### Fixed
+- Ensured backwards compatibility with Unity 2018.2
 
 ## [0.4.0] - 2019-11-10
 ### Changed

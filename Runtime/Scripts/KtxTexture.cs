@@ -62,7 +62,11 @@ namespace KtxUnity {
 
                         if(formats.Value.format== GraphicsFormat.RGBA_DXT5_SRGB && !ktx.hasAlpha) {
                             // ktx library automatically decides to use the smaller DXT1 instead of DXT5 if no alpha
+#if UNITY_2018_3_OR_NEWER
                             gf = GraphicsFormat.RGBA_DXT1_SRGB;
+#else
+                            gf = GraphicsFormat.RGB_DXT1_SRGB;
+#endif
                         }
                         texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
                         
