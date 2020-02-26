@@ -82,6 +82,7 @@ namespace KtxUnity {
                     } else {
                         Debug.LogError(ERR_MSG_TRANSCODE_FAILED);
                     }
+                    job.sizes.Dispose();
                     job.offsets.Dispose();
                     job.textureData.Dispose();
                     job.result.Dispose();
