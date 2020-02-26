@@ -84,6 +84,11 @@ namespace KtxUnity {
                 return ktx_get_baseHeight(nativeReference);
             }
         }
+        public uint numLevels {
+            get {
+                return ktx_get_numLevels(nativeReference);
+            }
+        }
 
         /*
         KtxClassId classId {
@@ -111,11 +116,7 @@ namespace KtxUnity {
                 return ktx_get_numDimensions(nativeReference);
             }
         }
-        uint numLevels {
-            get {
-                return ktx_get_numLevels(nativeReference);
-            }
-        }
+        
         uint numLayers {
             get {
                 return ktx_get_numLayers(nativeReference);
@@ -214,6 +215,9 @@ namespace KtxUnity {
         [DllImport(INTERFACE_DLL)]
         static extern void ktx_unload_ktx(System.IntPtr ktxTexture);
 
+        [DllImport(INTERFACE_DLL)]
+        static extern uint ktx_get_numLevels ( System.IntPtr ktxTexture );
+
         /*
         [DllImport(INTERFACE_DLL)]
         static extern KtxClassId ktx_get_classId ( System.IntPtr ktxTexture );
@@ -229,9 +233,6 @@ namespace KtxUnity {
 
         [DllImport(INTERFACE_DLL)]
         static extern uint ktx_get_numDimensions ( System.IntPtr ktxTexture );
-
-        [DllImport(INTERFACE_DLL)]
-        static extern uint ktx_get_numLevels ( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
         static extern uint ktx_get_numLayers ( System.IntPtr ktxTexture );

@@ -78,10 +78,18 @@ namespace KtxUnity {
             
             Profiler.BeginSample("BasisU.LoadBytesJob");
             
-            var size = basis.GetImageTranscodedSize(0,0,transF);
+            var numLevels = basis.GetLevelCount(job.imageIndex);
+            var offsets = new NativeArray<uint>((int)numLevels,KtxNativeInstance.defaultAllocator);
+            uint size = 0;
+            for (uint i = 0; i < numLevels; i++)
+            {
+                offsets[(int)i] = size; 
+                size += basis.GetImageTranscodedSize(job.imageIndex,i,transF);
+            }
 
             job.format = transF;
             job.size = size;
+            job.offsets = offsets;
             job.nativeReference = basis.nativeReference;
             
             job.textureData = new NativeArray<byte>((int)size,KtxNativeInstance.defaultAllocator);

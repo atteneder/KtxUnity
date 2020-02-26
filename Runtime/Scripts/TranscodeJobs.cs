@@ -34,12 +34,12 @@ namespace KtxUnity {
 
         [ReadOnly]
         public uint size;
+        [ReadOnly]
+
+        public NativeArray<uint> offsets;
 
         [ReadOnly]
         public uint imageIndex;
-
-        [ReadOnly]
-        public uint levelIndex;
 
         [WriteOnly]
         public NativeArray<byte> textureData;
@@ -48,7 +48,11 @@ namespace KtxUnity {
         {
             bool success = ktx_basisu_startTranscoding(nativeReference);
             void* textureDataPtr = NativeArrayUnsafeUtility.GetUnsafePtr<byte>(textureData);
-            success = success && ktx_basisu_transcodeImage(nativeReference,textureDataPtr,size,imageIndex,levelIndex,(uint)format,0,0);
+            for (uint i = 0; i < offsets.Length; i++)
+            {
+                success = success && ktx_basisu_transcodeImage(nativeReference,(byte*)textureDataPtr+offsets[(int)i],size,imageIndex,i,(uint)format,0,0);
+                if(!success) break;
+            }
             result[0] = success;
         }
 

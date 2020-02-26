@@ -68,8 +68,12 @@ namespace KtxUnity {
                             gf = GraphicsFormat.RGB_DXT1_SRGB;
 #endif
                         }
-                        texture = new Texture2D((int)width,(int)height,gf,TextureCreationFlags.None);
-                        
+                        var flags = TextureCreationFlags.None;
+                        if(ktx.numLevels>1)
+                        {
+                            flags |= TextureCreationFlags.MipChain;
+                        }
+                        texture = new Texture2D((int)width,(int)height,gf,flags);
                         try {
                             ktx.LoadRawTextureData(texture);
                         }

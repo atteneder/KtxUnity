@@ -49,7 +49,6 @@ namespace KtxUnity {
                     var job = new BasisUniversalJob();
 
                     job.imageIndex = imageIndex;
-                    job.levelIndex = 0;
 
                     job.result = new NativeArray<bool>(1,KtxNativeInstance.defaultAllocator);
 
@@ -72,13 +71,18 @@ namespace KtxUnity {
                         uint width;
                         uint height;
                         meta.GetSize(out width,out height);
-                        texture = new Texture2D((int)width,(int)height,formats.Value.format,TextureCreationFlags.None);
+                        var flags = TextureCreationFlags.None;
+                        if(meta.images[imageIndex].levels.Length>1) {
+                            flags |= TextureCreationFlags.MipChain;
+                        }
+                        texture = new Texture2D((int)width,(int)height,formats.Value.format,flags);
                         texture.LoadRawTextureData(job.textureData);
                         texture.Apply(false,true);
                         Profiler.EndSample();
                     } else {
                         Debug.LogError(ERR_MSG_TRANSCODE_FAILED);
                     }
+                    job.offsets.Dispose();
                     job.textureData.Dispose();
                     job.result.Dispose();
                 }
