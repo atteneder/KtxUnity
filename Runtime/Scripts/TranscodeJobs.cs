@@ -50,7 +50,17 @@ namespace KtxUnity {
             void* textureDataPtr = NativeArrayUnsafeUtility.GetUnsafePtr<byte>(textureData);
             for (uint i = 0; i < offsets.Length; i++)
             {
-                success = success && ktx_basisu_transcodeImage(nativeReference,(byte*)textureDataPtr+offsets[(int)i],sizes[(int)i],imageIndex,i,(uint)format,0,0);
+                success = success &&
+                ktx_basisu_transcodeImage(
+                    nativeReference,
+                    (byte*)textureDataPtr+offsets[(int)i],
+                    sizes[(int)i],
+                    imageIndex,
+                    i,
+                    (uint)format,
+                    0,
+                    0
+                    );
                 if(!success) break;
             }
             result[0] = success;

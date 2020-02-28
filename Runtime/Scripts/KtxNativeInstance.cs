@@ -14,6 +14,8 @@
 
 using System.Runtime.InteropServices;
 using UnityEngine;
+using UnityEngine.Experimental.Rendering;
+using UnityEngine.Profiling;
 using Unity.Collections;
 using Unity.Collections.LowLevel.Unsafe;
 using Unity.Jobs;
@@ -157,12 +159,42 @@ namespace KtxUnity {
             return true;
         }
 
-        public unsafe void LoadRawTextureData(Texture2D texture) {
+        public unsafe Texture2D LoadTextureData(GraphicsFormat gf) {
+            Profiler.BeginSample("LoadTextureData");
             byte* data;
             uint length;
             ktx_get_data(nativeReference,out data,out length);
-            texture.LoadRawTextureData((IntPtr)data,(int)length);
+            bool mipmap = numLevels>1;
+
+            Profiler.BeginSample("CreateTexture2D");
+            var texture = new Texture2D(
+                (int)baseWidth,
+                (int)baseHeight,
+                gf,
+                mipmap ? TextureCreationFlags.MipChain : TextureCreationFlags.None
+                );
+            Profiler.EndSample();
+
+            if(mipmap) {
+                Profiler.BeginSample("MipMapCopy");
+                var reorderedData = new NativeArray<byte>((int)length,Allocator.Temp);
+                void * reorderedDataPtr = NativeArrayUnsafeUtility.GetUnsafePtr<byte>(reorderedData);
+                ktx_copy_data_levels_reverted(
+                    nativeReference,
+                    reorderedDataPtr,
+                    (uint)reorderedData.Length
+                    );
+                texture.LoadRawTextureData(reorderedData);
+                reorderedData.Dispose();
+                Profiler.EndSample();
+            } else {
+                Profiler.BeginSample("LoadRawTextureData");
+                texture.LoadRawTextureData((IntPtr)data,(int)length);
+                Profiler.EndSample();
+            }
             texture.Apply(false,true);
+            Profiler.EndSample();
+            return texture;
         }
 
         public unsafe JobHandle LoadBytesJob(
@@ -211,6 +243,8 @@ namespace KtxUnity {
 
         [DllImport(INTERFACE_DLL)]
         unsafe static extern void ktx_get_data(System.IntPtr ktxTexture, out byte* data, out uint length);
+        [DllImport(INTERFACE_DLL)]
+        unsafe static extern void ktx_copy_data_levels_reverted(System.IntPtr ktxTexture, void* destination, uint destinationLength);
 
         [DllImport(INTERFACE_DLL)]
         static extern void ktx_unload_ktx(System.IntPtr ktxTexture);
