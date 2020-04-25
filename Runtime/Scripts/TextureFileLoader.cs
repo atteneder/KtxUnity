@@ -16,6 +16,7 @@ namespace KtxUnity {
     public abstract class TextureFileLoader<TextureType> : TextureLoaderBase where TextureType:TextureBase,new()
     {
         public string filePath;
+        public bool linear;
 
         protected virtual void Start() {
             LoadFromStreamingAssets();
@@ -28,7 +29,7 @@ namespace KtxUnity {
         protected void LoadFromStreamingAssets(TextureType txt = null) {
             texture = txt==null ? new TextureType() : txt;
             texture.onTextureLoaded += OnTextureLoaded;
-            texture.LoadFromStreamingAssets(filePath,this);
+            texture.LoadFromStreamingAssets(filePath,this,linear);
         }
     }
 }

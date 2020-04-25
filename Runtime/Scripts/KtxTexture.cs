@@ -21,7 +21,7 @@ using Unity.Collections;
 namespace KtxUnity {
     public class KtxTexture : TextureBase
     {
-        public override IEnumerator LoadBytesRoutine(NativeSlice<byte> data) {
+        public override IEnumerator LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
 
             Texture2D texture = null;
 
@@ -32,7 +32,7 @@ namespace KtxUnity {
                 // TODO: Maybe do this somewhere more central
                 TranscodeFormatHelper.Init();
 
-                var formats = GetFormat(ktx,ktx);
+                var formats = GetFormat(ktx,ktx,linear);
 
                 if(formats.HasValue) {
                     var gf = formats.Value.format;

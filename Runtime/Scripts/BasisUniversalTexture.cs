@@ -23,7 +23,7 @@ namespace KtxUnity {
 
     public class BasisUniversalTexture : TextureBase
     {
-        public override IEnumerator LoadBytesRoutine(NativeSlice<byte> data) {
+        public override IEnumerator LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
 
             uint imageIndex = 0;
 
@@ -39,7 +39,7 @@ namespace KtxUnity {
             if(transcoder.Open(data)) {
                 var meta = transcoder.LoadMetaData();
 
-                var formats = GetFormat( meta, meta.images[imageIndex].levels[0] );
+                var formats = GetFormat( meta, meta.images[imageIndex].levels[0], linear );
 
                 if(formats.HasValue) {
 #if KTX_VERBOSE

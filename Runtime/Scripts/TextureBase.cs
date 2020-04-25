@@ -37,9 +37,9 @@ namespace KtxUnity {
         /// </summary>
         /// <param name="filePath">Path to the file, relative to StreamingAssets</param>
         /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
-        public void LoadFromStreamingAssets( string filePath, MonoBehaviour monoBehaviour ) {
+        public void LoadFromStreamingAssets( string filePath, MonoBehaviour monoBehaviour, bool linear = false ) {
             var url = GetStreamingAssetsUrl(filePath);
-            monoBehaviour.StartCoroutine(LoadFile(url,monoBehaviour));
+            monoBehaviour.StartCoroutine(LoadFile(url,monoBehaviour,linear));
         }
 
         /// <summary>
@@ -47,8 +47,8 @@ namespace KtxUnity {
         /// </summary>
         /// <param name="url">URL to the ktx/basis file to load</param>
         /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
-        public void LoadFromUrl( string url, MonoBehaviour monoBehaviour ) {
-            monoBehaviour.StartCoroutine(LoadFile(url,monoBehaviour));
+        public void LoadFromUrl( string url, MonoBehaviour monoBehaviour, bool linear = false ) {
+            monoBehaviour.StartCoroutine(LoadFile(url,monoBehaviour,linear));
         }
 
         /// <summary>
@@ -56,8 +56,8 @@ namespace KtxUnity {
         /// </summary>
         /// <param name="data">Native buffer that holds the ktx/basisu file</param>
         /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
-        public void LoadFromBytes( NativeSlice<byte> data, MonoBehaviour monoBehaviour ) {
-            monoBehaviour.StartCoroutine(LoadBytesRoutine(data));
+        public void LoadFromBytes( NativeSlice<byte> data, MonoBehaviour monoBehaviour, bool linear = false ) {
+            monoBehaviour.StartCoroutine(LoadBytesRoutine(data,linear));
         }
 
         /// <summary>
@@ -78,7 +78,7 @@ namespace KtxUnity {
             return path;
         }
 
-        IEnumerator LoadFile( string url, MonoBehaviour monoBehaviour ) {
+        IEnumerator LoadFile( string url, MonoBehaviour monoBehaviour, bool linear = false ) {
     
             var webRequest = UnityWebRequest.Get(url);
             yield return webRequest.SendWebRequest();
@@ -91,11 +91,11 @@ namespace KtxUnity {
             var buffer = webRequest.downloadHandler.data;
 
             var na = new NativeArray<byte>(buffer,KtxNativeInstance.defaultAllocator);
-            yield return monoBehaviour.StartCoroutine(LoadBytesRoutine(na));
+            yield return monoBehaviour.StartCoroutine(LoadBytesRoutine(na,linear));
             na.Dispose();
         }
 
-        public abstract IEnumerator LoadBytesRoutine( NativeSlice<byte> data );
+        public abstract IEnumerator LoadBytesRoutine( NativeSlice<byte> data, bool linear = false );
 
         protected void OnTextureLoaded(Texture2D texture) {
             if(onTextureLoaded!=null) {
@@ -103,8 +103,8 @@ namespace KtxUnity {
             }
         }
 
-        protected virtual TranscodeFormatTuple? GetFormat( IMetaData meta, ILevelInfo li ) {
-            return TranscodeFormatHelper.GetFormatsForImage(meta,li);
+        protected virtual TranscodeFormatTuple? GetFormat( IMetaData meta, ILevelInfo li, bool linear = false ) {
+            return TranscodeFormatHelper.GetFormatsForImage(meta,li,linear);
         }
     }
 }

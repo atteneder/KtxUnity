@@ -105,8 +105,22 @@ namespace KtxUnity {
                     TranscodeFormat.BC1_RGB));
 
                 allFormats.Add( new FormatInfo(
+                    TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+#if UNITY_2018_3_OR_NEWER
+                    GraphicsFormat.RGBA_DXT1_UNorm,
+#else
+                    GraphicsFormat.RGB_DXT1_UNorm,
+#endif
+                    TranscodeFormat.BC1_RGB));
+
+                allFormats.Add( new FormatInfo(
                     TextureFeatures.None,
                     GraphicsFormat.RGB_PVRTC_4Bpp_SRGB,
+                    TranscodeFormat.PVRTC1_4_RGB));
+
+                allFormats.Add( new FormatInfo(
+                    TextureFeatures.Linear,
+                    GraphicsFormat.RGB_PVRTC_4Bpp_UNorm,
                     TranscodeFormat.PVRTC1_4_RGB));
 
                 // Compressed with alpha channel
@@ -116,8 +130,18 @@ namespace KtxUnity {
                     TranscodeFormat.ASTC_4x4_RGBA));
 
                 allFormats.Add( new FormatInfo(
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    GraphicsFormat.RGBA_ASTC4X4_UNorm,
+                    TranscodeFormat.ASTC_4x4_RGBA));
+
+                allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
                     GraphicsFormat.RGBA_ETC2_SRGB,
+                    TranscodeFormat.ETC2_RGBA));
+
+                allFormats.Add( new FormatInfo(
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    GraphicsFormat.RGBA_ETC2_UNorm,
                     TranscodeFormat.ETC2_RGBA));
 
                 allFormats.Add( new FormatInfo(
@@ -126,13 +150,28 @@ namespace KtxUnity {
                     TranscodeFormat.BC7_M5_RGBA));
 
                 allFormats.Add( new FormatInfo(
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    GraphicsFormat.RGBA_BC7_UNorm,
+                    TranscodeFormat.BC7_M5_RGBA));
+
+                allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
                     GraphicsFormat.RGBA_DXT5_SRGB,
                     TranscodeFormat.BC3_RGBA));
 
                 allFormats.Add( new FormatInfo(
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    GraphicsFormat.RGBA_DXT5_UNorm,
+                    TranscodeFormat.BC3_RGBA));
+
+                allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel,
                     GraphicsFormat.RGBA_PVRTC_4Bpp_SRGB,
+                    TranscodeFormat.PVRTC1_4_RGBA));
+
+                allFormats.Add( new FormatInfo(
+                    TextureFeatures.AlphaChannel | TextureFeatures.Linear,
+                    GraphicsFormat.RGBA_PVRTC_4Bpp_UNorm,
                     TranscodeFormat.PVRTC1_4_RGBA));
 
                 // Uncompressed
@@ -148,13 +187,18 @@ namespace KtxUnity {
 
                 // Uncompressed with alpha channel
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.R4G4B4A4_UNormPack16,
                     TranscodeFormat.RGBA4444));
 
                 allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
                     GraphicsFormat.R8G8B8A8_SRGB,
+                    TranscodeFormat.RGBA32));
+
+                allFormats.Add( new FormatInfo(
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    GraphicsFormat.R8G8B8A8_UNorm,
                     TranscodeFormat.RGBA32));
 
                 // GraphicsFormat.RGB_A1_ETC2_SRGB,TranscodeFormat.ETC2_RGBA // Does not work; always transcodes 8-bit alpha
@@ -187,7 +231,8 @@ namespace KtxUnity {
 
         public static TranscodeFormatTuple? GetFormatsForImage(
             IMetaData meta,
-            ILevelInfo li
+            ILevelInfo li,
+            bool linear = false
             )
         {
             TranscodeFormatTuple? formats;
@@ -195,7 +240,8 @@ namespace KtxUnity {
             formats = TranscodeFormatHelper.GetPreferredFormat(
                 meta.hasAlpha,
                 li.isPowerOfTwo,
-                li.isSquare
+                li.isSquare,
+                linear
                 );
             
             if( !formats.HasValue && meta.hasAlpha ) {
@@ -203,7 +249,8 @@ namespace KtxUnity {
                 formats = TranscodeFormatHelper.GetPreferredFormat(
                     false,
                     li.isPowerOfTwo,
-                    li.isSquare
+                    li.isSquare,
+                    linear
                     );
             }
             return formats;
@@ -212,7 +259,8 @@ namespace KtxUnity {
         public static TranscodeFormatTuple? GetPreferredFormat(
             bool hasAlpha,
             bool isPowerOfTwo,
-            bool isSquare
+            bool isSquare,
+            bool isLinear = false
         ) {
             TextureFeatures features = TextureFeatures.None;
             if(hasAlpha) {
@@ -223,6 +271,9 @@ namespace KtxUnity {
             }
             if(!isSquare) {
                 features |= TextureFeatures.NonSquare;
+            }
+            if(isLinear) {
+                features |= TextureFeatures.Linear;
             }
 
             TranscodeFormatTuple formatTuple;
@@ -245,9 +296,7 @@ namespace KtxUnity {
         }
 
         static bool FormatIsMatch(TextureFeatures required, TextureFeatures provided ) {
-            return (required & TextureFeatures.AlphaChannel) <= (provided & TextureFeatures.AlphaChannel)
-                && (required & TextureFeatures.NonPowerOfTwo) <= (provided & TextureFeatures.NonPowerOfTwo)
-                && (required & TextureFeatures.NonSquare) <= (provided & TextureFeatures.NonSquare);
+            return (required & provided) == required;
         }
 
 #if KTX_VERBOSE
