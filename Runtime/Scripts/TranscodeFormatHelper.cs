@@ -193,13 +193,25 @@ namespace KtxUnity {
 
                 allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
-                    GraphicsFormat.R8G8B8A8_SRGB,
+                    GraphicsFormat.R8G8B8A8_SRGB, // Also supports SNorm, UInt, SInt
                     TranscodeFormat.RGBA32));
 
                 allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
-                    GraphicsFormat.R8G8B8A8_UNorm,
+                    GraphicsFormat.R8G8B8A8_UNorm, // Also supports SNorm, UInt, SInt
                     TranscodeFormat.RGBA32));
+
+                // Need to extend TextureFeatures to request single/dual channel texture formats.
+                // Until then, those formats are at the end of the list
+                allFormats.Add( new FormatInfo(
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    GraphicsFormat.R_EAC_UNorm, // Also supports SNorm
+                    TranscodeFormat.ETC2_EAC_R11));
+
+                allFormats.Add( new FormatInfo(
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    GraphicsFormat.RG_EAC_UNorm, // Also supports SNorm
+                    TranscodeFormat.ETC2_EAC_RG11));
 
                 // GraphicsFormat.RGB_A1_ETC2_SRGB,TranscodeFormat.ETC2_RGBA // Does not work; always transcodes 8-bit alpha
                 // GraphicsFormat.RGBA_ETC2_SRGB,TranscodeFormat.ATC_RGBA // Not sure if this works (maybe compatible) - untested
