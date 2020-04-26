@@ -232,8 +232,6 @@ namespace KtxUnity {
                 // GraphicsFormat.?,TranscodeFormat.FXT1_RGB
                 // GraphicsFormat.?,TranscodeFormat.PVRTC2_4_RGB
                 // GraphicsFormat.?,TranscodeFormat.PVRTC2_4_RGBA
-                // GraphicsFormat.?,TranscodeFormat.ETC2_EAC_R11
-                // GraphicsFormat.?,TranscodeFormat.ETC2_EAC_RG11
             }
         }
 
