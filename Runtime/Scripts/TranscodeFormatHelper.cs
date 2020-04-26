@@ -91,6 +91,11 @@ namespace KtxUnity {
 
                 // Compressed
                 allFormats.Add( new FormatInfo(
+                    TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
+                    GraphicsFormat.RGB_ETC2_SRGB,
+                    TranscodeFormat.ETC1_RGB));
+
+                allFormats.Add( new FormatInfo(
                     TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.RGB_ETC_UNorm,
                     TranscodeFormat.ETC1_RGB));
