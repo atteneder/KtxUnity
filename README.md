@@ -1,5 +1,7 @@
 # KtxUnity
 
+[![openupm](https://img.shields.io/npm/v/com.atteneder.ktx?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.atteneder.ktx/)
+
 Unity package that allows users to load [KTX 2.0](https://github.com/KhronosGroup/KTX-Software) files with [Basis Universal](https://github.com/BinomialLLC/basis_universal) super compression or [Basis Universal](https://github.com/BinomialLLC/basis_universal) texture files directly.
 
 Following build targets are supported
