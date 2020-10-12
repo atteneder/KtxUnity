@@ -152,12 +152,12 @@ namespace KtxUnity {
                 allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
                     GraphicsFormat.RGBA_BC7_SRGB,
-                    TranscodeFormat.BC7_M5_RGBA));
+                    TranscodeFormat.BC7_RGBA));
 
                 allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.RGBA_BC7_UNorm,
-                    TranscodeFormat.BC7_M5_RGBA));
+                    TranscodeFormat.BC7_RGBA));
 
                 allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,

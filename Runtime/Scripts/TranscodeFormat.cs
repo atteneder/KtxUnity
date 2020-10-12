@@ -14,7 +14,7 @@
 
 namespace KtxUnity {
 
-    // source: C++ enum transcoder_texture_format
+    // source: C++ enum ktx_transcode_fmt_e; ktx.h
     public enum TranscodeFormat : uint {
         // Compressed formats
 
@@ -27,8 +27,7 @@ namespace KtxUnity {
         BC3_RGBA = 3, 							// Opaque+alpha, BC4 followed by a BC1 block, alpha channel will be opaque for opaque .basis files
         BC4_R = 4,								// Red only, alpha slice is transcoded to output if cDecodeFlagsTranscodeAlphaDataToOpaqueFormats flag is specified
         BC5_RG = 5,								// XY: Two BC4 blocks, X=R and Y=Alpha, .basis file should have alpha data (if not Y will be all 255's)
-        BC7_M6_RGB = 6,						// Opaque only, RGB or alpha if cDecodeFlagsTranscodeAlphaDataToOpaqueFormats flag is specified. Highest quality of all the non-ETC1 formats.
-        BC7_M5_RGBA = 7,						// Opaque+alpha, alpha channel will be opaque for opaque .basis files
+        BC7_RGBA = 6,						// !< RGB or RGBA mode 5 for ETC1S,  modes 1, 2, 3, 4, 5, 6, 7 for UASTC.
 
         // PVRTC1 4bpp (mobile, PowerVR devices)
         PVRTC1_4_RGB = 8,						// Opaque only, RGB or alpha if cDecodeFlagsTranscodeAlphaDataToOpaqueFormats flag is specified, nearly lowest quality of any texture format.
