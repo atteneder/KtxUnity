@@ -23,6 +23,15 @@ using UnityEngine.Profiling;
 
 namespace KtxUnity {
 
+    // Source: basisu_transcoder.h -> basist::basis_texture_type
+    public enum BasisUniversalTextureType {
+        Image2D = 0,		// An arbitrary array of 2D RGB or RGBA images with optional mipmaps, array size = # images, each image may have a different resolution and # of mipmap levels
+        Image2DArray = 1,	// An array of 2D RGB or RGBA images with optional mipmaps, array size = # images, each image has the same resolution and mipmap levels
+        CubemapArray = 2,	// an array of cubemap levels, total # of images must be divisable by 6, in X+, X-, Y+, Y-, Z+, Z- order, with optional mipmaps
+        VideoFrames = 3,	// An array of 2D video frames, with optional mipmaps, # frames = # images, each image has the same resolution and # of mipmap levels
+        Volume = 4,			// A 3D texture with optional mipmaps, Z dimension = # images, each image has the same resolution and # of mipmap levels
+    }
+
     public class BasisUniversalTranscoderInstance {
         public IntPtr nativeReference;
 
@@ -90,6 +99,18 @@ namespace KtxUnity {
             height = ktx_basisu_getImageHeight(nativeReference,image_index,level_index);
         }
 
+        public bool GetYFlip() {
+            return !ktx_basisu_get_y_flip(nativeReference);
+        }
+
+        // public bool GetIsEtc1s() {
+        //     return ktx_basisu_get_is_etc1s(nativeReference);
+        // }
+
+        public BasisUniversalTextureType GetTextureType() {
+            return ktx_basisu_get_texture_type(nativeReference);
+        }
+
         public uint GetImageTranscodedSize(uint imageIndex, uint levelIndex, TranscodeFormat format) {
             return ktx_basisu_getImageTranscodedSizeInBytes(nativeReference,imageIndex,levelIndex,(uint)format);
         }
@@ -142,6 +163,15 @@ namespace KtxUnity {
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static extern System.UInt32 ktx_basisu_getImageHeight( IntPtr basis, System.UInt32 image_index, System.UInt32 level_index);
+
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
+        private static extern bool ktx_basisu_get_y_flip( IntPtr basis );
+        
+        // [DllImport(KtxNativeInstance.INTERFACE_DLL)]
+        // private static extern bool ktx_basisu_get_is_etc1s( IntPtr basis );
+        
+        [DllImport(KtxNativeInstance.INTERFACE_DLL)]
+        private static extern BasisUniversalTextureType ktx_basisu_get_texture_type( IntPtr basis );
 
         [DllImport(KtxNativeInstance.INTERFACE_DLL)]
         private static extern System.UInt32 ktx_basisu_getImageTranscodedSizeInBytes( IntPtr basis, System.UInt32 image_index, System.UInt32 level_index, System.UInt32 format);

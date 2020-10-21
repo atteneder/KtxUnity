@@ -24,6 +24,7 @@ namespace KtxUnity {
         public override IEnumerator LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
 
             Texture2D texture = null;
+            var orientation = TextureOrientation.UNITY_DEFAULT;
 
             var ktx = new KtxNativeInstance(data);
 
@@ -31,6 +32,8 @@ namespace KtxUnity {
 
                 // TODO: Maybe do this somewhere more central
                 TranscodeFormatHelper.Init();
+
+                orientation = ktx.orientation;
 
                 var formats = GetFormat(ktx,ktx,linear);
 
@@ -83,7 +86,7 @@ namespace KtxUnity {
                 }
             }
             ktx.Unload();
-            OnTextureLoaded(texture);
+            OnTextureLoaded(texture,orientation);
         }
     }
 }

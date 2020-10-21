@@ -23,14 +23,6 @@ using IntPtr=System.IntPtr;
 
 namespace KtxUnity {
 
-    /*
-    struct KtxOrientation {
-        public KtxOrientationX x;
-        public KtxOrientationY y;
-        public KtxOrientationY z;
-    }
-    //*/
-
     public class KtxNativeInstance : IMetaData, ILevelInfo
     {
 #if UNITY_EDITOR_OSX || UNITY_WEBGL || UNITY_IOS
@@ -94,6 +86,12 @@ namespace KtxUnity {
             }
         }
 
+        public TextureOrientation orientation {
+            get {
+                return (TextureOrientation) ktx_get_orientation(nativeReference);;
+            }
+        }
+
         /*
         KtxClassId classId {
             get {
@@ -139,13 +137,6 @@ namespace KtxUnity {
         KtxSupercmpScheme supercompressionScheme {
             get {
                 return ktx_get_supercompressionScheme(nativeReference);
-            }
-        }
-        KtxOrientation orientation {
-            get {
-                KtxOrientation orientation;
-                ktx_get_orientation(nativeReference,out orientation);
-                return orientation;
             }
         }
         //*/
@@ -256,6 +247,9 @@ namespace KtxUnity {
         [DllImport(INTERFACE_DLL)]
         static extern uint ktx_get_numLevels ( System.IntPtr ktxTexture );
 
+        [DllImport(INTERFACE_DLL)]
+        static extern uint ktx_get_orientation ( System.IntPtr ktxTexture );
+
         /*
         [DllImport(INTERFACE_DLL)]
         static extern KtxClassId ktx_get_classId ( System.IntPtr ktxTexture );
@@ -283,9 +277,6 @@ namespace KtxUnity {
 
         [DllImport(INTERFACE_DLL)]
         static extern KtxSupercmpScheme ktx_get_supercompressionScheme ( System.IntPtr ktxTexture );
-
-        [DllImport(INTERFACE_DLL)]
-        static extern void ktx_get_orientation ( System.IntPtr ktxTexture, out KtxOrientation x );
         //*/
     }
 } 

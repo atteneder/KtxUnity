@@ -29,7 +29,7 @@ namespace KtxUnity {
     {
         protected const string ERR_MSG_TRANSCODE_FAILED = "Transcoding failed!";
 
-        public event UnityAction<Texture2D> onTextureLoaded;
+        public event UnityAction<Texture2D,TextureOrientation> onTextureLoaded;
 
         /// <summary>
         /// Loads a KTX or Basis Universal texture from the StreamingAssets folder
@@ -84,7 +84,7 @@ namespace KtxUnity {
             yield return webRequest.SendWebRequest();
             if(!string.IsNullOrEmpty(webRequest.error)) {
                 Debug.LogErrorFormat("Error loading {0}: {1}",url,webRequest.error);
-                OnTextureLoaded(null);
+                OnTextureLoaded(null,TextureOrientation.UNITY_DEFAULT);
                 yield break;
             }
 
@@ -97,9 +97,9 @@ namespace KtxUnity {
 
         public abstract IEnumerator LoadBytesRoutine( NativeSlice<byte> data, bool linear = false );
 
-        protected void OnTextureLoaded(Texture2D texture) {
+        protected void OnTextureLoaded(Texture2D texture, TextureOrientation orientation) {
             if(onTextureLoaded!=null) {
-                onTextureLoaded(texture);
+                onTextureLoaded(texture,orientation);
             }
         }
 

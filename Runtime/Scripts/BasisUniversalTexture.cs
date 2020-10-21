@@ -23,12 +23,12 @@ namespace KtxUnity {
 
     public class BasisUniversalTexture : TextureBase
     {
+        Texture2D texture;
+
         public override IEnumerator LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
 
-            uint imageIndex = 0;
+            bool yFlipped = true;
 
-            Texture2D texture = null;
-            
             var transcoder = BasisUniversal.GetTranscoderInstance();
 
             while(transcoder==null) {
@@ -37,61 +37,80 @@ namespace KtxUnity {
             }
 
             if(transcoder.Open(data)) {
-                var meta = transcoder.LoadMetaData();
-
-                var formats = GetFormat( meta, meta.images[imageIndex].levels[0], linear );
-
-                if(formats.HasValue) {
-#if KTX_VERBOSE
-                    Debug.LogFormat("Transcode to GraphicsFormat {0} ({1})",formats.Value.format,formats.Value.transcodeFormat);
-#endif
-                    Profiler.BeginSample("BasisUniversalJob");
-                    var job = new BasisUniversalJob();
-
-                    job.imageIndex = imageIndex;
-
-                    job.result = new NativeArray<bool>(1,KtxNativeInstance.defaultAllocator);
-
-                    var jobHandle = BasisUniversal.LoadBytesJob(
-                        ref job,
-                        transcoder,
-                        data,
-                        formats.Value.transcodeFormat
-                        );
-
-                    Profiler.EndSample();
-                    
-                    while(!jobHandle.IsCompleted) {
-                        yield return null;
-                    }
-                    jobHandle.Complete();
-
-                    if(job.result[0]) {
-                        Profiler.BeginSample("LoadBytesRoutineGPUupload");
-                        uint width;
-                        uint height;
-                        meta.GetSize(out width,out height);
-                        var flags = TextureCreationFlags.None;
-                        if(meta.images[imageIndex].levels.Length>1) {
-                            flags |= TextureCreationFlags.MipChain;
-                        }
-                        texture = new Texture2D((int)width,(int)height,formats.Value.format,flags);
-                        texture.LoadRawTextureData(job.textureData);
-                        texture.Apply(false,true);
-                        Profiler.EndSample();
-                    } else {
-                        Debug.LogError(ERR_MSG_TRANSCODE_FAILED);
-                    }
-                    job.sizes.Dispose();
-                    job.offsets.Dispose();
-                    job.textureData.Dispose();
-                    job.result.Dispose();
+                var textureType = transcoder.GetTextureType();
+                if(textureType == BasisUniversalTextureType.Image2D) {
+                    yFlipped = transcoder.GetYFlip();
+                    yield return TranscodeImage2D(transcoder,data,linear);
+                } else {
+                    Debug.LogErrorFormat("Basis Universal texture type {0} is not supported",textureType);
                 }
             }
-            
+
             BasisUniversal.ReturnTranscoderInstance(transcoder);
 
-            OnTextureLoaded(texture);
+            var orientation = TextureOrientation.KTX_DEFAULT;
+            if(!yFlipped) {
+                // Regular basis files (no y_flip) seem to be 
+                orientation |= TextureOrientation.Y_UP;
+            }
+            OnTextureLoaded(texture,orientation);
+        }
+
+        IEnumerator TranscodeImage2D(BasisUniversalTranscoderInstance transcoder, NativeSlice<byte> data, bool linear) {
+
+            // Can turn to parameter in future
+            uint imageIndex = 0;
+
+            var meta = transcoder.LoadMetaData();
+
+            var formats = GetFormat( meta, meta.images[imageIndex].levels[0], linear );
+
+            if(formats.HasValue) {
+#if KTX_VERBOSE
+                Debug.LogFormat("Transcode to GraphicsFormat {0} ({1})",formats.Value.format,formats.Value.transcodeFormat);
+#endif
+                Profiler.BeginSample("BasisUniversalJob");
+                var job = new BasisUniversalJob();
+
+                job.imageIndex = imageIndex;
+
+                job.result = new NativeArray<bool>(1,KtxNativeInstance.defaultAllocator);
+
+                var jobHandle = BasisUniversal.LoadBytesJob(
+                    ref job,
+                    transcoder,
+                    data,
+                    formats.Value.transcodeFormat
+                    );
+
+                Profiler.EndSample();
+                
+                while(!jobHandle.IsCompleted) {
+                    yield return null;
+                }
+                jobHandle.Complete();
+
+                if(job.result[0]) {
+                    Profiler.BeginSample("LoadBytesRoutineGPUupload");
+                    uint width;
+                    uint height;
+                    meta.GetSize(out width,out height);
+                    var flags = TextureCreationFlags.None;
+                    if(meta.images[imageIndex].levels.Length>1) {
+                        flags |= TextureCreationFlags.MipChain;
+                    }
+                    texture = new Texture2D((int)width,(int)height,formats.Value.format,flags);
+                    texture.LoadRawTextureData(job.textureData);
+                    texture.Apply(false,true);
+                    Profiler.EndSample();
+                } else {
+                    Debug.LogError(ERR_MSG_TRANSCODE_FAILED);
+                }
+                job.sizes.Dispose();
+                job.offsets.Dispose();
+                job.textureData.Dispose();
+                job.result.Dispose();
+            }
         }
     }
 }

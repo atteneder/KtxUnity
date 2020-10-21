@@ -14,21 +14,6 @@
 
 namespace KtxUnity {
 
-    enum KtxOrientationX {
-        KTX_ORIENT_X_LEFT = 'l',
-        KTX_ORIENT_X_RIGHT = 'r'
-    }
-
-    enum KtxOrientationY {
-        KTX_ORIENT_Y_UP = 'u',
-        KTX_ORIENT_Y_DOWN = 'd'
-    }
-
-    enum KtxOrientationZ {
-        KTX_ORIENT_Z_IN = 'i',
-        KTX_ORIENT_Z_OUT = 'o'
-    }
-
     enum KtxClassId {
         ktxTexture1_c = 1,
         ktxTexture2_c = 2
