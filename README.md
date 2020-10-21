@@ -4,20 +4,21 @@
 
 Unity package that allows users to load [KTX 2.0](https://github.com/KhronosGroup/KTX-Software) or [Basis Universal](https://github.com/BinomialLLC/basis_universal) texture files.
 
-Limitations
+## Features
 
-- Supports [Basis Universal](https://github.com/BinomialLLC/basis_universal) super compressed KTX 2.0 file.
-- Other texture formats (like DXT, BC7, PVRTC, ETC, … ) are transcoded to from super compression, but are not supported directly.
-- Works with ETC1S mode Basis Universal compression only. UASTC mode (higher quality; bigger size) will be added eventually.
+- [Basis Universal](https://github.com/BinomialLLC/basis_universal) files (.basis)
+- [KTX 2.0](https://github.com/KhronosGroup/KTX-Software) files (.ktx)
+- ETC1s and UASTC mode for Basis Universal super compression
+- Arbitrary Texture orientation can be considered
 
 Following build targets are supported
 
 - WebGL
-- iOS
+- iOS (arm64 and armv7a)
 - Android (arm64 and armv7a)
-- Windows (32 and 64 bit)
-- macOS (64 bit)
-- Linux (32 and 64 bit)
+- Windows (64 bit)
+- macOS (Intel 64 bit)
+- Linux (64 bit)
 
 ![Screenshot of loaded fish textures](https://github.com/atteneder/BasisUniversalUnityDemo/raw/master/Images/fishes.png "Lots of fish basis universal textures loaded via BasisUniversalUnity")
 
@@ -48,13 +49,41 @@ It should look something like this:
 
 Next time you open your project in Unity, it will download the package automatically. You have to have a GIT LFS client (large file support) installed on your system. Otherwise you will get an error that the native library file (dll on Windows) is corrupt. There's more detail about how to add packages via GIT URLs in the [Unity documentation](https://docs.unity3d.com/Manual/upm-git.html).
 
+## Creating Textures
+
+You can use the command line tools `toktx` (comes with [KTX-Software](https://github.com/KhronosGroup/KTX-Software)) to create KTX v2.0 files and `basisu` (part of [Basis Universal](https://github.com/BinomialLLC/basis_universal)) to create .basis files.
+
+The default texture orientation of both of those tools (right-down) does not match Unity's orientation (right-up). To counter-act, you can provide a parameter to flip textures in the vertical axis (Y). This is recommended, if you use the textures in Unity only. The parameters are:
+
+- `--lower_left_maps_to_s0t0` for `toktx`
+- `--y_flip` for `basisu`
+
+Example usage:
+
+```bash
+# For KTX files:
+# Create regular KTX file from an input image
+toktx --bcmp regular.ktx input.png
+# Create a y-flipped KTX file, fit for Unity out of the box
+toktx --lower_left_maps_to_s0t0 --bcmp unity_flipped.ktx input.png
+
+
+# For Basis files:
+# Create regular basis file from an input image
+basisu -output_file regular.basis input.png
+# Create a y-flipped basis file, fit for Unity out of the box
+basisu -y_flip -output_file unity_flipped.basis input.png
+```
+
+If changing the orientation of your texture files is not an option, you can correct it by applying it flipped at run-time. Usage example is below.
+
 ## Using
 
 There's a simple demo project that shows how you can use it:
 
 <https://github.com/atteneder/KtxUnityDemo>
 
-Excerpt how to load a file from StreamingAssets:
+Excerpt from [KtxUnityDemo](https://github.com/atteneder/KtxUnityDemo/blob/master/Assets/Scripts/CustomKtxFileLoader.cs) how to load a file from StreamingAssets:
 
 ```C#
 using UnityEngine;
@@ -62,16 +91,23 @@ using KtxUnity;
 
 public class CustomKtxFileLoader : TextureFileLoader<KtxTexture>
 {
-    protected override void ApplyTexture(Texture2D texture) {
+    protected override void ApplyTexture(Texture2D texture, TextureOrientation orientation) {
         var renderer = GetComponent<Renderer>();
         if(renderer!=null && renderer.sharedMaterial!=null) {
             renderer.material.mainTexture = texture;
+            // Optional: Support arbitrary texture orientation by flipping the texture if necessary
+            var scale = renderer.material.mainTextureScale;
+            scale.x = orientation.IsXFlipped() ? -1 : 1;
+            scale.y = orientation.IsYFlipped() ? -1 : 1;
+            renderer.material.mainTextureScale = scale;
         }
     }
 }
 ```
 
 In this simple case the base MonoBehaviour `TextureFileLoader` has a public `filePath` member, starts loading in `Start` and  already takes care of all things. You only need to implement the `ApplyTexture` method and do something with your texture.
+
+`TextureOrientation` is used to counter-act a potentially flipped image by setting texture scales to negative one.
 
 `TextureFileLoader` is generic and can load KTX or Basis Universal files. Depending on what you need, pass `KtxTexture` or `BasisUniversalTexture` into its type parameter.
 
@@ -83,7 +119,7 @@ using KtxUnity;
 
 public class CustomBasisUniversalUrlLoader : TextureUrlLoader<BasisUniversalTexture>
 {
-   protected override void ApplyTexture(Texture2D texture) {
+   protected override void ApplyTexture(Texture2D texture, TextureOrientation orientation) {
         var renderer = GetComponent<Renderer>();
         if(renderer!=null && renderer.sharedMaterial!=null) {
             renderer.material.mainTexture = texture;
@@ -93,6 +129,14 @@ public class CustomBasisUniversalUrlLoader : TextureUrlLoader<BasisUniversalText
 ```
 
 Developers who want to create advanced loading code should look into classes `KtxTexture`/`BasisUniversalTexture` and `TextureBase` directly.
+
+## Limitations
+
+At the moment known shortcomings:
+
+- KTX with non-supercompressed formats (like uncompressed, DXT, BC7, PVRTC, ETC, … ) are not tested or supported
+- Only 2D image texture types (no cube-map, videos, 3D texture, 2D arrays)
+- Only RGB/RGBA is tested (RG,R untested)
 
 ## Support
 
