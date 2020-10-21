@@ -59,7 +59,9 @@ namespace KtxUnity {
 
         public bool hasAlpha {
             get {
-                return ktx_get_has_alpha(nativeReference);
+                // TODO: This will change
+                // See discussion https://github.com/KhronosGroup/KTX-Software/issues/327
+                return ktx_get_num_components(nativeReference) > 1;
             }
         }
 
@@ -237,6 +239,8 @@ namespace KtxUnity {
         static extern uint ktx_get_baseHeight ( System.IntPtr ktxTexture );
         [DllImport(INTERFACE_DLL)]
          static extern bool ktx_get_has_alpha( System.IntPtr ktxTexture );
+        [DllImport(INTERFACE_DLL)]
+         static extern int ktx_get_num_components( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
         public static extern KtxErrorCode ktx_transcode_ktx(System.IntPtr ktxTexture, TranscodeFormat outputFormat, uint transcodeFlags);
