@@ -20,10 +20,10 @@ namespace KtxUnity {
     /// </summary>
     [System.Flags]
     public enum TextureOrientation {
-        KTX_DEFAULT = 0b000,
-        X_LEFT = 0b001,
-        Y_UP = 0b010,
-        Z_IN = 0b100, // Not used at the moment
+        KTX_DEFAULT = 0x0,
+        X_LEFT = 0x1,
+        Y_UP = 0x2,
+        Z_IN = 0x4, // Not used at the moment
         /// <summary>
         /// Unity expects GPU textures to be X=right Y=up
         /// </summary>
