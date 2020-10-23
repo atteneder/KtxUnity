@@ -4,12 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased]
+## [0.8.0] - 2020-10-23
 ### Added
 - Texture orientation is now exposed. This allows users to correct (=flip) them (fixes #18)
 ### Changed
+- Native binary libs are now provided by [KTX-Software-Unity 0.1.0](https://github.com/atteneder/KTX-Software-Unity/releases/tag/v0.1.0)
 - Unsupported basis file texture types (non 2D Images) raise a proper error now
-- Updated KTX-Software (native libs) to 4.0.0 beta 4
 - Removed support for 32-bit Desktop platforms (Windows, Linux)
 
 ## [0.7.0] - 2020-04-26
