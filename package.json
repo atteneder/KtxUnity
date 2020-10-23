@@ -1,6 +1,6 @@
 {
   "name": "com.atteneder.ktx",
-  "version": "0.7.0",
+  "version": "0.8.0",
   "displayName": "KTX",
   "description": "Load KTX and Basis Universal textures at runtime.",
   "unity": "2019.1",
@@ -14,7 +14,10 @@
     "basis",
     "universal",
     "transcode",
-    "compress"
+    "compress",
+    "ETC1s",
+    "UASTC",
+    "glTF"
   ],
   "author": {
     "name": "Andreas Atteneder",

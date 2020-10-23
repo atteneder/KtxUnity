@@ -23,14 +23,6 @@ using IntPtr=System.IntPtr;
 
 namespace KtxUnity {
 
-    /*
-    struct KtxOrientation {
-        public KtxOrientationX x;
-        public KtxOrientationY y;
-        public KtxOrientationY z;
-    }
-    //*/
-
     public class KtxNativeInstance : IMetaData, ILevelInfo
     {
 #if UNITY_EDITOR_OSX || UNITY_WEBGL || UNITY_IOS
@@ -59,7 +51,9 @@ namespace KtxUnity {
 
         public bool hasAlpha {
             get {
-                return ktx_get_has_alpha(nativeReference);
+                // TODO: This will change
+                // See discussion https://github.com/KhronosGroup/KTX-Software/issues/327
+                return ktx_get_num_components(nativeReference) > 1;
             }
         }
 
@@ -89,6 +83,12 @@ namespace KtxUnity {
         public uint numLevels {
             get {
                 return ktx_get_numLevels(nativeReference);
+            }
+        }
+
+        public TextureOrientation orientation {
+            get {
+                return (TextureOrientation) ktx_get_orientation(nativeReference);;
             }
         }
 
@@ -137,13 +137,6 @@ namespace KtxUnity {
         KtxSupercmpScheme supercompressionScheme {
             get {
                 return ktx_get_supercompressionScheme(nativeReference);
-            }
-        }
-        KtxOrientation orientation {
-            get {
-                KtxOrientation orientation;
-                ktx_get_orientation(nativeReference,out orientation);
-                return orientation;
             }
         }
         //*/
@@ -237,6 +230,8 @@ namespace KtxUnity {
         static extern uint ktx_get_baseHeight ( System.IntPtr ktxTexture );
         [DllImport(INTERFACE_DLL)]
          static extern bool ktx_get_has_alpha( System.IntPtr ktxTexture );
+        [DllImport(INTERFACE_DLL)]
+         static extern int ktx_get_num_components( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
         public static extern KtxErrorCode ktx_transcode_ktx(System.IntPtr ktxTexture, TranscodeFormat outputFormat, uint transcodeFlags);
@@ -251,6 +246,9 @@ namespace KtxUnity {
 
         [DllImport(INTERFACE_DLL)]
         static extern uint ktx_get_numLevels ( System.IntPtr ktxTexture );
+
+        [DllImport(INTERFACE_DLL)]
+        static extern uint ktx_get_orientation ( System.IntPtr ktxTexture );
 
         /*
         [DllImport(INTERFACE_DLL)]
@@ -279,9 +277,6 @@ namespace KtxUnity {
 
         [DllImport(INTERFACE_DLL)]
         static extern KtxSupercmpScheme ktx_get_supercompressionScheme ( System.IntPtr ktxTexture );
-
-        [DllImport(INTERFACE_DLL)]
-        static extern void ktx_get_orientation ( System.IntPtr ktxTexture, out KtxOrientation x );
         //*/
     }
 } 

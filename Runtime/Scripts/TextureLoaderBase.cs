@@ -23,16 +23,16 @@ namespace KtxUnity {
         /// Example callback for loading a texture.
         /// </summary>
         /// <param name="loadedTexture">If no error occurred, resulting texture. null otherwise</param>
-        protected void OnTextureLoaded(Texture2D loadedTexture) {
+        protected void OnTextureLoaded(Texture2D loadedTexture, TextureOrientation orientation) {
             texture.onTextureLoaded -= OnTextureLoaded;
             if(loadedTexture!=null) {
-                ApplyTexture(loadedTexture);
+                ApplyTexture(loadedTexture,orientation);
             } else {
                 Debug.LogError("Loading Texture failed!");
             }
             texture = null;
         }
 
-        protected abstract void ApplyTexture(Texture2D texture);
+        protected abstract void ApplyTexture(Texture2D texture, TextureOrientation orientation);
     }
 }
