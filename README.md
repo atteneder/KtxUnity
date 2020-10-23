@@ -26,6 +26,14 @@ Thanks to [Khronos](https://www.khronos.org), [Binomial](http://www.binomial.inf
 
 ## Installing
 
+The easiest way to install is to download and open the [Installer Package](https://package-installer.glitch.me/v1/installer/OpenUPM/com.atteneder.ktx?registry=https%3A%2F%2Fpackage.openupm.com&scope=com.atteneder)
+
+It runs a script that installs KtxUnity via a [scoped registry](https://docs.unity3d.com/Manual/upm-scoped.html). After that it is listed in the *Package Manager* and can be updated from there.
+
+<details><summary>Alternative / Legacy installations (for Unity 2018.4 and older)</summary>
+
+Install manually via package URL
+
 You have to manually add the package's URL into your [project manifest](https://docs.unity3d.com/Manual/upm-manifestPrj.html)
 
 Inside your Unity project there's the folder `Packages` containing a file called `manifest.json`. You have to open it and add the following line inside the `dependencies` category:
@@ -40,7 +48,6 @@ It should look something like this:
 {
   "dependencies": {
     "com.atteneder.ktx": "https://gitlab.com/atteneder/ktxunity.git",
-    "com.unity.package-manager-ui": "2.1.2",
     "com.unity.modules.unitywebrequest": "1.0.0"
     ...
   }
@@ -48,6 +55,8 @@ It should look something like this:
 ```
 
 Next time you open your project in Unity, it will download the package automatically. You have to have a GIT LFS client (large file support) installed on your system. Otherwise you will get an error that the native library file (dll on Windows) is corrupt. There's more detail about how to add packages via GIT URLs in the [Unity documentation](https://docs.unity3d.com/Manual/upm-git.html).
+
+</details>
 
 ## Creating Textures
 
