@@ -17,6 +17,7 @@ Following build targets are supported
 - iOS (arm64 and armv7a)
 - Android (arm64 and armv7a)
 - Windows (64 bit)
+- Universal Windows Platform (x64)
 - macOS (Intel 64 bit)
 - Linux (64 bit)
 
