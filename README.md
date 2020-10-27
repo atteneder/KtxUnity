@@ -1,4 +1,4 @@
-# KtxUnity
+# KTX/Basis Texture Unity Package
 
 [![openupm](https://img.shields.io/npm/v/com.atteneder.ktx?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.atteneder.ktx/)
 
@@ -6,8 +6,8 @@ Unity package that allows users to load [KTX 2.0](https://github.com/KhronosGrou
 
 ## Features
 
-- [Basis Universal](https://github.com/BinomialLLC/basis_universal) files (.basis)
 - [KTX 2.0](https://github.com/KhronosGroup/KTX-Software) files (.ktx)
+- [Basis Universal](https://github.com/BinomialLLC/basis_universal) files (.basis)
 - ETC1s and UASTC mode for Basis Universal super compression
 - Arbitrary Texture orientation can be considered
 
