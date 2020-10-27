@@ -59,34 +59,6 @@ Next time you open your project in Unity, it will download the package automatic
 
 </details>
 
-## Creating Textures
-
-You can use the command line tools `toktx` (comes with [KTX-Software](https://github.com/KhronosGroup/KTX-Software)) to create KTX v2.0 files and `basisu` (part of [Basis Universal](https://github.com/BinomialLLC/basis_universal)) to create .basis files.
-
-The default texture orientation of both of those tools (right-down) does not match Unity's orientation (right-up). To counter-act, you can provide a parameter to flip textures in the vertical axis (Y). This is recommended, if you use the textures in Unity only. The parameters are:
-
-- `--lower_left_maps_to_s0t0` for `toktx`
-- `--y_flip` for `basisu`
-
-Example usage:
-
-```bash
-# For KTX files:
-# Create regular KTX file from an input image
-toktx --bcmp regular.ktx input.png
-# Create a y-flipped KTX file, fit for Unity out of the box
-toktx --lower_left_maps_to_s0t0 --bcmp unity_flipped.ktx input.png
-
-
-# For Basis files:
-# Create regular basis file from an input image
-basisu -output_file regular.basis input.png
-# Create a y-flipped basis file, fit for Unity out of the box
-basisu -y_flip -output_file unity_flipped.basis input.png
-```
-
-If changing the orientation of your texture files is not an option, you can correct it by applying it flipped at run-time. Usage example is below.
-
 ## Using
 
 There's a demo project that shows how you can use it:
@@ -139,6 +111,34 @@ public class CustomBasisUniversalUrlLoader : TextureUrlLoader<BasisUniversalText
 ```
 
 Developers who want to create advanced loading code should look into classes `KtxTexture`/`BasisUniversalTexture` and `TextureBase` directly.
+
+## Creating Textures
+
+You can use the command line tools `toktx` (comes with [KTX-Software](https://github.com/KhronosGroup/KTX-Software)) to create KTX v2.0 files and `basisu` (part of [Basis Universal](https://github.com/BinomialLLC/basis_universal)) to create .basis files.
+
+The default texture orientation of both of those tools (right-down) does not match Unity's orientation (right-up). To counter-act, you can provide a parameter to flip textures in the vertical axis (Y). This is recommended, if you use the textures in Unity only. The parameters are:
+
+- `--lower_left_maps_to_s0t0` for `toktx`
+- `--y_flip` for `basisu`
+
+Example usage:
+
+```bash
+# For KTX files:
+# Create regular KTX file from an input image
+toktx --bcmp regular.ktx input.png
+# Create a y-flipped KTX file, fit for Unity out of the box
+toktx --lower_left_maps_to_s0t0 --bcmp unity_flipped.ktx input.png
+
+
+# For Basis files:
+# Create regular basis file from an input image
+basisu -output_file regular.basis input.png
+# Create a y-flipped basis file, fit for Unity out of the box
+basisu -y_flip -output_file unity_flipped.basis input.png
+```
+
+If changing the orientation of your texture files is not an option, you can correct it by applying it flipped at run-time (see [Usage](#using)).
 
 ## Limitations
 
