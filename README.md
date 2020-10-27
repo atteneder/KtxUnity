@@ -89,7 +89,7 @@ If changing the orientation of your texture files is not an option, you can corr
 
 ## Using
 
-There's a simple demo project that shows how you can use it:
+There's a demo project that shows how you can use it:
 
 <https://github.com/atteneder/KtxUnityDemo>
 
@@ -115,7 +115,7 @@ public class CustomKtxFileLoader : TextureFileLoader<KtxTexture>
 }
 ```
 
-In this simple case the base MonoBehaviour `TextureFileLoader` has a public `filePath` member, starts loading in `Start` and  already takes care of all things. You only need to implement the `ApplyTexture` method and do something with your texture.
+In this case the base MonoBehaviour `TextureFileLoader` has a public `filePath` member, starts loading in `Start` and  already takes care of all things. You only need to implement the `ApplyTexture` method and do something with your texture.
 
 `TextureOrientation` is used to counter-act a potentially flipped image by setting texture scales to negative one.
 
