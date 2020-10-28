@@ -14,7 +14,7 @@
 
 namespace KtxUnity {
 
-    enum KtxClassId {
+    public enum KtxClassId {
         ktxTexture1_c = 1,
         ktxTexture2_c = 2
     }

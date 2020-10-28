@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] -
 ### Added
 - Support for UWP x64
+- Expressive error messages when loading unsupported KTX 1.0 or non-supercompressed KTX 2.0 file
 
 ## [0.8.2] - 2020-10-23
 - No changes. Bump release to trick OpenUPM to create package for 0.8.1

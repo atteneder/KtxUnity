@@ -49,6 +49,18 @@ namespace KtxUnity {
             }
         }
 
+        public KtxClassId ktxClass {
+            get {
+                return ktx_get_classId(nativeReference);
+            }
+        }
+
+        public bool needsTranscoding {
+            get {
+                return ktxTexture2_NeedsTranscoding(nativeReference);
+            }
+        }
+
         public bool hasAlpha {
             get {
                 // Valid for KTX 2.0 Basis Universal only!
@@ -231,8 +243,10 @@ namespace KtxUnity {
 
         [DllImport(INTERFACE_DLL)]
         static extern uint ktx_get_baseHeight ( System.IntPtr ktxTexture );
+
         [DllImport(INTERFACE_DLL)]
-         static extern bool ktx_get_has_alpha( System.IntPtr ktxTexture );
+        static extern bool ktxTexture2_NeedsTranscoding( System.IntPtr ktxTexture );
+
         [DllImport(INTERFACE_DLL)]
         static extern int ktxTexture2_GetNumComponents( System.IntPtr ktxTexture );
 
@@ -253,10 +267,10 @@ namespace KtxUnity {
         [DllImport(INTERFACE_DLL)]
         static extern uint ktx_get_orientation ( System.IntPtr ktxTexture );
 
-        /*
         [DllImport(INTERFACE_DLL)]
         static extern KtxClassId ktx_get_classId ( System.IntPtr ktxTexture );
 
+        /*
         [DllImport(INTERFACE_DLL)]
         static extern bool ktx_get_isArray ( System.IntPtr ktxTexture );
 

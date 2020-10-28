@@ -31,7 +31,15 @@ namespace KtxUnity {
 
             if(ktx.valid) {
                 orientation = ktx.orientation;
-                yield return Transcode(ktx,linear);
+                if(ktx.ktxClass==KtxClassId.ktxTexture2_c) {
+                    if(ktx.needsTranscoding) {
+                        yield return Transcode(ktx,linear);
+                    } else {
+                        Debug.LogError("Only supercompressed KTX is supported");
+                    }
+                } else {
+                    Debug.LogError("Only KTX 2.0 is supported");
+                }
             }
             ktx.Unload();
             OnTextureLoaded(texture,orientation);
