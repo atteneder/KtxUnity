@@ -251,7 +251,7 @@ namespace KtxUnity {
         static extern int ktxTexture2_GetNumComponents( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        public static extern KtxErrorCode ktx_transcode_ktx(System.IntPtr ktxTexture, TranscodeFormat outputFormat, uint transcodeFlags);
+        public static extern KtxErrorCode ktxTexture2_TranscodeBasis(System.IntPtr ktxTexture, TranscodeFormat outputFormat, uint transcodeFlags);
 
         [DllImport(INTERFACE_DLL)]
         unsafe static extern void ktx_get_data(System.IntPtr ktxTexture, out byte* data, out uint length);
