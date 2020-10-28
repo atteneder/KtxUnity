@@ -65,9 +65,11 @@ There's a demo project that shows how you can use it:
 
 <https://github.com/atteneder/KtxUnityDemo>
 
-Excerpt from [KtxUnityDemo](https://github.com/atteneder/KtxUnityDemo/blob/master/Assets/Scripts/CustomKtxFileLoader.cs) how to load a file from StreamingAssets:
+### Load from file
 
-```C#
+Excerpt from [KtxUnityDemo](https://github.com/atteneder/KtxUnityDemo/blob/master/Assets/Scripts/CustomKtxFileLoader.cs) how to load a file (for example from StreamingAssets):
+
+```csharp
 using UnityEngine;
 using KtxUnity;
 
@@ -93,7 +95,35 @@ In this case the base MonoBehaviour `TextureFileLoader` has a public `filePath` 
 
 `TextureFileLoader` is generic and can load KTX or Basis Universal files. Depending on what you need, pass `KtxTexture` or `BasisUniversalTexture` into its type parameter.
 
-Loading from URLs is similarly easy, just use `TextureUrlLoader`, which has the exact same interface. In this example we load a Basis Universal texture via URL:
+### Using as Sprite
+
+If you want to use the texture in a UI / Sprite context, this is how you create a Sprite with correct orientation (excerpt from [BasisImageLoader](https://github.com/atteneder/KtxUnityDemo/blob/main/Assets/Scripts/BasisImageLoader.cs)):
+
+```csharp
+    …
+    protected override void ApplyTexture(Texture2D texture, TextureOrientation orientation)
+    {
+        Vector2 pos = new Vector2(0,0);
+        Vector2 size = new Vector2(texture.width, texture.height);
+
+        if(orientation.IsXFlipped()) {
+            pos.x = size.x;
+            size.x *= -1;
+        }
+
+        if(orientation.IsYFlipped()) {
+            pos.y = size.y;
+            size.y *= -1;
+        }
+        var sprite = Sprite.Create(texture, new Rect(pos, size), Vector2.zero);
+        GetComponent<Image>().sprite = sprite;
+    }
+    …
+```
+
+### Load from URL
+
+Loading from URLs is similar. Use `TextureUrlLoader`, which has the exact same interface as `TextureFileLoader`. In this example we load a Basis Universal texture via URL:
 
 ```C#
 using UnityEngine;
@@ -109,6 +139,8 @@ public class CustomBasisUniversalUrlLoader : TextureUrlLoader<BasisUniversalText
     }
 }
 ```
+
+### Advanced
 
 Developers who want to create advanced loading code should look into classes `KtxTexture`/`BasisUniversalTexture` and `TextureBase` directly.
 
