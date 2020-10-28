@@ -4,10 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [Unreleased] -
+## [0.9.0] - 2020-10-28
 ### Added
-- Support for UWP x64
+- Support for Universal Windows Platform (x64)
 - Expressive error messages when loading unsupported KTX 1.0 or non-supercompressed KTX 2.0 file
+### Changed
+- Updated KTX-Software-Unity native libs to [0.2.0](https://github.com/atteneder/KTX-Software-Unity/releases/tag/v0.2.0)
 
 ## [0.8.2] - 2020-10-23
 - No changes. Bump release to trick OpenUPM to create package for 0.8.1
