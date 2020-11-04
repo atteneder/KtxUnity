@@ -6,7 +6,7 @@ Unity package that allows users to load [KTX 2.0](https://github.com/KhronosGrou
 
 ## Features
 
-- [KTX 2.0](https://github.com/KhronosGroup/KTX-Software) files (.ktx)
+- [KTX 2.0](https://github.com/KhronosGroup/KTX-Software) files (.ktx2)
 - [Basis Universal](https://github.com/BinomialLLC/basis_universal) files (.basis)
 - ETC1s and UASTC mode for Basis Universal super compression
 - Arbitrary Texture orientation can be considered
@@ -126,9 +126,9 @@ Example usage:
 ```bash
 # For KTX files:
 # Create regular KTX file from an input image
-toktx --bcmp regular.ktx input.png
+toktx --bcmp regular.ktx2 input.png
 # Create a y-flipped KTX file, fit for Unity out of the box
-toktx --lower_left_maps_to_s0t0 --bcmp unity_flipped.ktx input.png
+toktx --lower_left_maps_to_s0t0 --bcmp unity_flipped.ktx2 input.png
 
 
 # For Basis files:
