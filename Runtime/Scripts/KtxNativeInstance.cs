@@ -49,11 +49,26 @@ namespace KtxUnity {
             }
         }
 
+        public KtxClassId ktxClass {
+            get {
+                return ktx_get_classId(nativeReference);
+            }
+        }
+
+        public bool needsTranscoding {
+            get {
+                return ktxTexture2_NeedsTranscoding(nativeReference);
+            }
+        }
+
         public bool hasAlpha {
             get {
-                // TODO: This will change
-                // See discussion https://github.com/KhronosGroup/KTX-Software/issues/327
-                return ktx_get_num_components(nativeReference) > 1;
+                // Valid for KTX 2.0 Basis Universal only!
+                // 1 = greyscale => no alpha
+                // 2 = RRRA => alpha
+                // 3 = RGB => no alpha
+                // 4 = RGBA => alpha
+                return ktxTexture2_GetNumComponents(nativeReference) % 2 == 0;
             }
         }
 
@@ -228,13 +243,15 @@ namespace KtxUnity {
 
         [DllImport(INTERFACE_DLL)]
         static extern uint ktx_get_baseHeight ( System.IntPtr ktxTexture );
-        [DllImport(INTERFACE_DLL)]
-         static extern bool ktx_get_has_alpha( System.IntPtr ktxTexture );
-        [DllImport(INTERFACE_DLL)]
-         static extern int ktx_get_num_components( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        public static extern KtxErrorCode ktx_transcode_ktx(System.IntPtr ktxTexture, TranscodeFormat outputFormat, uint transcodeFlags);
+        static extern bool ktxTexture2_NeedsTranscoding( System.IntPtr ktxTexture );
+
+        [DllImport(INTERFACE_DLL)]
+        static extern int ktxTexture2_GetNumComponents( System.IntPtr ktxTexture );
+
+        [DllImport(INTERFACE_DLL)]
+        public static extern KtxErrorCode ktxTexture2_TranscodeBasis(System.IntPtr ktxTexture, TranscodeFormat outputFormat, uint transcodeFlags);
 
         [DllImport(INTERFACE_DLL)]
         unsafe static extern void ktx_get_data(System.IntPtr ktxTexture, out byte* data, out uint length);
@@ -250,10 +267,10 @@ namespace KtxUnity {
         [DllImport(INTERFACE_DLL)]
         static extern uint ktx_get_orientation ( System.IntPtr ktxTexture );
 
-        /*
         [DllImport(INTERFACE_DLL)]
         static extern KtxClassId ktx_get_classId ( System.IntPtr ktxTexture );
 
+        /*
         [DllImport(INTERFACE_DLL)]
         static extern bool ktx_get_isArray ( System.IntPtr ktxTexture );
 

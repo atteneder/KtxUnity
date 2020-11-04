@@ -86,7 +86,7 @@ namespace KtxUnity {
         public TranscodeFormat outputFormat;
 
         public void Execute() {
-            result[0] = KtxNativeInstance.ktx_transcode_ktx(
+            result[0] = KtxNativeInstance.ktxTexture2_TranscodeBasis(
                 nativeReference,
                 outputFormat,
                 0 // transcodeFlags
