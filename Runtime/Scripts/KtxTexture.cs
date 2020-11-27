@@ -33,7 +33,9 @@ namespace KtxUnity {
                 orientation = ktx.orientation;
                 if(ktx.ktxClass==KtxClassId.ktxTexture2_c) {
                     if(ktx.needsTranscoding) {
-                        yield return Transcode(ktx,linear);
+                        var transcode = Transcode(ktx,linear);
+                        while (transcode.MoveNext())
+                            yield return null;
                     } else {
                         Debug.LogError("Only supercompressed KTX is supported");
                     }
