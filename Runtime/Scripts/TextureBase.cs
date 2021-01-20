@@ -18,6 +18,7 @@
 
 using System.Collections;
 using System.IO;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.Experimental.Rendering;
@@ -36,28 +37,25 @@ namespace KtxUnity {
         /// see https://docs.unity3d.com/Manual/StreamingAssets.html
         /// </summary>
         /// <param name="filePath">Path to the file, relative to StreamingAssets</param>
-        /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
-        public void LoadFromStreamingAssets( string filePath, MonoBehaviour monoBehaviour, bool linear = false ) {
+        public async Task LoadFromStreamingAssets( string filePath, bool linear = false ) {
             var url = GetStreamingAssetsUrl(filePath);
-            monoBehaviour.StartCoroutine(LoadFile(url,monoBehaviour,linear));
+            await LoadFile(url,linear);
         }
 
         /// <summary>
         /// Loads a KTX or Basis Universal texture from an URL
         /// </summary>
         /// <param name="url">URL to the ktx/basis file to load</param>
-        /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
-        public void LoadFromUrl( string url, MonoBehaviour monoBehaviour, bool linear = false ) {
-            monoBehaviour.StartCoroutine(LoadFile(url,monoBehaviour,linear));
+        public async Task LoadFromUrl( string url, bool linear = false ) {
+            await LoadFile(url,linear);
         }
 
         /// <summary>
         /// Load a KTX or Basis Universal texture from a buffer
         /// </summary>
         /// <param name="data">Native buffer that holds the ktx/basisu file</param>
-        /// <param name="monoBehaviour">Can be any component. Used as loading Coroutine container. Make sure it is not destroyed before loading has finished.</param>
-        public void LoadFromBytes( NativeSlice<byte> data, MonoBehaviour monoBehaviour, bool linear = false ) {
-            monoBehaviour.StartCoroutine(LoadBytesRoutine(data,linear));
+        public void LoadFromBytes( NativeSlice<byte> data, bool linear = false ) {
+            LoadBytesRoutine(data,linear);
         }
 
         /// <summary>
@@ -78,24 +76,28 @@ namespace KtxUnity {
             return path;
         }
 
-        IEnumerator LoadFile( string url, MonoBehaviour monoBehaviour, bool linear = false ) {
+        async Task LoadFile( string url, bool linear = false ) {
     
             var webRequest = UnityWebRequest.Get(url);
-            yield return webRequest.SendWebRequest();
+            var asyncOp = webRequest.SendWebRequest();
+            while (!asyncOp.isDone) {
+                await Task.Yield();
+            }
+
             if(!string.IsNullOrEmpty(webRequest.error)) {
                 Debug.LogErrorFormat("Error loading {0}: {1}",url,webRequest.error);
                 OnTextureLoaded(null,TextureOrientation.UNITY_DEFAULT);
-                yield break;
+                return;
             }
 
             var buffer = webRequest.downloadHandler.data;
 
             var na = new NativeArray<byte>(buffer,KtxNativeInstance.defaultAllocator);
-            yield return monoBehaviour.StartCoroutine(LoadBytesRoutine(na,linear));
+            await LoadBytesRoutine(na,linear);
             na.Dispose();
         }
 
-        public abstract IEnumerator LoadBytesRoutine( NativeSlice<byte> data, bool linear = false );
+        public abstract Task LoadBytesRoutine( NativeSlice<byte> data, bool linear = false );
 
         protected void OnTextureLoaded(Texture2D texture, TextureOrientation orientation) {
             if(onTextureLoaded!=null) {

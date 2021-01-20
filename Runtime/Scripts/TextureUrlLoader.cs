@@ -12,22 +12,24 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System.Threading.Tasks;
+
 namespace KtxUnity {
     public abstract class TextureUrlLoader<TextureType> : TextureLoaderBase where TextureType:TextureBase,new()
     {
         public string url;
 
-        protected virtual void Start() {
-            LoadFromUrl();
+        protected virtual async void Start() {
+            await LoadFromUrl();
         }
 
         /// <summary>
         /// Demonstrates how to load a texture file from an URL
         /// </summary>
-        void LoadFromUrl() {
+        async Task LoadFromUrl() {
             texture = new TextureType();
             texture.onTextureLoaded += OnTextureLoaded;
-            texture.LoadFromUrl(url,this);
+            await texture.LoadFromUrl(url,this);
         }
     }
 }

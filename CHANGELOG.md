@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.0.0] - 2021-01-20
+### Changed
+- Switched API to `async` in order to remove dependency to MonoBehaviour and Coroutines
+- Raised minimum required version to 2019.2 (the version that switched to scripting runtime version .NET 4.6)
+
 ## [0.9.1] - 2020-11-12
 ### Changed
 - Updated KTX-Software-Unity native libs to [0.2.4](https://github.com/atteneder/KTX-Software-Unity/releases/tag/v0.2.4)

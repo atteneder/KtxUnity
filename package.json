@@ -1,9 +1,9 @@
 {
   "name": "com.atteneder.ktx",
-  "version": "0.9.1",
+  "version": "1.0.0-preview",
   "displayName": "KTX/Basis Texture",
   "description": "Load KTX and Basis Universal textures at runtime.",
-  "unity": "2019.1",
+  "unity": "2019.2",
   "dependencies": {
     "com.unity.modules.unitywebrequest": "1.0.0"
   },
@@ -22,6 +22,6 @@
   "author": {
     "name": "Andreas Atteneder",
     "email": "andreas.atteneder@gmail.com",
-    "url": "https://atteneder.netlify.app"
+    "url": "https://pixel.engineer"
   } 
 }

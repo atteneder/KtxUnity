@@ -13,7 +13,8 @@
 // limitations under the License.
 
 using System.Collections;
-
+using System.Threading.Tasks;
+    
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
@@ -23,24 +24,24 @@ namespace KtxUnity {
 
     public class BasisUniversalTexture : TextureBase
     {
-        Texture2D texture;
-
-        public override IEnumerator LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
+        public override async Task LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
 
             bool yFlipped = true;
 
             var transcoder = BasisUniversal.GetTranscoderInstance();
 
             while(transcoder==null) {
-                yield return null;
+                await Task.Yield();
                 transcoder = BasisUniversal.GetTranscoderInstance();
             }
+
+            Texture2D texture = null;
 
             if(transcoder.Open(data)) {
                 var textureType = transcoder.GetTextureType();
                 if(textureType == BasisUniversalTextureType.Image2D) {
                     yFlipped = transcoder.GetYFlip();
-                    yield return TranscodeImage2D(transcoder,data,linear);
+                    texture = await TranscodeImage2D(transcoder,data,linear);
                 } else {
                     Debug.LogErrorFormat("Basis Universal texture type {0} is not supported",textureType);
                 }
@@ -56,8 +57,10 @@ namespace KtxUnity {
             OnTextureLoaded(texture,orientation);
         }
 
-        IEnumerator TranscodeImage2D(BasisUniversalTranscoderInstance transcoder, NativeSlice<byte> data, bool linear) {
-
+        async Task<Texture2D> TranscodeImage2D(BasisUniversalTranscoderInstance transcoder, NativeSlice<byte> data, bool linear) {
+            
+            Texture2D texture = null;
+            
             // Can turn to parameter in future
             uint imageIndex = 0;
 
@@ -86,7 +89,7 @@ namespace KtxUnity {
                 Profiler.EndSample();
                 
                 while(!jobHandle.IsCompleted) {
-                    yield return null;
+                    await Task.Yield();
                 }
                 jobHandle.Complete();
 
@@ -111,6 +114,8 @@ namespace KtxUnity {
                 job.textureData.Dispose();
                 job.result.Dispose();
             }
+
+            return texture;
         }
     }
 }

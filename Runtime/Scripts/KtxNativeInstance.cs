@@ -192,7 +192,9 @@ namespace KtxUnity {
                     reorderedDataPtr,
                     (uint)reorderedData.Length
                     );
+                Profiler.BeginSample("LoadRawTextureData");
                 texture.LoadRawTextureData(reorderedData);
+                Profiler.EndSample();
                 reorderedData.Dispose();
                 Profiler.EndSample();
             } else {

@@ -13,6 +13,7 @@
 // limitations under the License.
 
 using System.Collections;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
@@ -21,19 +22,18 @@ using Unity.Collections;
 namespace KtxUnity {
     public class KtxTexture : TextureBase
     {
-        Texture2D texture;
-
-        public override IEnumerator LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
+        public override async Task LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
 
             var orientation = TextureOrientation.UNITY_DEFAULT;
 
             var ktx = new KtxNativeInstance(data);
+            Texture2D texture = null;
 
             if(ktx.valid) {
                 orientation = ktx.orientation;
                 if(ktx.ktxClass==KtxClassId.ktxTexture2_c) {
                     if(ktx.needsTranscoding) {
-                        yield return Transcode(ktx,linear);
+                        texture = await Transcode(ktx,linear);
                     } else {
                         Debug.LogError("Only supercompressed KTX is supported");
                     }
@@ -45,10 +45,12 @@ namespace KtxUnity {
             OnTextureLoaded(texture,orientation);
         }
 
-        IEnumerator Transcode(KtxNativeInstance ktx, bool linear) {
+        async Task<Texture2D> Transcode(KtxNativeInstance ktx, bool linear) {
             // TODO: Maybe do this somewhere more central
             TranscodeFormatHelper.Init();
 
+            Texture2D texture = null;
+            
             var formats = GetFormat(ktx,ktx,linear);
 
             if(formats.HasValue) {
@@ -68,7 +70,7 @@ namespace KtxUnity {
                 Profiler.EndSample();
                 
                 while(!jobHandle.IsCompleted) {
-                    yield return null;
+                    await Task.Yield();
                 }
                 jobHandle.Complete();
 
@@ -90,7 +92,6 @@ namespace KtxUnity {
                     }
                     catch (UnityException) {
                         Debug.LogError(ERR_MSG_TRANSCODE_FAILED);
-                        texture = null;
                     }
                     Profiler.EndSample();
                 } else {
@@ -98,6 +99,7 @@ namespace KtxUnity {
                 }
                 job.result.Dispose();
             }
+            return texture;
         }
     }
 }
