@@ -24,7 +24,7 @@ namespace KtxUnity {
 
     public class BasisUniversalTexture : TextureBase
     {
-        protected override async Task<TextureResult> LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
+        public override async Task<TextureResult> LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
 
             bool yFlipped = true;
 

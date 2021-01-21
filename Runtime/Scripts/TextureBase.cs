@@ -93,7 +93,7 @@ namespace KtxUnity {
             return result;
         }
 
-        protected abstract Task<TextureResult> LoadBytesRoutine( NativeSlice<byte> data, bool linear = false );
+        public abstract Task<TextureResult> LoadBytesRoutine( NativeSlice<byte> data, bool linear = false );
 
         protected virtual TranscodeFormatTuple? GetFormat( IMetaData meta, ILevelInfo li, bool linear = false ) {
             return TranscodeFormatHelper.GetFormatsForImage(meta,li,linear);
