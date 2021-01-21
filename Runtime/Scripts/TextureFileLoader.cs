@@ -21,17 +21,17 @@ namespace KtxUnity {
         public bool linear;
 
         protected virtual async void Start() {
-            await LoadFromStreamingAssets();
+            var result = await LoadFromStreamingAssets();
+            OnTextureLoaded(result);
         }
 
         /// <summary>
         /// Demonstrates how to load a texture file from the StreamingAssets
         /// folder (see https://docs.unity3d.com/Manual/StreamingAssets.html)
         /// </summary>
-        protected async Task LoadFromStreamingAssets(TextureType txt = null) {
-            texture = txt==null ? new TextureType() : txt;
-            texture.onTextureLoaded += OnTextureLoaded;
-            await texture.LoadFromStreamingAssets(filePath,linear);
+        protected async Task<TextureResult> LoadFromStreamingAssets(TextureType txt = null) {
+            var texture = txt==null ? new TextureType() : txt;
+            return await texture.LoadFromStreamingAssets(filePath,linear);
         }
     }
 }

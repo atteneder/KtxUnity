@@ -24,7 +24,7 @@ namespace KtxUnity {
 
     public class BasisUniversalTexture : TextureBase
     {
-        public override async Task LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
+        protected override async Task<TextureResult> LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
 
             bool yFlipped = true;
 
@@ -54,7 +54,8 @@ namespace KtxUnity {
                 // Regular basis files (no y_flip) seem to be 
                 orientation |= TextureOrientation.Y_UP;
             }
-            OnTextureLoaded(texture,orientation);
+
+            return new TextureResult(texture, orientation);
         }
 
         async Task<Texture2D> TranscodeImage2D(BasisUniversalTranscoderInstance transcoder, NativeSlice<byte> data, bool linear) {

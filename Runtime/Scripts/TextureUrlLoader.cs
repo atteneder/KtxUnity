@@ -27,9 +27,10 @@ namespace KtxUnity {
         /// Demonstrates how to load a texture file from an URL
         /// </summary>
         async Task LoadFromUrl() {
-            texture = new TextureType();
-            texture.onTextureLoaded += OnTextureLoaded;
-            await texture.LoadFromUrl(url,this);
+            var texture = new TextureType();
+            var result = await texture.LoadFromUrl(url);
+            OnTextureLoaded(result);
+            
         }
     }
 }

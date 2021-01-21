@@ -6,7 +6,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.0.0] - 2021-01-20
 ### Changed
-- Switched API to `async` in order to remove dependency to MonoBehaviour and Coroutines
+- Switched API to `async` calls that return a `TextureResult` directly (instead of onTextureLoaded event)
+- Doesn't require a MonoBehaviour for running coroutines anymore
 - Raised minimum required version to 2019.2 (the version that switched to scripting runtime version .NET 4.6)
 
 ## [0.9.1] - 2020-11-12

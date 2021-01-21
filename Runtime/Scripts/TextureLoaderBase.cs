@@ -17,22 +17,19 @@ using UnityEngine;
 namespace KtxUnity {
     public abstract class TextureLoaderBase : MonoBehaviour
     {
-        protected TextureBase texture;
-
         /// <summary>
         /// Example callback for loading a texture.
         /// </summary>
-        /// <param name="loadedTexture">If no error occurred, resulting texture. null otherwise</param>
-        protected void OnTextureLoaded(Texture2D loadedTexture, TextureOrientation orientation) {
-            texture.onTextureLoaded -= OnTextureLoaded;
-            if(loadedTexture!=null) {
-                ApplyTexture(loadedTexture,orientation);
+        /// <param name="result">Result of loading a texture</param>
+        protected void OnTextureLoaded(TextureResult result) {
+            if(result.texture!=null) {
+                ApplyTexture(result);
             } else {
                 Debug.LogError("Loading Texture failed!");
             }
-            texture = null;
+            // texture = null;
         }
 
-        protected abstract void ApplyTexture(Texture2D texture, TextureOrientation orientation);
+        protected abstract void ApplyTexture(TextureResult result);
     }
 }
