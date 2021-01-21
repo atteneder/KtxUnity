@@ -18,16 +18,15 @@ namespace KtxUnity {
     public abstract class TextureLoaderBase : MonoBehaviour
     {
         /// <summary>
-        /// Example callback for loading a texture.
+        /// Example method for applying a loaded texture.
         /// </summary>
         /// <param name="result">Result of loading a texture</param>
         protected void OnTextureLoaded(TextureResult result) {
-            if(result.texture!=null) {
+            if(result!=null) {
                 ApplyTexture(result);
             } else {
                 Debug.LogError("Loading Texture failed!");
             }
-            // texture = null;
         }
 
         protected abstract void ApplyTexture(TextureResult result);

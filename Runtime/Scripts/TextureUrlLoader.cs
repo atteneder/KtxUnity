@@ -30,7 +30,6 @@ namespace KtxUnity {
             var texture = new TextureType();
             var result = await texture.LoadFromUrl(url);
             OnTextureLoaded(result);
-            
         }
     }
 }

@@ -82,7 +82,7 @@ namespace KtxUnity {
 
             if(!string.IsNullOrEmpty(webRequest.error)) {
                 Debug.LogErrorFormat("Error loading {0}: {1}",url,webRequest.error);
-                return new TextureResult();
+                return null;
             }
 
             var buffer = webRequest.downloadHandler.data;

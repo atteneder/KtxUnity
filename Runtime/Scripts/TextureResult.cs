@@ -20,7 +20,7 @@ namespace KtxUnity {
     /// <summary>
     /// TextureResult encapsulates result of texture loading. The texture itself and its orientation.
     /// </summary>
-    public struct TextureResult {
+    public class TextureResult {
         public Texture2D texture;
         public TextureOrientation orientation;
         
@@ -28,5 +28,5 @@ namespace KtxUnity {
             this.texture = texture;
             this.orientation = orientation;
         }
-    } 
+    }
 }
