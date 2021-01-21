@@ -61,84 +61,100 @@ Next time you open your project in Unity, it will download the package automatic
 
 ## Using
 
-There's a demo project that shows how you can use it:
+The API provides the loading classes `KtxTexture` for KTX 2.0 files and `BasisUniversalTexture` for Basis files, which both offer the following async loading methods:
 
-<https://github.com/atteneder/KtxUnityDemo>
+- `LoadFromUrl` for loading URLs (including file URLs starting with `file://`)
+- `LoadFromStreamingAssets` for loading relative paths in the StreamingAssets folder
+- `LoadFromBytes` for loading from memory
 
-### Load from file
+See [TextureBase](./Runtime/Scripts/TextureBase.cs) for complete signature.
 
-Excerpt from [KtxUnityDemo](https://github.com/atteneder/KtxUnityDemo/blob/master/Assets/Scripts/CustomKtxFileLoader.cs) how to load a file (for example from StreamingAssets):
+> Take a look at the demo project [KtxUnityDemo](https://github.com/atteneder/KtxUnityDemo) for extensive usage examples.
 
-```csharp
-using UnityEngine;
-using KtxUnity;
+### Loading Textures
 
-public class CustomKtxFileLoader : TextureFileLoader<KtxTexture>
-{
-    protected override void ApplyTexture(Texture2D texture, TextureOrientation orientation) {
-        var renderer = GetComponent<Renderer>();
-        if(renderer!=null && renderer.sharedMaterial!=null) {
-            renderer.material.mainTexture = texture;
-            // Optional: Support arbitrary texture orientation by flipping the texture if necessary
-            var scale = renderer.material.mainTextureScale;
-            scale.x = orientation.IsXFlipped() ? -1 : 1;
-            scale.y = orientation.IsYFlipped() ? -1 : 1;
-            renderer.material.mainTextureScale = scale;
-        }
+Excerpt from [KtxUnityDemo](https://github.com/atteneder/KtxUnityDemo/blob/master/Assets/Scripts/LoadKtxFileDemo.cs) how to load a file (for example from StreamingAssets):
+
+```C#
+…
+async void Start() {
+        
+    // Create KTX texture instance
+    var texture = new KtxTexture();
+    
+    // Linear color sampling. Needed for non-color value textures (e.g. normal maps) 
+    bool linearColor = true;
+    
+    // Load file from Streaming Assets folder (relative path)
+    var result = await texture.LoadFromStreamingAssets("trout.ktx",linearColor);
+    
+    // Alternative: Load from URL
+    // var result = await texture.LoadFromUrl("https://myserver.com/trout.ktx", linearColor);
+    
+    // Alternative: Load from memory
+    // var result = await texture.LoadFromBytes(nativeArray, linearColor);
+
+    if (result != null) {
+        // Use texture. For example, apply texture to a material
+        targetMaterial.mainTexture = result.texture;
+        
+        // Optional: Support arbitrary texture orientation by flipping the texture if necessary
+        var scale = targetMaterial.mainTextureScale;
+        scale.x = result.orientation.IsXFlipped() ? -1 : 1;
+        scale.y = result.orientation.IsYFlipped() ? -1 : 1;
+        targetMaterial.mainTextureScale = scale;
     }
 }
+…
 ```
-
-In this case the base MonoBehaviour `TextureFileLoader` has a public `filePath` member, starts loading in `Start` and  already takes care of all things. You only need to implement the `ApplyTexture` method and do something with your texture.
-
-`TextureOrientation` is used to counter-act a potentially flipped image by setting texture scales to negative one.
-
-`TextureFileLoader` is generic and can load KTX or Basis Universal files. Depending on what you need, pass `KtxTexture` or `BasisUniversalTexture` into its type parameter.
 
 ### Using as Sprite
 
-If you want to use the texture in a UI / Sprite context, this is how you create a Sprite with correct orientation (excerpt from [BasisImageLoader](https://github.com/atteneder/KtxUnityDemo/blob/main/Assets/Scripts/BasisImageLoader.cs)):
+If you want to use the texture in a UI / Sprite context, this is how you create a Sprite with correct orientation (excerpt from [BasisImageLoader](https://github.com/atteneder/KtxUnityDemo/blob/main/Assets/Scripts/LoadBasisFileSpriteDemo.cs)):
 
-```csharp
-    …
-    protected override void ApplyTexture(Texture2D texture, TextureOrientation orientation)
-    {
-        Vector2 pos = new Vector2(0,0);
-        Vector2 size = new Vector2(texture.width, texture.height);
+```C#
+…
+async void Start() {
+        
+    // Create a basis universal texture instance
+    var texture = new BasisUniversalTexture();
+    
+    // Load file from Streaming Assets folder
+    var result = await texture.LoadFromStreamingAssets("dachstein.basis");
 
-        if(orientation.IsXFlipped()) {
+    if (result != null) {
+        // Calculate correct size
+        var pos = new Vector2(0,0);
+        var size = new Vector2(result.texture.width, result.texture.height);
+
+        // Flip Sprite, if required
+        if(result.orientation.IsXFlipped()) {
             pos.x = size.x;
             size.x *= -1;
         }
 
-        if(orientation.IsYFlipped()) {
+        if(result.orientation.IsYFlipped()) {
             pos.y = size.y;
             size.y *= -1;
         }
-        var sprite = Sprite.Create(texture, new Rect(pos, size), Vector2.zero);
-        GetComponent<Image>().sprite = sprite;
-    }
-    …
-```
 
-### Load from URL
-
-Loading from URLs is similar. Use `TextureUrlLoader`, which has the exact same interface as `TextureFileLoader`. In this example we load a Basis Universal texture via URL:
-
-```C#
-using UnityEngine;
-using KtxUnity;
-
-public class CustomBasisUniversalUrlLoader : TextureUrlLoader<BasisUniversalTexture>
-{
-   protected override void ApplyTexture(Texture2D texture, TextureOrientation orientation) {
-        var renderer = GetComponent<Renderer>();
-        if(renderer!=null && renderer.sharedMaterial!=null) {
-            renderer.material.mainTexture = texture;
-        }
+        // Create a Sprite and assign it to the Image
+        GetComponent<Image>().sprite = Sprite.Create(result.texture, new Rect(pos, size), Vector2.zero);
+        
+        // Preserve aspect ratio:
+        // Flipping the sprite by making the size x or y negative (above) breaks Image's `Preserve Aspect` feature
+        // You can/have to calculate the RectTransform size yourself. Example:
+        
+        // Calculate correct size and assign it to the RectTransform
+        const float scale = 0.5f; // Set this to whatever size you need it - best make it a serialized class field
+        var rt = GetComponent<RectTransform>();
+        rt.sizeDelta = new Vector2(result.texture.width*scale, result.texture.height*scale);
     }
 }
+…
 ```
+
+> Note: You can still use the `Preserve Aspect` Image option, if you encode your KTX/Basis files with flipped Y axis (see [Creating Textures](#creating-textures) )
 
 ### Advanced
 
@@ -170,7 +186,7 @@ basisu -output_file regular.basis input.png
 basisu -y_flip -output_file unity_flipped.basis input.png
 ```
 
-If changing the orientation of your texture files is not an option, you can correct it by applying it flipped at run-time (see [Usage](#using)).
+If changing the orientation of your texture files is not an option, you can correct it by applying it flipped at run-time (see [Using](#using)).
 
 ## Limitations
 
