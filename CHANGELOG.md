@@ -4,11 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.0.0] - 2021-01-20
+## [1.0.0-preview] - 2021-01-31
 ### Changed
 - Switched API to `async` calls that return a `TextureResult` directly (instead of onTextureLoaded event)
 - Doesn't require a MonoBehaviour for running coroutines anymore
 - Raised minimum required version to 2019.2 (the version that switched to scripting runtime version .NET 4.6)
+- Updated KTX-Software-Unity native libs to [0.3.0](https://github.com/atteneder/KTX-Software-Unity/releases/tag/v0.3.0)
 
 ## [0.9.1] - 2020-11-12
 ### Changed
