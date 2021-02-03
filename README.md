@@ -5,6 +5,8 @@
 </p>
 
 [![openupm](https://img.shields.io/npm/v/com.atteneder.ktx?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.atteneder.ktx/)
+[![GitHub issues](https://img.shields.io/github/issues/atteneder/KtxUnity)](https://github.com/atteneder/KtxUnity/issues)
+[![GitHub license](https://img.shields.io/github/license/atteneder/KtxUnity)](https://github.com/atteneder/KtxUnity/blob/main/LICENSE.md)
 
 Unity package that allows users to load [KTX 2.0][ktx] or [Basis Universal][basisu] texture files.
 
