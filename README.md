@@ -1,5 +1,9 @@
 # KTX/Basis Texture Unity Package
 
+<p align="center">
+<img src="./Documentation~/img/ktx-unity-logos.png" />
+</p>
+
 [![openupm](https://img.shields.io/npm/v/com.atteneder.ktx?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.atteneder.ktx/)
 
 Unity package that allows users to load [KTX 2.0](https://github.com/KhronosGroup/KTX-Software) or [Basis Universal](https://github.com/BinomialLLC/basis_universal) texture files.
@@ -17,7 +21,7 @@ Following build targets are supported
 - iOS (arm64 and armv7a)
 - Android (arm64 and armv7a)
 - Windows (64 bit)
-- Universal Windows Platform (x64)
+- Universal Windows Platform (x64,x86,ARM,ARM64)
 - macOS (Intel 64 bit)
 - Linux (64 bit)
 
