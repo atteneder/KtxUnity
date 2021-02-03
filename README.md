@@ -6,12 +6,12 @@
 
 [![openupm](https://img.shields.io/npm/v/com.atteneder.ktx?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.atteneder.ktx/)
 
-Unity package that allows users to load [KTX 2.0](https://github.com/KhronosGroup/KTX-Software) or [Basis Universal](https://github.com/BinomialLLC/basis_universal) texture files.
+Unity package that allows users to load [KTX 2.0][ktx] or [Basis Universal][basisu] texture files.
 
 ## Features
 
-- [KTX 2.0](https://github.com/KhronosGroup/KTX-Software) files (.ktx2)
-- [Basis Universal](https://github.com/BinomialLLC/basis_universal) files (.basis)
+- [KTX 2.0][ktx] files (.ktx2)
+- [Basis Universal][basisu] files (.basis)
 - ETC1s and UASTC mode for Basis Universal super compression
 - Arbitrary Texture orientation can be considered
 
@@ -27,13 +27,13 @@ Following build targets are supported
 
 ![Screenshot of loaded fish textures](https://github.com/atteneder/BasisUniversalUnityDemo/raw/master/Images/fishes.png "Lots of fish basis universal textures loaded via BasisUniversalUnity")
 
-Thanks to [Khronos](https://www.khronos.org), [Binomial](http://www.binomial.info) and everyone involved in making KTX and Basis Universal available!
+Thanks to [Khronos][khronos], [Binomial][binomial] and everyone involved in making KTX and Basis Universal available!
 
 ## Installing
 
 The easiest way to install is to download and open the [Installer Package](https://package-installer.glitch.me/v1/installer/Atteneder/com.atteneder.ktx?registry=https%3A%2F%2Fpackage.openupm.com&scope=com.atteneder)
 
-It runs a script that installs KtxUnity via a [scoped registry](https://docs.unity3d.com/Manual/upm-scoped.html). After that it is listed in the *Package Manager* and can be updated from there.
+It runs a script that installs KtxUnity via a [scoped registry][scoped]. After that it is listed in the *Package Manager* and can be updated from there.
 
 <details><summary>Alternative / Legacy installations (for Unity 2018.4 and older)</summary>
 
@@ -166,7 +166,7 @@ Developers who want to create advanced loading code should look into classes `Kt
 
 ## Creating Textures
 
-You can use the command line tools `toktx` (comes with [KTX-Software](https://github.com/KhronosGroup/KTX-Software)) to create KTX v2.0 files and `basisu` (part of [Basis Universal](https://github.com/BinomialLLC/basis_universal)) to create .basis files.
+You can use the command line tools `toktx` (comes with [KTX-Software][ktxsoftware]) to create KTX v2.0 files and `basisu` (part of [Basis Universal](https://github.com/BinomialLLC/basis_universal)) to create .basis files.
 
 The default texture orientation of both of those tools (right-down) does not match Unity's orientation (right-up). To counter-act, you can provide a parameter to flip textures in the vertical axis (Y). This is recommended, if you use the textures in Unity only. The parameters are:
 
@@ -204,7 +204,13 @@ At the moment known shortcomings:
 
 Like this demo? You can show your appreciation and ...
 
-[![Buy me a coffee](https://az743702.vo.msecnd.net/cdn/kofi1.png?v=0)](https://ko-fi.com/C0C3BW7G)
+[![Buy me a coffee](https://az743702.vo.msecnd.net/cdn/kofi1.png?v=0)][kofi]
+
+## Trademarks
+
+*Unity* is a registered trademark of [Unity Technologies][unity].
+
+*Khronos®* is a registered trademark and *KTX™* is a trademark of [The Khronos Group Inc][khronos].
 
 ## License
 
@@ -220,3 +226,12 @@ distributed under the License is distributed on an "AS IS" BASIS,
 WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
+
+[basisu]: https://github.com/BinomialLLC/basis_universal
+[binomial]: http://www.binomial.info
+[khronos]: https://www.khronos.org
+[kofi]: https://ko-fi.com/C0C3BW7G
+[ktxsoftware]: https://github.com/KhronosGroup/KTX-Software
+[ktx]: http://github.khronos.org/KTX-Specification
+[scoped]: https://docs.unity3d.com/Manual/upm-scoped.html
+[unity]: https://unity.com
