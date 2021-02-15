@@ -27,7 +27,7 @@ Following build targets are supported
 - macOS (Intel 64 bit)
 - Linux (64 bit)
 
-![Screenshot of loaded fish textures](https://github.com/atteneder/BasisUniversalUnityDemo/raw/master/Images/fishes.png "Lots of fish basis universal textures loaded via BasisUniversalUnity")
+![Screenshot of loaded fish textures](https://raw.githubusercontent.com/atteneder/KtxUnityDemo/main/Images/fishes.png "Lots of fish basis universal textures loaded via BasisUniversalUnity")
 
 Thanks to [Khronos][khronos], [Binomial][binomial] and everyone involved in making KTX and Basis Universal available!
 
