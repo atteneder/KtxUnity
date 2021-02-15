@@ -79,7 +79,7 @@ See [TextureBase](./Runtime/Scripts/TextureBase.cs) for complete signature.
 
 ### Loading Textures
 
-Excerpt from [KtxUnityDemo](https://github.com/atteneder/KtxUnityDemo/blob/master/Assets/Scripts/LoadKtxFileDemo.cs) how to load a file (for example from StreamingAssets):
+Excerpt from [KtxUnityDemo](https://github.com/atteneder/KtxUnityDemo/blob/main/Assets/Scripts/LoadKtxFileDemo.cs) how to load a file (for example from StreamingAssets):
 
 ```C#
 …
