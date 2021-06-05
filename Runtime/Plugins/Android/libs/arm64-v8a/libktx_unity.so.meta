@@ -19,6 +19,7 @@ PluginImporter:
         Exclude Android: 0
         Exclude Editor: 1
         Exclude Linux64: 1
+        Exclude Lumin: 0
         Exclude OSXUniversal: 1
         Exclude WebGL: 1
         Exclude Win: 1
@@ -55,6 +56,11 @@ PluginImporter:
       enabled: 0
       settings:
         CPU: AnyCPU
+  - first:
+      Lumin: Lumin
+    second:
+      enabled: 1
+      settings: {}
   - first:
       Standalone: Linux64
     second:
