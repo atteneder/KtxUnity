@@ -26,6 +26,7 @@ Following build targets are supported
 - Universal Windows Platform (x64,x86,ARM,ARM64)
 - macOS (Intel 64 bit)
 - Linux (64 bit)
+- Lumin / Magic Leap
 
 ![Screenshot of loaded fish textures](https://raw.githubusercontent.com/atteneder/KtxUnityDemo/main/Images/fishes.png "Lots of fish basis universal textures loaded via BasisUniversalUnity")
 
