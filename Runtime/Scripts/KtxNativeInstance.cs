@@ -253,7 +253,7 @@ namespace KtxUnity {
         static extern bool ktxTexture2_NeedsTranscoding( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
-        static extern int ktxTexture2_GetNumComponents( System.IntPtr ktxTexture );
+        static extern uint ktxTexture2_GetNumComponents( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
         public static extern KtxErrorCode ktxTexture2_TranscodeBasis(System.IntPtr ktxTexture, TranscodeFormat outputFormat, uint transcodeFlags);
