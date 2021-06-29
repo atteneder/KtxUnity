@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Support for Lumin / Magic Leap
+### Fixed
+- Prevent crash during mipmap reverting on recent llvm/emscripten versions
 
 ## [1.0.0] - 2021-02-03
 ### Added

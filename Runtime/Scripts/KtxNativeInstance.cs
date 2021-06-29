@@ -187,12 +187,15 @@ namespace KtxUnity {
                 Profiler.BeginSample("MipMapCopy");
                 var reorderedData = new NativeArray<byte>((int)length,Allocator.Temp);
                 void * reorderedDataPtr = NativeArrayUnsafeUtility.GetUnsafePtr<byte>(reorderedData);
-                ktx_copy_data_levels_reverted(
+                var result = ktx_copy_data_levels_reverted(
                     nativeReference,
                     reorderedDataPtr,
                     (uint)reorderedData.Length
                     );
                 Profiler.BeginSample("LoadRawTextureData");
+                if (result != KtxErrorCode.KTX_SUCCESS) {
+                    return texture;
+                }
                 texture.LoadRawTextureData(reorderedData);
                 Profiler.EndSample();
                 reorderedData.Dispose();
@@ -258,7 +261,7 @@ namespace KtxUnity {
         [DllImport(INTERFACE_DLL)]
         unsafe static extern void ktx_get_data(System.IntPtr ktxTexture, out byte* data, out uint length);
         [DllImport(INTERFACE_DLL)]
-        unsafe static extern void ktx_copy_data_levels_reverted(System.IntPtr ktxTexture, void* destination, uint destinationLength);
+        unsafe static extern KtxErrorCode ktx_copy_data_levels_reverted(System.IntPtr ktxTexture, void* destination, uint destinationLength);
 
         [DllImport(INTERFACE_DLL)]
         static extern void ktx_unload_ktx(System.IntPtr ktxTexture);
