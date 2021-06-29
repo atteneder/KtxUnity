@@ -20,6 +20,7 @@ namespace KtxUnity {
 
     public interface ILevelInfo {
         bool isPowerOfTwo {get;}
+        bool isMultipleOfFour {get;}
         bool isSquare {get;}
     }
 
@@ -55,9 +56,19 @@ namespace KtxUnity {
             return (i&(i-1))==0;
         }
 
+        public static bool IsMultipleOfFour(uint i) {
+            return (i&0x3)==0;
+        }
+
         public bool isPowerOfTwo {
             get {
                 return IsPowerOfTwo(width) && IsPowerOfTwo(height);
+            }
+        }
+
+        public bool isMultipleOfFour {
+            get {
+                return IsMultipleOfFour(width) && IsMultipleOfFour(height);
             }
         }
 

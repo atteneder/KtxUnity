@@ -9,6 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for Lumin / Magic Leap
 ### Fixed
 - Prevent crash during mipmap reverting on recent llvm/emscripten versions
+- Not transcoding to ETC1/ETC2/BC1 if resolution is not a multiple of four
 
 ## [1.0.0] - 2021-02-03
 ### Added

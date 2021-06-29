@@ -78,6 +78,12 @@ namespace KtxUnity {
             }
         }
 
+        public bool isMultipleOfFour {
+            get {
+                return LevelInfo.IsMultipleOfFour(baseWidth) && LevelInfo.IsMultipleOfFour(baseHeight);
+            }
+        }
+
         public bool isSquare {
             get {
                 return baseWidth==baseHeight;

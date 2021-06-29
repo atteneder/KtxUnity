@@ -41,14 +41,19 @@ namespace KtxUnity {
         NonPowerOfTwo = 0x2,
 
         /// <summary>
+        /// Format supports arbitrary resolutions
+        /// </summary>
+        NonMultipleOfFour = 0x4,
+
+        /// <summary>
         /// Non square resolution
         /// </summary>
-        NonSquare = 0x4,
+        NonSquare = 0x8,
 
         /// <summary>
         /// Linear value encoding (not sRGB)
         /// </summary>
-        Linear = 0x8
+        Linear = 0x10
     }
 
     public struct TranscodeFormatTuple {
@@ -121,23 +126,23 @@ namespace KtxUnity {
                     TranscodeFormat.BC1_RGB));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.None,
+                    TextureFeatures.NonMultipleOfFour,
                     GraphicsFormat.RGB_PVRTC_4Bpp_SRGB,
                     TranscodeFormat.PVRTC1_4_RGB));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.Linear,
+                    TextureFeatures.NonMultipleOfFour,
                     GraphicsFormat.RGB_PVRTC_4Bpp_UNorm,
                     TranscodeFormat.PVRTC1_4_RGB));
 
                 // Compressed with alpha channel
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare,
                     GraphicsFormat.RGBA_ASTC4X4_SRGB,
                     TranscodeFormat.ASTC_4x4_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.RGBA_ASTC4X4_UNorm,
                     TranscodeFormat.ASTC_4x4_RGBA));
 
@@ -152,59 +157,59 @@ namespace KtxUnity {
                     TranscodeFormat.ETC2_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare,
                     GraphicsFormat.RGBA_BC7_SRGB,
                     TranscodeFormat.BC7_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.RGBA_BC7_UNorm,
                     TranscodeFormat.BC7_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare,
                     GraphicsFormat.RGBA_DXT5_SRGB,
                     TranscodeFormat.BC3_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.RGBA_DXT5_UNorm,
                     TranscodeFormat.BC3_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonMultipleOfFour,
                     GraphicsFormat.RGBA_PVRTC_4Bpp_SRGB,
                     TranscodeFormat.PVRTC1_4_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.Linear,
+                    TextureFeatures.AlphaChannel | TextureFeatures.Linear | TextureFeatures.NonMultipleOfFour,
                     GraphicsFormat.RGBA_PVRTC_4Bpp_UNorm,
                     TranscodeFormat.PVRTC1_4_RGBA));
 
                 // Uncompressed
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.R5G6B5_UNormPack16,
                     TranscodeFormat.RGB565));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.B5G6R5_UNormPack16,
                     TranscodeFormat.BGR565));
 
                 // Uncompressed with alpha channel
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.R4G4B4A4_UNormPack16,
                     TranscodeFormat.RGBA4444));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare,
                     GraphicsFormat.R8G8B8A8_SRGB, // Also supports SNorm, UInt, SInt
                     TranscodeFormat.RGBA32));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.R8G8B8A8_UNorm, // Also supports SNorm, UInt, SInt
                     TranscodeFormat.RGBA32));
 
@@ -257,6 +262,7 @@ namespace KtxUnity {
             formats = TranscodeFormatHelper.GetPreferredFormat(
                 meta.hasAlpha,
                 li.isPowerOfTwo,
+                li.isMultipleOfFour,
                 li.isSquare,
                 linear
                 );
@@ -266,6 +272,7 @@ namespace KtxUnity {
                 formats = TranscodeFormatHelper.GetPreferredFormat(
                     false,
                     li.isPowerOfTwo,
+                    li.isMultipleOfFour,
                     li.isSquare,
                     linear
                     );
@@ -276,6 +283,7 @@ namespace KtxUnity {
         public static TranscodeFormatTuple? GetPreferredFormat(
             bool hasAlpha,
             bool isPowerOfTwo,
+            bool isMultipleOfFour,
             bool isSquare,
             bool isLinear = false
         ) {
@@ -285,6 +293,9 @@ namespace KtxUnity {
             }
             if(!isPowerOfTwo) {
                 features |= TextureFeatures.NonPowerOfTwo;
+            }
+            if(!isMultipleOfFour) {
+                features |= TextureFeatures.NonMultipleOfFour;
             }
             if(!isSquare) {
                 features |= TextureFeatures.NonSquare;
