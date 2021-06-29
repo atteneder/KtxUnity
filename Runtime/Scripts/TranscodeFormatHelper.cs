@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -25,6 +26,7 @@ namespace KtxUnity {
     /// <summary>
     /// Mask of texture features
     /// </summary>
+    [Flags]
     enum TextureFeatures {
         None = 0x0,
 
