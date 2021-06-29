@@ -19,6 +19,9 @@ namespace KtxUnity {
         ktxTexture2_c = 2
     }
 
+    /// <summary>
+    /// KTX error codes (taken from native ktx.h)
+    /// </summary>
     public enum KtxErrorCode {
         KTX_SUCCESS = 0,         /*!< Operation was successful. */
         KTX_FILE_DATA_ERROR,     /*!< The data in the file is inconsistent with the spec. */
@@ -37,7 +40,9 @@ namespace KtxUnity {
         KTX_TRANSCODE_FAILED,    /*!< Transcoding of block compressed texture failed. */
         KTX_UNKNOWN_FILE_FORMAT, /*!< The file not a KTX file */
         KTX_UNSUPPORTED_TEXTURE_TYPE, /*!< The KTX file specifies an unsupported texture type. */
-        KTX_UNSUPPORTED_FEATURE  /*!< Feature not included in in-use library or not yet implemented. */
+        KTX_UNSUPPORTED_FEATURE,  /*!< Feature not included in in-use library or not yet implemented. */
+        KTX_LIBRARY_NOT_LINKED,  /*!< Library dependency (OpenGL or Vulkan) not linked into application. */
+        KTX_ERROR_MAX_ENUM = KTX_LIBRARY_NOT_LINKED /*!< For safety checks. */
     }
 
     enum KtxSupercmpScheme {
