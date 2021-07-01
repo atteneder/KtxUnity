@@ -7,6 +7,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased]
 ### Added
 - Support for Lumin / Magic Leap
+### Changed
+- Updated KTX-Software-Unity to [0.4.0][https://github.com/atteneder/KTX-Software-Unity/releases/tag/v0.4.0]
 ### Fixed
 - Prevent crash during mipmap reverting on recent llvm/emscripten versions
 - Not transcoding to ETC1/ETC2/BC1 if resolution is not a multiple of four
