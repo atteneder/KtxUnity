@@ -165,7 +165,7 @@ namespace KtxUnity {
         unsafe bool Load(NativeSlice<byte> data) {
             var src = data.GetUnsafeReadOnlyPtr();
             KtxErrorCode status;
-            nativeReference = ktx_load_ktx(src, data.Length, out status);
+            nativeReference = ktx_load_ktx(src, (uint)data.Length, out status);
             if(status!=KtxErrorCode.KTX_SUCCESS) {
                 Debug.LogErrorFormat("KTX error code {0}",status);
                 return false;
@@ -247,7 +247,7 @@ namespace KtxUnity {
         }
 
         [DllImport(INTERFACE_DLL)]
-        unsafe static extern System.IntPtr ktx_load_ktx(void * data, int length, out KtxErrorCode status);
+        unsafe static extern System.IntPtr ktx_load_ktx(void * data, uint length, out KtxErrorCode status);
 
         [DllImport(INTERFACE_DLL)]
         static extern uint ktx_get_baseWidth ( System.IntPtr ktxTexture );
