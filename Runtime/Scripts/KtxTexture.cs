@@ -76,8 +76,6 @@ namespace KtxUnity {
 
                 if(job.result[0] == KtxErrorCode.KTX_SUCCESS) {
                     Profiler.BeginSample("LoadBytesRoutineGPUupload");
-                    uint width = ktx.baseWidth;
-                    uint height = ktx.baseHeight;
 
                     if(formats.Value.format== GraphicsFormat.RGBA_DXT5_SRGB && !ktx.hasAlpha) {
                         // ktx library automatically decides to use the smaller DXT1 instead of DXT5 if no alpha
