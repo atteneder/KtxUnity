@@ -24,7 +24,7 @@ Following build targets are supported
 - Android (arm64 and armv7a)
 - Windows (64 bit)
 - Universal Windows Platform (x64,x86,ARM,ARM64)
-- macOS (Intel 64 bit)
+- macOS Universal (Apple Silicon and Intel)
 - Linux (64 bit)
 - Lumin / Magic Leap
 
