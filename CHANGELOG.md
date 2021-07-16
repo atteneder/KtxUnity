@@ -6,7 +6,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [1.1.1] - 2021-07-16
 ### Changed
-- Updated KTX-Software-Unity to [0.4.2][https://github.com/atteneder/KTX-Software-Unity/releases/tag/v0.4.2] (only the relevant iOS binaries)
+- Updated KTX-Software-Unity to [0.4.2](https://github.com/atteneder/KTX-Software-Unity/releases/tag/v0.4.2) (only the relevant iOS binaries)
 ### Fixed
 - Bitcode is now embed in all iOS binaries (fixes #37)
 
@@ -15,7 +15,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for Lumin / Magic Leap
 - Support for Apple Silicon on macOS via a universal library 
 ### Changed
-- Updated KTX-Software-Unity to [0.4.1][https://github.com/atteneder/KTX-Software-Unity/releases/tag/v0.4.1]
+- Updated KTX-Software-Unity to [0.4.1](https://github.com/atteneder/KTX-Software-Unity/releases/tag/v0.4.1)
 ### Fixed
 - Prevent crash during mipmap reverting on recent llvm/emscripten versions
 - Not transcoding to ETC1/ETC2/BC1 if resolution is not a multiple of four
