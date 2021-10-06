@@ -1,7 +1,7 @@
 # KTX/Basis Texture Unity Package
 
 <p align="center">
-<img src="./Documentation~/img/ktx-unity-logos.png" />
+<img src="./Documentation~/img/unity-ktx-logos.png" />
 </p>
 
 [![openupm](https://img.shields.io/npm/v/com.atteneder.ktx?label=openupm&registry_uri=https://package.openupm.com)](https://openupm.com/packages/com.atteneder.ktx/)
