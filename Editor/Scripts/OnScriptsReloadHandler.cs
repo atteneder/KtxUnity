@@ -25,8 +25,8 @@ namespace KtxUnity.Editor {
         
         [UnityEditor.Callbacks.DidReloadScripts]
         static void OnScriptsReloaded() {
-#if UNITY_WEBGL && UNITY_2021_2_OR_NEWER
-            Debug.LogError($"Update {k_PkgName} to version {k_PkgMinVersion} or newer!\nWith Unity 2021.2 or newer that is required for successful WebGL builds!");
+#if UNITY_WEBGL && !UNITY_2021_2_OR_NEWER
+            Debug.LogError($"Downgrade {k_PkgName} to version {k_PkgLegacyVersion}!\nWebGL builds will not succeed with {k_PkgName} {k_PkgMinVersion} or newer and Unity versions older than 2021.2.");
 #endif
         }
     }
