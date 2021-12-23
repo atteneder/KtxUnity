@@ -28,7 +28,7 @@ namespace KtxUnity {
     {
         static bool initialized;
         static int transcoderCountAvailable = 8;
-        
+
 
 #if POOL_TRANSCODERS
         static Stack<TranscoderInstance> transcoderPool;
@@ -36,14 +36,14 @@ namespace KtxUnity {
 
         static void InitInternal()
         {
-            initialized=true;
+            initialized = true;
             TranscodeFormatHelper.Init();
             ktx_basisu_basis_init();
             transcoderCountAvailable = UnityEngine.SystemInfo.processorCount;
         }
-        
+
         public static BasisUniversalTranscoderInstance GetTranscoderInstance() {
-            if(!initialized) {
+            if (!initialized) {
                 InitInternal();
             }
 #if POOL_TRANSCODERS
@@ -51,7 +51,7 @@ namespace KtxUnity {
                 return transcoderPool.Pop();
             }
 #endif
-            if(transcoderCountAvailable>0) {
+            if (transcoderCountAvailable > 0) {
                 transcoderCountAvailable--;
                 return new BasisUniversalTranscoderInstance(ktx_basisu_create_basis());
             } else {
@@ -59,7 +59,7 @@ namespace KtxUnity {
             }
         }
 
-        public static void ReturnTranscoderInstance( BasisUniversalTranscoderInstance transcoder ) {
+        public static void ReturnTranscoderInstance(BasisUniversalTranscoderInstance transcoder) {
 #if POOL_TRANSCODERS
             if(transcoderPool==null) {
                 transcoderPool = new Stack<TranscoderInstance>();
@@ -73,21 +73,26 @@ namespace KtxUnity {
             ref BasisUniversalJob job,
             BasisUniversalTranscoderInstance basis,
             NativeSlice<byte> basisuData,
-            TranscodeFormat transF
-        ) {
+            TranscodeFormat transF        ) 
+        {
             
             Profiler.BeginSample("BasisU.LoadBytesJob");
             
             var numLevels = basis.GetLevelCount(job.imageIndex);
-            var sizes = new NativeArray<uint>((int)numLevels,KtxNativeInstance.defaultAllocator);
-            var offsets = new NativeArray<uint>((int)numLevels,KtxNativeInstance.defaultAllocator);
+            int levelsNeeded = (int)((uint)numLevels - job.mipLevel);
+            if (job.mipChain == false)
+                levelsNeeded = 1;
+            var sizes = new NativeArray<uint>((int)levelsNeeded, KtxNativeInstance.defaultAllocator);
+            var offsets = new NativeArray<uint>((int)levelsNeeded, KtxNativeInstance.defaultAllocator);
             uint totalSize = 0;
-            for (uint i = 0; i < numLevels; i++)
+            for (uint i = job.mipLevel; i<numLevels; i++)
             {
-                offsets[(int)i] = totalSize;
-                var size = basis.GetImageTranscodedSize(job.imageIndex,i,transF);
-                sizes[(int)i] = size;
+                offsets[(int)i - (int)job.mipLevel] = totalSize;
+                var size = basis.GetImageTranscodedSize(job.imageIndex, i, transF);
+                sizes[(int)i - (int)job.mipLevel] = size;
                 totalSize += size;
+                if (job.mipChain == false)
+                    break;
             }
 
             job.format = transF;
@@ -95,8 +100,28 @@ namespace KtxUnity {
             job.offsets = offsets;
             job.nativeReference = basis.nativeReference;
             
-            job.textureData = new NativeArray<byte>((int)totalSize,KtxNativeInstance.defaultAllocator);
+            job.textureData = new NativeArray<byte>((int) totalSize, KtxNativeInstance.defaultAllocator);
+            bool separateAlpha = false;
 
+            if (basis.GetHasAlpha() && (
+                (transF == TranscodeFormat.ETC1_RGB) || 
+                (transF == TranscodeFormat.BC1_RGB) ||
+                (transF == TranscodeFormat.BC4_R)||
+                (transF == TranscodeFormat.PVRTC1_4_RGB) ||
+                (transF == TranscodeFormat.ATC_RGB))
+                )
+            {
+                UnityEngine.Debug.Log("Target does not support alpha creating separate alpha mask as source has alpha");
+                separateAlpha = true;
+            }
+            if (separateAlpha)
+            {
+                job.textureDataAlpha = new NativeArray<byte>((int) totalSize, KtxNativeInstance.defaultAllocator);
+            }
+            else
+            {
+                job.textureDataAlpha = new NativeArray<byte>((int)0, KtxNativeInstance.defaultAllocator); ;
+            }
             var jobHandle = job.Schedule();
 
             Profiler.EndSample();

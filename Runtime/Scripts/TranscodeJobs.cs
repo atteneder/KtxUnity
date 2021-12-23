@@ -29,6 +29,13 @@ namespace KtxUnity {
         public TranscodeFormat format;
 
         [ReadOnly]
+        public bool mipChain;
+
+        [ReadOnly]
+        public uint mipLevel;
+
+
+        [ReadOnly]
         [NativeDisableUnsafePtrRestriction]
         public IntPtr nativeReference;
 
@@ -44,10 +51,19 @@ namespace KtxUnity {
         [WriteOnly]
         public NativeArray<byte> textureData;
 
+        [WriteOnly]
+        public NativeArray<byte> textureDataAlpha;
+
         public void Execute()
         {
             bool success = ktx_basisu_startTranscoding(nativeReference);
             void* textureDataPtr = NativeArrayUnsafeUtility.GetUnsafePtr<byte>(textureData);
+            void* textureDataAlphaPtr = NativeArrayUnsafeUtility.GetUnsafePtr<byte>(textureDataAlpha);
+            bool DoAlpha = false;
+            if (textureDataAlpha.Length > 0)
+            {
+                DoAlpha = true;
+            }
             for (uint i = 0; i < offsets.Length; i++)
             {
                 success = success &&
@@ -56,12 +72,25 @@ namespace KtxUnity {
                     (byte*)textureDataPtr+offsets[(int)i],
                     sizes[(int)i],
                     imageIndex,
-                    i,
+                    mipLevel+i,
                     (uint)format,
                     0,
                     0
                     );
                 if(!success) break;
+                if (DoAlpha)
+                {
+                    ktx_basisu_transcodeImage(
+                        nativeReference,
+                        (byte*)textureDataAlphaPtr + offsets[(int)i],
+                        sizes[(int)i],
+                        imageIndex,
+                        mipLevel + i,
+                        (uint)format,
+                        0,
+                        1
+                        );
+                }
             }
             result[0] = success;
         }

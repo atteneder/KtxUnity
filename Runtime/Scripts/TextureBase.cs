@@ -50,8 +50,8 @@ namespace KtxUnity {
         /// Load a KTX or Basis Universal texture from a buffer
         /// </summary>
         /// <param name="data">Native buffer that holds the ktx/basisu file</param>
-        public async Task<TextureResult> LoadFromBytes( NativeSlice<byte> data, bool linear = false ) {
-            return await LoadBytesRoutine(data,linear);
+        public async Task<TextureResult> LoadFromBytes(NativeSlice<byte> data, uint imageIndex = 0, uint mipLevel = 0, bool linear = false) {
+            return await LoadBytesRoutine(data,imageIndex,mipLevel,linear);
         }
 
         /// <summary>
@@ -88,12 +88,12 @@ namespace KtxUnity {
             var buffer = webRequest.downloadHandler.data;
 
             var na = new NativeArray<byte>(buffer,KtxNativeInstance.defaultAllocator);
-            var result = await LoadBytesRoutine(na,linear);
+            var result = await LoadBytesRoutine(na,0,0,linear);
             na.Dispose();
             return result;
         }
 
-        public abstract Task<TextureResult> LoadBytesRoutine( NativeSlice<byte> data, bool linear = false );
+        public abstract Task<TextureResult> LoadBytesRoutine(NativeSlice<byte> data, uint imageIndex = 0, uint mipLevel = 0, bool linear = false);
 
         protected virtual TranscodeFormatTuple? GetFormat( IMetaData meta, ILevelInfo li, bool linear = false ) {
             return TranscodeFormatHelper.GetFormatsForImage(meta,li,linear);

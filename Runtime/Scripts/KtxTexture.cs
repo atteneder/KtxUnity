@@ -22,7 +22,7 @@ using Unity.Collections;
 namespace KtxUnity {
     public class KtxTexture : TextureBase
     {
-        public override async Task<TextureResult> LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
+        public override async Task<TextureResult> LoadBytesRoutine(NativeSlice<byte> data, uint imageIndex = 0, uint mipLevel = 0, bool linear = false) {
 
             var orientation = TextureOrientation.UNITY_DEFAULT;
 

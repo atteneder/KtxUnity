@@ -19,12 +19,13 @@ using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
 using Unity.Collections;
+using System.Collections.Generic;
 
 namespace KtxUnity {
 
     public class BasisUniversalTexture : TextureBase
     {
-        public override async Task<TextureResult> LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
+        public override async Task<TextureResult> LoadBytesRoutine(NativeSlice<byte> data, uint imageIndex = 0, uint mipLevel = 0, bool linear = false) {
 
             bool yFlipped = true;
 
@@ -36,12 +37,17 @@ namespace KtxUnity {
             }
 
             Texture2D texture = null;
-
-            if(transcoder.Open(data)) {
+            Texture2D textureAlpha = null;
+            if (transcoder.Open(data)) {
                 var textureType = transcoder.GetTextureType();
                 if(textureType == BasisUniversalTextureType.Image2D) {
                     yFlipped = transcoder.GetYFlip();
-                    texture = await TranscodeImage2D(transcoder,data,linear);
+                    List<Texture2D> textures = await TranscodeImage2D(transcoder, data, imageIndex, mipLevel, linear);
+                    texture = textures[0];
+                    if (textures.Count > 1)
+                    {
+                        textureAlpha = textures[1];
+                    }
                 } else {
                     Debug.LogErrorFormat("Basis Universal texture type {0} is not supported",textureType);
                 }
@@ -55,18 +61,26 @@ namespace KtxUnity {
                 orientation |= TextureOrientation.Y_UP;
             }
 
-            return new TextureResult(texture, orientation);
+            return new TextureResult(texture, orientation,textureAlpha);
         }
 
-        async Task<Texture2D> TranscodeImage2D(BasisUniversalTranscoderInstance transcoder, NativeSlice<byte> data, bool linear) {
-            
-            Texture2D texture = null;
-            
+        async Task<List<Texture2D>> TranscodeImage2D(BasisUniversalTranscoderInstance transcoder, NativeSlice<byte> data, uint imageIndex=0, uint mipLevel=0,bool linear=false) {
+
+            List<Texture2D> textures = new List<Texture2D>();
+            Texture2D texture_Opaque = null;
+            Texture2D texture_Alpha = null;
+
             // Can turn to parameter in future
-            uint imageIndex = 0;
 
             var meta = transcoder.LoadMetaData();
-
+            if (imageIndex >= meta.images.Length)
+            {
+                imageIndex = 0;
+            }
+            if (mipLevel >= meta.images[imageIndex].levels.Length)
+            {
+                mipLevel = 0;
+            }
             var formats = GetFormat( meta, meta.images[imageIndex].levels[0], linear );
 
             if(formats.HasValue) {
@@ -77,6 +91,7 @@ namespace KtxUnity {
                 var job = new BasisUniversalJob();
 
                 job.imageIndex = imageIndex;
+                job.mipLevel = mipLevel;
 
                 job.result = new NativeArray<bool>(1,KtxNativeInstance.defaultAllocator);
 
@@ -100,12 +115,21 @@ namespace KtxUnity {
                     uint height;
                     meta.GetSize(out width,out height);
                     var flags = TextureCreationFlags.None;
-                    if(meta.images[imageIndex].levels.Length>1) {
+                    if(job.mipChain) {
                         flags |= TextureCreationFlags.MipChain;
                     }
-                    texture = new Texture2D((int)width,(int)height,formats.Value.format,flags);
-                    texture.LoadRawTextureData(job.textureData);
-                    texture.Apply(false,true);
+                    texture_Opaque = new Texture2D((int)width,(int)height,formats.Value.format,flags);
+                    texture_Opaque.LoadRawTextureData(job.textureData);
+                    texture_Opaque.Apply(false,true);
+                    textures.Add(texture_Opaque);
+                    if (job.textureDataAlpha.Length > 0)
+                    {
+                        texture_Alpha = new Texture2D((int)width, (int)height, formats.Value.format, flags);
+                        texture_Alpha.LoadRawTextureData(job.textureDataAlpha);
+                        texture_Alpha.Apply(false, true);
+                        textures.Add(texture_Alpha);
+                    }
+
                     Profiler.EndSample();
                 } else {
                     Debug.LogError(ERR_MSG_TRANSCODE_FAILED);
@@ -113,10 +137,11 @@ namespace KtxUnity {
                 job.sizes.Dispose();
                 job.offsets.Dispose();
                 job.textureData.Dispose();
+                job.textureDataAlpha.Dispose();
                 job.result.Dispose();
             }
 
-            return texture;
+            return textures;
         }
     }
 }

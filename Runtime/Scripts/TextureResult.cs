@@ -22,10 +22,12 @@ namespace KtxUnity {
     /// </summary>
     public class TextureResult {
         public Texture2D texture;
+        public Texture2D textureAlpha;
         public TextureOrientation orientation;
         
-        public TextureResult(Texture2D texture, TextureOrientation orientation) {
+        public TextureResult(Texture2D texture, TextureOrientation orientation, Texture2D textureAlpha = null) {
             this.texture = texture;
+            this.textureAlpha = textureAlpha;
             this.orientation = orientation;
         }
     }
