@@ -24,32 +24,32 @@ namespace KtxUnity {
     {
         public override async Task<TextureResult> LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
 
-            var orientation = TextureOrientation.UNITY_DEFAULT;
-
             var ktx = new KtxNativeInstance(data);
-            Texture2D texture = null;
+            TextureResult result;
 
             if(ktx.valid) {
-                orientation = ktx.orientation;
                 if(ktx.ktxClass==KtxClassId.ktxTexture2_c) {
                     if(ktx.needsTranscoding) {
-                        texture = await Transcode(ktx,linear);
+                        result = await Transcode(ktx,linear);
+                        result.orientation = ktx.orientation;
                     } else {
-                        Debug.LogError("Only supercompressed KTX is supported");
+                        result = new TextureResult(ErrorCode.NotSuperCompressed);
                     }
                 } else {
-                    Debug.LogError("Only KTX 2.0 is supported");
+                    result = new TextureResult(ErrorCode.UnsupportedVersion);
                 }
+            } else {
+                result = new TextureResult(ErrorCode.LoadingFailed);
             }
             ktx.Unload();
-            return new TextureResult(texture, orientation);
+            return result;
         }
 
-        async Task<Texture2D> Transcode(KtxNativeInstance ktx, bool linear) {
+        async Task<TextureResult> Transcode(KtxNativeInstance ktx, bool linear) {
             // TODO: Maybe do this somewhere more central
             TranscodeFormatHelper.Init();
 
-            Texture2D texture = null;
+            TextureResult result = null;
             
             var formats = GetFormat(ktx,ktx,linear);
 
@@ -86,18 +86,23 @@ namespace KtxUnity {
 #endif
                     }
                     try {
-                        texture = ktx.LoadTextureData(gf);
+                        var texture = ktx.LoadTextureData(gf);
+                        result = new TextureResult {
+                            texture = texture
+                        };
                     }
                     catch (UnityException) {
-                        Debug.LogError(ERR_MSG_TRANSCODE_FAILED);
+                        result = new TextureResult(ErrorCode.TranscodeFailed);
                     }
                     Profiler.EndSample();
                 } else {
-                    Debug.LogError(ERR_MSG_TRANSCODE_FAILED);
+                    result = new TextureResult(ErrorCode.TranscodeFailed);
                 }
                 job.result.Dispose();
+            } else {
+                result = new TextureResult(ErrorCode.UnsupportedFormat);
             }
-            return texture;
+            return result;
         }
     }
 }

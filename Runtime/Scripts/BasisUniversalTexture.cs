@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-using System.Collections;
 using System.Threading.Tasks;
     
 using UnityEngine;
@@ -26,8 +25,6 @@ namespace KtxUnity {
     {
         public override async Task<TextureResult> LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
 
-            bool yFlipped = true;
-
             var transcoder = BasisUniversal.GetTranscoderInstance();
 
             while(transcoder==null) {
@@ -35,32 +32,35 @@ namespace KtxUnity {
                 transcoder = BasisUniversal.GetTranscoderInstance();
             }
 
-            Texture2D texture = null;
+            TextureResult result;
 
             if(transcoder.Open(data)) {
                 var textureType = transcoder.GetTextureType();
                 if(textureType == BasisUniversalTextureType.Image2D) {
-                    yFlipped = transcoder.GetYFlip();
-                    texture = await TranscodeImage2D(transcoder,data,linear);
+                    result = await TranscodeImage2D(transcoder,data,linear);
+                    result.orientation = TextureOrientation.KTX_DEFAULT;
+                    if(!transcoder.GetYFlip()) {
+                        // Regular basis files (no y_flip) seem to be 
+                        result.orientation |= TextureOrientation.Y_UP;
+                    }
                 } else {
+#if DEBUG
                     Debug.LogErrorFormat("Basis Universal texture type {0} is not supported",textureType);
+#endif
+                    result = new TextureResult(ErrorCode.UnsupportedFormat);
                 }
+            } else {
+                result = new TextureResult(ErrorCode.LoadingFailed);
             }
 
             BasisUniversal.ReturnTranscoderInstance(transcoder);
 
-            var orientation = TextureOrientation.KTX_DEFAULT;
-            if(!yFlipped) {
-                // Regular basis files (no y_flip) seem to be 
-                orientation |= TextureOrientation.Y_UP;
-            }
-
-            return new TextureResult(texture, orientation);
+            return result;
         }
 
-        async Task<Texture2D> TranscodeImage2D(BasisUniversalTranscoderInstance transcoder, NativeSlice<byte> data, bool linear) {
+        async Task<TextureResult> TranscodeImage2D(BasisUniversalTranscoderInstance transcoder, NativeSlice<byte> data, bool linear) {
             
-            Texture2D texture = null;
+            TextureResult result = null;
             
             // Can turn to parameter in future
             uint imageIndex = 0;
@@ -103,20 +103,25 @@ namespace KtxUnity {
                     if(meta.images[imageIndex].levels.Length>1) {
                         flags |= TextureCreationFlags.MipChain;
                     }
-                    texture = new Texture2D((int)width,(int)height,formats.Value.format,flags);
-                    texture.LoadRawTextureData(job.textureData);
-                    texture.Apply(false,true);
+
+                    result = new TextureResult {
+                        texture = new Texture2D((int)width,(int)height,formats.Value.format,flags)
+                    };
+                    result.texture.LoadRawTextureData(job.textureData);
+                    result.texture.Apply(false,true);
                     Profiler.EndSample();
                 } else {
-                    Debug.LogError(ERR_MSG_TRANSCODE_FAILED);
+                    result = new TextureResult(ErrorCode.TranscodeFailed);
                 }
                 job.sizes.Dispose();
                 job.offsets.Dispose();
                 job.textureData.Dispose();
                 job.result.Dispose();
+            } else {
+                result = new TextureResult(ErrorCode.UnsupportedFormat);
             }
 
-            return texture;
+            return result;
         }
     }
 }

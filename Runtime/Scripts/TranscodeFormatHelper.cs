@@ -318,7 +318,9 @@ namespace KtxUnity {
                         return formatInfo.formats;
                     }
                 }
+#if DEBUG
                 Debug.LogErrorFormat("Could not find transcode texture format! (alpha:{0} Po2:{1} sqr:{2})",hasAlpha,isPowerOfTwo,isSquare);
+#endif
                 return null;
             }
         }

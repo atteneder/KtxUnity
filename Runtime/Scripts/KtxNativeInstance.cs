@@ -167,7 +167,9 @@ namespace KtxUnity {
             KtxErrorCode status;
             nativeReference = ktx_load_ktx(src, (uint)data.Length, out status);
             if(status!=KtxErrorCode.KTX_SUCCESS) {
+#if DEBUG
                 Debug.LogErrorFormat("KTX error code {0}",status);
+#endif
                 return false;
             }
             return true;

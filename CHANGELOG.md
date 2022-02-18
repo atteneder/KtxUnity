@@ -4,6 +4,13 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [Unreleased]
+### Added
+- Editor Import via `ScriptableImporter`
+- Error Codes (in `TextureResult.errorCode`)
+### Changed
+- In release builds there's no console logging anymore (use the `errorCode` instead). In Debug builds and the Editor you still get detailed error messages.
+
 ## [1.1.2] - 2021-10-27
 ### Added
 - Error message when users try to run KtxUnity 1.x Unity >=2021.2 combination targeting WebGL

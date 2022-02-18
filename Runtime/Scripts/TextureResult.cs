@@ -23,7 +23,14 @@ namespace KtxUnity {
     public class TextureResult {
         public Texture2D texture;
         public TextureOrientation orientation;
+        public ErrorCode errorCode = ErrorCode.Success;
+
+        public TextureResult() {}
         
+        public TextureResult(ErrorCode errorCode) {
+            this.errorCode = errorCode;
+        }
+
         public TextureResult(Texture2D texture, TextureOrientation orientation) {
             this.texture = texture;
             this.orientation = orientation;

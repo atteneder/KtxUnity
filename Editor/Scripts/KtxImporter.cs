@@ -48,22 +48,18 @@ namespace KtxUnity
                 var data = texture.LoadFromBytes(alloc, linear);
                 alloc.Dispose();
                 return data;
-            }).texture;
+            });
             Profiler.EndSample();
 
-            if(!result)
-            {
-                // TODO needs a way to pipe issues back into the importer
-                reportItems = new[] { "Couldn't import file. See the console output for more details." };
-                result = new Texture2D(4, 4, TextureFormat.RGB24, true, linear);
-                var arr = new Color32[result.width * result.height];
-                for (int i = 0; i < arr.Length; i++) arr[i] = new Color32(255, 0, 0, 255);
-                result.SetPixels32(arr);
-                result.Apply();
+            if(result.texture) {
+                result.texture.name = name;
+                ctx.AddObjectToAsset("result", result.texture);
+                ctx.SetMainObject(result.texture);
+            } else {
+                var errorMessage = ErrorMessage.GetErrorMessage(result.errorCode);
+                reportItems = new[] { errorMessage };
+                Debug.LogError($"Could not load ktx2 file at {assetPath}: {errorMessage}",this);
             }
-            result.name = this.name;
-            ctx.AddObjectToAsset("result", result);
-            ctx.SetMainObject(result);
             
             Profiler.EndSample();
         }

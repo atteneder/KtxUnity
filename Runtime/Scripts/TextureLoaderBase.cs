@@ -22,11 +22,7 @@ namespace KtxUnity {
         /// </summary>
         /// <param name="result">Result of loading a texture</param>
         protected void OnTextureLoaded(TextureResult result) {
-            if(result!=null) {
-                ApplyTexture(result);
-            } else {
-                Debug.LogError("Loading Texture failed!");
-            }
+            ApplyTexture(result);
         }
 
         protected abstract void ApplyTexture(TextureResult result);
