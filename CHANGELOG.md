@@ -24,6 +24,10 @@ Ported changes from 1.2.0
 - WebGL library is built with Emscripten 2.0.19 now
 - Minimum required version is Unity 2021.2
 
+## [1.2.3] - 2022-04-14
+### Fixed
+- Fix undefined variable error when building project
+
 ## [1.2.2] - 2022-04-14
 ### Fixed
 - Compiler error due to C# 7.3 incompatible code
