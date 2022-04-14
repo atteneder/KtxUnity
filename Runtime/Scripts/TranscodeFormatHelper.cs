@@ -157,22 +157,22 @@ namespace KtxUnity {
                     TranscodeFormat.ETC2_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
                     GraphicsFormat.RGBA_BC7_SRGB,
                     TranscodeFormat.BC7_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.RGBA_BC7_UNorm,
                     TranscodeFormat.BC7_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
                     GraphicsFormat.RGBA_DXT5_SRGB,
                     TranscodeFormat.BC3_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.RGBA_DXT5_UNorm,
                     TranscodeFormat.BC3_RGBA));
 
