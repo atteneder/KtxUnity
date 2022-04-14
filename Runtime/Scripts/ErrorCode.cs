@@ -29,7 +29,7 @@ namespace KtxUnity {
 
     public static class ErrorMessage {
         const string k_UnknownErrorMessage = "Unknown Error"; 
-        static readonly Dictionary<ErrorCode, string> k_ErrorMessages = new() {
+        static readonly Dictionary<ErrorCode, string> k_ErrorMessages = new Dictionary<ErrorCode, string>() {
             { ErrorCode.Success, "OK" },
             { ErrorCode.UnsupportedVersion, "Only KTX 2.0 is supported" },
             { ErrorCode.UnsupportedFormat, "Unsupported format" },
