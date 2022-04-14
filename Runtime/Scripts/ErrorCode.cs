@@ -46,7 +46,7 @@ namespace KtxUnity {
 #if DEBUG
             return $"No Error message for error {code.ToString()}";
 #else
-            return UnknownErrorMessage;
+            return k_UnknownErrorMessage;
 #endif
         }
     }
