@@ -4,6 +4,11 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.2] - 2022-04-14
+### Fixed
+- Fix undefined variable error when building project
+- Compiler error due to C# 7.3 incompatible code
+
 ## [2.1.1] - 2022-04-14
 Ported changes from 1.2.0
 ### Added
