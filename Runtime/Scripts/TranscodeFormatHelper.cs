@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Andreas Atteneder, All Rights Reserved.
+﻿// Copyright (c) 2019-2022 Andreas Atteneder, All Rights Reserved.
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -157,22 +157,22 @@ namespace KtxUnity {
                     TranscodeFormat.ETC2_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
                     GraphicsFormat.RGBA_BC7_SRGB,
                     TranscodeFormat.BC7_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.RGBA_BC7_UNorm,
                     TranscodeFormat.BC7_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare,
                     GraphicsFormat.RGBA_DXT5_SRGB,
                     TranscodeFormat.BC3_RGBA));
 
                 allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.RGBA_DXT5_UNorm,
                     TranscodeFormat.BC3_RGBA));
 
@@ -318,7 +318,9 @@ namespace KtxUnity {
                         return formatInfo.formats;
                     }
                 }
+#if DEBUG
                 Debug.LogErrorFormat("Could not find transcode texture format! (alpha:{0} Po2:{1} sqr:{2})",hasAlpha,isPowerOfTwo,isSquare);
+#endif
                 return null;
             }
         }

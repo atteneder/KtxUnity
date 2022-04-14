@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Andreas Atteneder, All Rights Reserved.
+﻿// Copyright (c) 2019-2022 Andreas Atteneder, All Rights Reserved.
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,20 +42,14 @@ namespace KtxUnity {
         public unsafe bool Open(NativeSlice<byte> data) {
             void* src = data.GetUnsafeReadOnlyPtr();
             bool success = ktx_basisu_open_basis(nativeReference,src,data.Length);
+#if DEBUG
             if(!success) {
                 Debug.LogError("Couldn't validate BasisU header!");
             }
+#endif
             return success;
         }
-
-        public unsafe bool Open( void* src, int size ) {
-            bool success = ktx_basisu_open_basis(nativeReference,src,size);
-            if(!success) {
-                Debug.LogError("Couldn't validate BasisU header!");
-            }
-            return success;
-        }
-
+        
         public MetaData LoadMetaData() {
             Profiler.BeginSample("LoadMetaData");
             MetaData meta = new MetaData();

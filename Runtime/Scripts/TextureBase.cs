@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Andreas Atteneder, All Rights Reserved.
+﻿// Copyright (c) 2019-2022 Andreas Atteneder, All Rights Reserved.
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -26,8 +26,6 @@ using Unity.Collections;
 namespace KtxUnity {
     public abstract class TextureBase
     {
-        protected const string ERR_MSG_TRANSCODE_FAILED = "Transcoding failed!";
-
         /// <summary>
         /// Loads a KTX or Basis Universal texture from the StreamingAssets folder
         /// see https://docs.unity3d.com/Manual/StreamingAssets.html
@@ -81,8 +79,10 @@ namespace KtxUnity {
             }
 
             if(!string.IsNullOrEmpty(webRequest.error)) {
+#if DEBUG
                 Debug.LogErrorFormat("Error loading {0}: {1}",url,webRequest.error);
-                return null;
+#endif
+                return new TextureResult(ErrorCode.OpenUriFailed);
             }
 
             var buffer = webRequest.downloadHandler.data;

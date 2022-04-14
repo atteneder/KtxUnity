@@ -1,4 +1,4 @@
-﻿// Copyright (c) 2019-2021 Andreas Atteneder, All Rights Reserved.
+﻿// Copyright (c) 2019-2022 Andreas Atteneder, All Rights Reserved.
 
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -167,7 +167,9 @@ namespace KtxUnity {
             KtxErrorCode status;
             nativeReference = ktx_load_ktx(src, (uint)data.Length, out status);
             if(status!=KtxErrorCode.KTX_SUCCESS) {
+#if DEBUG
                 Debug.LogErrorFormat("KTX error code {0}",status);
+#endif
                 return false;
             }
             return true;
