@@ -7,7 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [2.1.0] - 2022-04-14
 Ported changes from 1.2.0
 ### Added
-- Editor Import via `ScriptableImporter`
+- Editor Import via `ScriptableImporter` (thanks @hybridherbst][hybridherbst] for #45)
 - Error Codes (in `TextureResult.errorCode`)
 ### Changed
 - In release builds there's no console logging anymore (use the `errorCode` instead). In Debug builds and the Editor you still get detailed error messages.
@@ -26,7 +26,7 @@ Ported changes from 1.2.0
 
 ## [1.2.0] - 2022-04-14
 ### Added
-- Editor Import via `ScriptableImporter`
+- Editor Import via `ScriptableImporter` (thanks @hybridherbst][hybridherbst] for #45)
 - Error Codes (in `TextureResult.errorCode`)
 ### Changed
 - In release builds there's no console logging anymore (use the `errorCode` instead). In Debug builds and the Editor you still get detailed error messages.
@@ -145,3 +145,5 @@ Ported changes from 1.2.0
 ## [0.0.1] - 2019-06-21
 ### Added
 - Changelog. All previous work was not versioned.
+
+[hybridherbst]: https://github.com/hybridherbst
