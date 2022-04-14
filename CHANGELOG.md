@@ -24,7 +24,7 @@ Ported changes from 1.2.0
 - WebGL library is built with Emscripten 2.0.19 now
 - Minimum required version is Unity 2021.2
 
-## [1.2.0] - 2022-04-14
+## [1.2.1] - 2022-04-14
 ### Added
 - Editor Import via `ScriptableImporter` (thanks @hybridherbst][hybridherbst] for #45)
 - Error Codes (in `TextureResult.errorCode`)
