@@ -173,10 +173,8 @@ namespace KtxUnity {
 
         public unsafe Texture2D LoadTextureData(GraphicsFormat gf) {
             Profiler.BeginSample("LoadTextureData");
-            byte* data;
-            uint length;
-            ktx_get_data(nativeReference,out data,out length);
-            bool mipmap = numLevels>1;
+            ktx_get_data(nativeReference,out var data,out var length);
+            var mipmap = numLevels>1;
 
             Profiler.BeginSample("CreateTexture2D");
             var texture = new Texture2D(
@@ -190,7 +188,7 @@ namespace KtxUnity {
             if(mipmap) {
                 Profiler.BeginSample("MipMapCopy");
                 var reorderedData = new NativeArray<byte>((int)length,Allocator.Temp);
-                void * reorderedDataPtr = NativeArrayUnsafeUtility.GetUnsafePtr<byte>(reorderedData);
+                var reorderedDataPtr = reorderedData.GetUnsafePtr();
                 var result = ktx_copy_data_levels_reverted(
                     nativeReference,
                     reorderedDataPtr,
@@ -214,7 +212,7 @@ namespace KtxUnity {
             return texture;
         }
 
-        public unsafe JobHandle LoadBytesJob(
+        public JobHandle LoadBytesJob(
             ref KtxTranscodeJob job,
             TranscodeFormat transF
         ) {
