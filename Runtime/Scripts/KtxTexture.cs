@@ -17,6 +17,7 @@ using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
 using Unity.Collections;
+using UnityEngine.Assertions;
 
 namespace KtxUnity {
     public class KtxTexture : TextureBase {
@@ -51,6 +52,7 @@ namespace KtxUnity {
 
         public override TextureResult CreateTexture() {
             TextureResult result;
+            Assert.IsTrue(m_Ktx.valid);
             Profiler.BeginSample("LoadBytesRoutineGpuUpload");
             try {
                 var texture = m_Ktx.LoadTextureData(m_Format);
@@ -59,7 +61,7 @@ namespace KtxUnity {
                 };
             }
             catch (UnityException) {
-                result = new TextureResult(ErrorCode.TranscodeFailed);
+                result = new TextureResult(ErrorCode.LoadingFailed);
             }
             
             Profiler.EndSample();
