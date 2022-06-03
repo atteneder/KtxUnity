@@ -39,10 +39,6 @@ namespace KtxUnity {
 
         public IntPtr nativeReference;
 
-        public KtxNativeInstance(NativeSlice<byte> data) {
-            Load(data);
-        }
-
         public bool valid {
             get {
                 return nativeReference != System.IntPtr.Zero;
@@ -162,7 +158,7 @@ namespace KtxUnity {
         }
         //*/
 
-        unsafe bool Load(NativeSlice<byte> data) {
+        internal unsafe ErrorCode Load(NativeSlice<byte> data) {
             var src = data.GetUnsafeReadOnlyPtr();
             KtxErrorCode status;
             nativeReference = ktx_load_ktx(src, (uint)data.Length, out status);
@@ -170,9 +166,9 @@ namespace KtxUnity {
 #if DEBUG
                 Debug.LogErrorFormat("KTX error code {0}",status);
 #endif
-                return false;
+                return ErrorCode.LoadingFailed;
             }
-            return true;
+            return ErrorCode.Success;
         }
 
         public unsafe Texture2D LoadTextureData(GraphicsFormat gf) {

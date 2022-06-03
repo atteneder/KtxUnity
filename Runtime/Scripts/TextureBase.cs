@@ -26,6 +26,8 @@ using Unity.Collections;
 namespace KtxUnity {
     public abstract class TextureBase
     {
+        protected GraphicsFormat m_Format;
+        
         /// <summary>
         /// Loads a KTX or Basis Universal texture from the StreamingAssets folder
         /// see https://docs.unity3d.com/Manual/StreamingAssets.html
@@ -69,6 +71,74 @@ namespace KtxUnity {
 
             return path;
         }
+        
+        /// <summary>
+        /// Loads, transcodes and creates a <see cref="Texture2D"/> from a
+        /// texture in memory.
+        /// </summary>
+        /// <param name="data">Input texture data</param>
+        /// <param name="linear">Depicts if texture is sampled in linear or
+        /// sRGB gamma color space.</param>
+        /// <returns><see cref="TextureResult"/> containg the result and
+        /// (if loading failed) an <see cref="ErrorCode"/></returns>
+        public async Task<TextureResult> LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
+            var result = new TextureResult();
+            result.errorCode = Load(data);
+            if (result.errorCode != ErrorCode.Success) return result;
+            result.errorCode = await Transcode(linear);
+            if (result.errorCode != ErrorCode.Success) return result;
+            result = CreateTexture();
+            Dispose();
+            return result;
+        }
+        
+        /// <summary>
+        /// Loads a texture from memory. 
+        /// Part of the low-level API that provides finer control over the
+        /// loading process.
+        /// <seealso cref="Transcode"/>
+        /// <seealso cref="CreateTexture"/>
+        /// <seealso cref="Dispose"/>
+        /// </summary>
+        /// <param name="data">Input texture data</param>
+        /// <returns><see cref="ErrorCode.Success"/> if loading was successful
+        /// or an error specific code otherwise.</returns>
+        public abstract ErrorCode Load(NativeSlice<byte> data);
+        
+        /// <summary>
+        /// Transcodes or decodes the texture into a GPU compatible format.
+        /// Part of the low-level API that provides finer control over the
+        /// loading process.
+        /// <seealso cref="Load"/>
+        /// <seealso cref="CreateTexture"/>
+        /// <seealso cref="Dispose"/>
+        /// </summary>
+        /// <param name="linear">Depicts if texture is sampled in linear or
+        /// sRGB gamma color space.</param>
+        /// <returns></returns>
+        public abstract Task<ErrorCode> Transcode(bool linear = false);
+        
+        /// <summary>
+        /// Tries to create a <see cref="Texture2D"/> from the previously
+        /// decoded texture.
+        /// Part of the low-level API that provides finer control over the
+        /// loading process.
+        /// <seealso cref="Load"/>
+        /// <seealso cref="Transcode"/>
+        /// <seealso cref="Dispose"/>
+        /// </summary>
+        /// <returns></returns>
+        public abstract TextureResult CreateTexture();
+        
+        /// <summary>
+        /// Releases all resources.
+        /// Part of the low-level API that provides finer control over the
+        /// loading process.
+        /// <seealso cref="Load"/>
+        /// <seealso cref="Transcode"/>
+        /// <seealso cref="Dispose"/>
+        /// </summary>
+        public abstract void Dispose();
 
         async Task<TextureResult> LoadFile( string url, bool linear = false ) {
     
@@ -92,8 +162,6 @@ namespace KtxUnity {
             na.Dispose();
             return result;
         }
-
-        public abstract Task<TextureResult> LoadBytesRoutine( NativeSlice<byte> data, bool linear = false );
 
         protected virtual TranscodeFormatTuple? GetFormat( IMetaData meta, ILevelInfo li, bool linear = false ) {
             return TranscodeFormatHelper.GetFormatsForImage(meta,li,linear);

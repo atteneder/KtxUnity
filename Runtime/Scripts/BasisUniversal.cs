@@ -69,10 +69,9 @@ namespace KtxUnity {
             transcoderCountAvailable++;
         }
 
-        public unsafe static JobHandle LoadBytesJob(
+        public static JobHandle LoadBytesJob(
             ref BasisUniversalJob job,
             BasisUniversalTranscoderInstance basis,
-            NativeSlice<byte> basisuData,
             TranscodeFormat transF
         ) {
             

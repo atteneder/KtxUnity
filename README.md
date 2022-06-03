@@ -167,6 +167,8 @@ async void Start() {
 
 Developers who want to create advanced loading code should look into classes `KtxTexture`/`BasisUniversalTexture` and `TextureBase` directly.
 
+When loading many textures at once, using the low-level API to get finer control over the loading process can yield great performance gains. Have a look at `TextureBase.Load` and for starting and details.
+
 ## Creating Textures
 
 You can use the command line tools `toktx` (comes with [KTX-Software][ktxsoftware]) to create KTX v2.0 files and `basisu` (part of [Basis Universal](https://github.com/BinomialLLC/basis_universal)) to create .basis files.
