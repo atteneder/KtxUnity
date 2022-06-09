@@ -25,7 +25,7 @@ namespace KtxUnity {
 
     public class KtxNativeInstance : IMetaData, ILevelInfo
     {
-#if UNITY_EDITOR_OSX || UNITY_WEBGL || UNITY_IOS
+#if UNITY_EDITOR_OSX || UNITY_WEBGL || (UNITY_IOS && !UNITY_EDITOR)
         public const string INTERFACE_DLL = "__Internal";
 #elif UNITY_ANDROID || UNITY_STANDALONE || UNITY_WSA || UNITY_EDITOR || PLATFORM_LUMIN
         public const string INTERFACE_DLL = "ktx_unity";
