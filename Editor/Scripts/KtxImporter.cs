@@ -53,6 +53,7 @@ namespace KtxUnity
 
             if(result.texture) {
                 result.texture.name = name;
+                result.texture.alphaIsTransparency = true;
                 ctx.AddObjectToAsset("result", result.texture);
                 ctx.SetMainObject(result.texture);
             } else {
