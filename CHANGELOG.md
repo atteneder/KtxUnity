@@ -7,6 +7,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [Unreleased] - 
 ### Added
 - Low-level API that gives finer control over the loading process (alternative to `TextureBase.LoadBytesRoutine`)
+- `ManagedNativeArray` wrapper for efficient access of managed `byte[]` from C# Jobs
 ### Fixed
 - Textures with alpha channel are shown blended (with checkerboard background) in the inspector now (`alphaIsTransparency` is enabled; #64)
 
