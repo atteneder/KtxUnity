@@ -33,25 +33,73 @@ namespace KtxUnity {
         /// see https://docs.unity3d.com/Manual/StreamingAssets.html
         /// </summary>
         /// <param name="filePath">Path to the file, relative to StreamingAssets</param>
-        public async Task<TextureResult> LoadFromStreamingAssets( string filePath, bool linear = false ) {
+        /// <param name="linear">Depicts if texture is sampled in linear or
+        /// sRGB gamma color space.</param>
+        /// <param name="layer">Texture array layer to import</param>
+        /// <param name="faceSlice">Cubemap face or 3D/volume texture slice to import.</param>
+        /// <param name="mipLevel">Lowest mipmap level to import (where 0 is
+        /// the highest resolution). Lower mipmap levels (of higher resolution)
+        /// are being discarded. Useful to limit texture resolution.</param>
+        /// <param name="mipChain">If true, a mipmap chain (if present) is imported.</param>
+        public async Task<TextureResult> LoadFromStreamingAssets(
+            string filePath,
+            bool linear = false,
+            uint layer = 0,
+            uint faceSlice = 0,
+            uint mipLevel = 0,
+            bool mipChain = true
+            )
+        {
             var url = GetStreamingAssetsUrl(filePath);
-            return await LoadFile(url,linear);
+            return await LoadFile(url,linear,layer,faceSlice,mipLevel,mipChain);
         }
 
         /// <summary>
         /// Loads a KTX or Basis Universal texture from an URL
         /// </summary>
         /// <param name="url">URL to the ktx/basis file to load</param>
-        public async Task<TextureResult> LoadFromUrl( string url, bool linear = false ) {
-            return await LoadFile(url,linear);
+        /// <param name="linear">Depicts if texture is sampled in linear or
+        /// sRGB gamma color space.</param>
+        /// <param name="layer">Texture array layer to import</param>
+        /// <param name="faceSlice">Cubemap face or 3D/volume texture slice to import.</param>
+        /// <param name="mipLevel">Lowest mipmap level to import (where 0 is
+        /// the highest resolution). Lower mipmap levels (of higher resolution)
+        /// are being discarded. Useful to limit texture resolution.</param>
+        /// <param name="mipChain">If true, a mipmap chain (if present) is imported.</param>
+        public async Task<TextureResult> LoadFromUrl(
+            string url,
+            bool linear = false,
+            uint layer = 0,
+            uint faceSlice = 0,
+            uint mipLevel = 0,
+            bool mipChain = true
+            )
+        {
+            return await LoadFile(url,linear,layer,faceSlice,mipLevel,mipChain);
         }
 
         /// <summary>
         /// Load a KTX or Basis Universal texture from a buffer
         /// </summary>
-        /// <param name="data">Native buffer that holds the ktx/basisu file</param>
-        public async Task<TextureResult> LoadFromBytes( NativeSlice<byte> data, bool linear = false ) {
-            return await LoadBytesRoutine(data,linear);
+        /// <param name="data">Native buffer that holds the ktx/basis file</param>
+        /// <param name="linear">Depicts if texture is sampled in linear or
+        /// sRGB gamma color space.</param>
+        /// <param name="layer">Texture array layer to import</param>
+        /// <param name="faceSlice">Cubemap face or 3D/volume texture slice to import.</param>
+        /// <param name="mipLevel">Lowest mipmap level to import (where 0 is
+        /// the highest resolution). Lower mipmap levels (of higher resolution)
+        /// are being discarded. Useful to limit texture resolution.</param>
+        /// <param name="mipChain">If true, a mipmap chain (if present) is imported.</param>
+        public async Task<TextureResult> LoadFromBytes(
+            NativeSlice<byte> data,
+            bool linear = false,
+            uint layer = 0,
+            uint faceSlice = 0,
+            uint mipLevel = 0,
+            bool mipChain = true
+            )
+        {
+            return await LoadBytesRoutine(data,linear,layer,faceSlice,mipLevel,mipChain);
         }
 
         /// <summary>
@@ -66,7 +114,7 @@ namespace KtxUnity {
             var path = Path.Combine(Application.streamingAssetsPath,subPath);
 
             #if LOCAL_LOADING
-            path = string.Format( "file://{0}", path );
+            path = $"file://{path}";
             #endif
 
             return path;
@@ -79,15 +127,30 @@ namespace KtxUnity {
         /// <param name="data">Input texture data</param>
         /// <param name="linear">Depicts if texture is sampled in linear or
         /// sRGB gamma color space.</param>
-        /// <returns><see cref="TextureResult"/> containg the result and
+        /// <param name="layer">Texture array layer to import</param>
+        /// <param name="faceSlice">Cubemap face or 3D/volume texture slice to import.</param>
+        /// <param name="mipLevel">Lowest mipmap level to import (where 0 is
+        /// the highest resolution). Lower mipmap levels (of higher resolution)
+        /// are being discarded. Useful to limit texture resolution.</param>
+        /// <param name="mipChain">If true, a mipmap chain (if present) is imported.</param>
+        /// <returns><see cref="TextureResult"/> containing the result and
         /// (if loading failed) an <see cref="ErrorCode"/></returns>
-        public async Task<TextureResult> LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
-            var result = new TextureResult();
-            result.errorCode = Load(data);
+        async Task<TextureResult> LoadBytesRoutine(
+            NativeSlice<byte> data, 
+            bool linear = false,
+            uint layer = 0,
+            uint faceSlice = 0,
+            uint mipLevel = 0,
+            bool mipChain = true
+            )
+        {
+            var result = new TextureResult {
+                errorCode = Load(data)
+            };
             if (result.errorCode != ErrorCode.Success) return result;
-            result.errorCode = await Transcode(linear);
+            result.errorCode = await Transcode(linear,layer,faceSlice,mipLevel,mipChain);
             if (result.errorCode != ErrorCode.Success) return result;
-            result = CreateTexture();
+            result = CreateTexture(layer,faceSlice,mipLevel,mipChain);
             Dispose();
             return result;
         }
@@ -115,8 +178,21 @@ namespace KtxUnity {
         /// </summary>
         /// <param name="linear">Depicts if texture is sampled in linear or
         /// sRGB gamma color space.</param>
-        /// <returns></returns>
-        public abstract Task<ErrorCode> Transcode(bool linear = false);
+        /// <param name="layer">Texture array layer to import</param>
+        /// <param name="faceSlice">Cubemap face or 3D/volume texture slice to import.</param>
+        /// <param name="mipLevel">Lowest mipmap level to import (where 0 is
+        /// the highest resolution). Lower mipmap levels (of higher resolution)
+        /// are being discarded. Useful to limit texture resolution.</param>
+        /// <param name="mipChain">If true, a mipmap chain (if present) is imported.</param> 
+        /// <returns><see cref="ErrorCode.Success"/> if loading was successful
+        /// or an error specific code otherwise.</returns>
+        public abstract Task<ErrorCode> Transcode(
+            bool linear = false,
+            uint layer = 0,
+            uint faceSlice = 0,
+            uint mipLevel = 0,
+            bool mipChain = true
+            );
         
         /// <summary>
         /// Tries to create a <see cref="Texture2D"/> from the previously
@@ -128,7 +204,12 @@ namespace KtxUnity {
         /// <seealso cref="Dispose"/>
         /// </summary>
         /// <returns></returns>
-        public abstract TextureResult CreateTexture();
+        public abstract TextureResult CreateTexture(
+            uint layer = 0,
+            uint faceSlice = 0,
+            uint mipLevel = 0,
+            bool mipChain = true
+            );
         
         /// <summary>
         /// Releases all resources.
@@ -140,8 +221,15 @@ namespace KtxUnity {
         /// </summary>
         public abstract void Dispose();
 
-        async Task<TextureResult> LoadFile( string url, bool linear = false ) {
-    
+        async Task<TextureResult> LoadFile(
+            string url,
+            bool linear = false,
+            uint layer = 0,
+            uint faceSlice = 0,
+            uint mipLevel = 0,
+            bool mipChain = true
+            )
+        {
             var webRequest = UnityWebRequest.Get(url);
             var asyncOp = webRequest.SendWebRequest();
             while (!asyncOp.isDone) {
@@ -156,11 +244,17 @@ namespace KtxUnity {
             }
 
             var buffer = webRequest.downloadHandler.data;
-
-            var na = new NativeArray<byte>(buffer,KtxNativeInstance.defaultAllocator);
-            var result = await LoadBytesRoutine(na,linear);
-            na.Dispose();
-            return result;
+            
+            using (var bufferWrapped = new ManagedNativeArray(buffer)) {
+                return await LoadBytesRoutine(
+                    bufferWrapped.nativeArray,
+                    linear,
+                    layer,
+                    faceSlice,
+                    mipLevel,
+                    mipChain
+                    );
+            }
         }
 
         protected virtual TranscodeFormatTuple? GetFormat( IMetaData meta, ILevelInfo li, bool linear = false ) {

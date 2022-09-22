@@ -29,6 +29,9 @@ namespace KtxUnity {
         public TranscodeFormat format;
 
         [ReadOnly]
+        public uint mipLevel;
+
+        [ReadOnly]
         [NativeDisableUnsafePtrRestriction]
         public IntPtr nativeReference;
 
@@ -39,7 +42,7 @@ namespace KtxUnity {
         public NativeArray<uint> offsets;
 
         [ReadOnly]
-        public uint imageIndex;
+        public uint layer;
 
         [WriteOnly]
         public NativeArray<byte> textureData;
@@ -55,8 +58,8 @@ namespace KtxUnity {
                     nativeReference,
                     (byte*)textureDataPtr+offsets[(int)i],
                     sizes[(int)i],
-                    imageIndex,
-                    i,
+                    layer,
+                    mipLevel+i,
                     (uint)format,
                     0,
                     0

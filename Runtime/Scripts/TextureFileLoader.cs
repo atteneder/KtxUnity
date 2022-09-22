@@ -19,6 +19,10 @@ namespace KtxUnity {
     {
         public string filePath;
         public bool linear;
+        public uint layer;
+        public uint faceSlice;
+        public uint mipLevel;
+        public bool mipChain;
 
         protected virtual async void Start() {
             var result = await LoadFromStreamingAssets();
@@ -31,7 +35,7 @@ namespace KtxUnity {
         /// </summary>
         protected async Task<TextureResult> LoadFromStreamingAssets(TextureType txt = null) {
             var texture = txt==null ? new TextureType() : txt;
-            return await texture.LoadFromStreamingAssets(filePath,linear);
+            return await texture.LoadFromStreamingAssets(filePath,linear,layer,faceSlice,mipLevel,mipChain);
         }
     }
 }

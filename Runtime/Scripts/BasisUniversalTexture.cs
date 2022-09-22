@@ -32,7 +32,14 @@ namespace KtxUnity {
             return ErrorCode.Success;
         }
 
-        public override async Task<ErrorCode> Transcode(bool linear = false) {
+        public override async Task<ErrorCode> Transcode(
+            bool linear = false,
+            uint layer = 0,
+            uint faceSlice = 0,
+            uint mipLevel = 0,
+            bool mipChain = true
+            ) 
+        {
             var transcoder = BasisUniversal.GetTranscoderInstance();
 
             while(transcoder==null) {
@@ -43,19 +50,17 @@ namespace KtxUnity {
             ErrorCode result;
 
             if(transcoder.Open(m_InputData)) {
-                var textureType = transcoder.GetTextureType();
-                if(textureType == BasisUniversalTextureType.Image2D) {
-                    result = await Transcode(transcoder,m_InputData,linear);
-                    m_Orientation = TextureOrientation.KTX_DEFAULT;
-                    if(!transcoder.GetYFlip()) {
-                        // Regular basis files (no y_flip) seem to be 
-                        m_Orientation |= TextureOrientation.Y_UP;
-                    }
-                } else {
-#if DEBUG
-                    Debug.LogErrorFormat("Basis Universal texture type {0} is not supported",textureType);
-#endif
-                    result = ErrorCode.UnsupportedFormat;
+                result = await Transcode(
+                    transcoder,
+                    linear,
+                    layer,
+                    mipLevel,
+                    mipChain
+                    );
+                m_Orientation = TextureOrientation.KTX_DEFAULT;
+                if(!transcoder.GetYFlip()) {
+                    // Regular basis files (no y_flip) seem to be 
+                    m_Orientation |= TextureOrientation.Y_UP;
                 }
             } else {
                 result = ErrorCode.LoadingFailed;
@@ -66,15 +71,18 @@ namespace KtxUnity {
             return result;
         }
 
-        public override TextureResult CreateTexture() {
+        public override TextureResult CreateTexture(
+            uint layer = 0,
+            uint faceSlice = 0,
+            uint mipLevel = 0,
+            bool mipChain = true
+            )
+        {
             Profiler.BeginSample("LoadBytesRoutineGpuUpload");
             
-            // Can turn to parameter in future
-            const uint imageIndex = 0;
-
-            m_MetaData.GetSize(out var width,out var height);
+            m_MetaData.GetSize(out var width,out var height,layer,mipLevel);
             var flags = TextureCreationFlags.None;
-            if(m_MetaData.images[imageIndex].levels.Length>1) {
+            if(mipChain && m_MetaData.images[layer].levels.Length-mipLevel>1) {
                 flags |= TextureCreationFlags.MipChain;
             }
 
@@ -92,16 +100,20 @@ namespace KtxUnity {
             m_TextureData.Dispose();
         }
 
-        async Task<ErrorCode> Transcode(BasisUniversalTranscoderInstance transcoder, NativeSlice<byte> data, bool linear) {
+        async Task<ErrorCode> Transcode(
+            BasisUniversalTranscoderInstance transcoder,
+            bool linear,
+            uint layer,
+            uint mipLevel,
+            bool mipChain
+            )
+        {
             
             var result = ErrorCode.Success;
-            
-            // Can turn to parameter in future
-            const uint imageIndex = 0;
 
             m_MetaData = transcoder.LoadMetaData();
 
-            var formats = GetFormat( m_MetaData, m_MetaData.images[imageIndex].levels[0], linear );
+            var formats = GetFormat( m_MetaData, m_MetaData.images[layer].levels[0], linear );
 
             if(formats.HasValue) {
 #if KTX_VERBOSE
@@ -109,16 +121,17 @@ namespace KtxUnity {
 #endif
                 Profiler.BeginSample("BasisUniversalJob");
                 m_Format = formats.Value.format;
-                var job = new BasisUniversalJob();
-
-                job.imageIndex = imageIndex;
-
-                job.result = new NativeArray<bool>(1,KtxNativeInstance.defaultAllocator);
+                var job = new BasisUniversalJob {
+                    layer = layer,
+                    mipLevel = mipLevel,
+                    result = new NativeArray<bool>(1,KtxNativeInstance.defaultAllocator)
+                };
 
                 var jobHandle = BasisUniversal.LoadBytesJob(
                     ref job,
                     transcoder,
-                    formats.Value.transcodeFormat
+                    formats.Value.transcodeFormat,
+                    mipChain
                     );
 
                 m_TextureData = job.textureData;

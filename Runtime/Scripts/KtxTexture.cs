@@ -24,19 +24,45 @@ namespace KtxUnity {
 
         KtxNativeInstance m_Ktx;
 
+        /// <inheritdoc />
         public override ErrorCode Load(NativeSlice<byte> data) {
             m_Ktx = new KtxNativeInstance();
             return m_Ktx.Load(data);
         }
+
+        public bool needsTranscoding => m_Ktx.needsTranscoding;
+        public bool hasAlpha => m_Ktx.hasAlpha;
+        public bool isPowerOfTwo => m_Ktx.isPowerOfTwo;
+        public bool isMultipleOfFour => m_Ktx.isMultipleOfFour;
+        public bool isSquare => m_Ktx.isSquare;
+        public uint baseWidth => m_Ktx.baseWidth;
+        public uint baseHeight => m_Ktx.baseHeight;
+        public uint baseDepth => m_Ktx.baseDepth;
+        public uint numLevels => m_Ktx.numLevels;
+        public bool isArray => m_Ktx.isArray;
+        public bool isCubemap => m_Ktx.isCubemap;
+        public bool isCompressed => m_Ktx.isCompressed;
+        public uint numDimensions => m_Ktx.numDimensions;
+        public uint numLayers => m_Ktx.numLayers;
+        public uint numFaces => m_Ktx.numFaces;
+        public TextureOrientation orientation => m_Ktx.orientation;
         
-        public override async Task<ErrorCode> Transcode(bool linear = false) {
+        /// <inheritdoc />
+        public override async Task<ErrorCode> Transcode(
+            bool linear = false,
+            uint layer = 0,
+            uint faceSlice = 0,
+            uint mipLevel = 0,
+            bool mipChain = true
+            )
+        {
 
             ErrorCode result;
 
             if(m_Ktx.valid) {
                 if(m_Ktx.ktxClass==KtxClassId.ktxTexture2_c) {
                     if(m_Ktx.needsTranscoding) {
-                        result = await TranscodeInternal(m_Ktx,linear);
+                        result = await TranscodeInternal(m_Ktx,linear,layer,faceSlice,mipLevel);
                         // result.orientation = ktx.orientation;
                     } else {
                         result = ErrorCode.NotSuperCompressed;
@@ -50,12 +76,25 @@ namespace KtxUnity {
             return result;
         }
 
-        public override TextureResult CreateTexture() {
+        /// <inheritdoc />
+        public override TextureResult CreateTexture(
+            uint layer = 0,
+            uint faceSlice = 0,
+            uint mipLevel = 0,
+            bool mipChain = true
+            )
+        {
             TextureResult result;
             Assert.IsTrue(m_Ktx.valid);
             Profiler.BeginSample("LoadBytesRoutineGpuUpload");
             try {
-                var texture = m_Ktx.LoadTextureData(m_Format);
+                var texture = m_Ktx.LoadTextureData(
+                    m_Format,
+                    layer,
+                    mipLevel,
+                    faceSlice,
+                    mipChain
+                    );
                 result = new TextureResult {
                     texture = texture
                 };
@@ -68,11 +107,36 @@ namespace KtxUnity {
             return result;
         }
         
+        /// <inheritdoc />
         public override void Dispose() {
             m_Ktx.Unload();
         }
 
-        async Task<ErrorCode> TranscodeInternal(KtxNativeInstance ktx, bool linear) {
+        async Task<ErrorCode> TranscodeInternal(
+            KtxNativeInstance ktx,
+            bool linear,
+            uint layer,
+            uint faceSlice,
+            uint mipLevel
+            )
+        {
+
+            if (layer >= (isArray ? numLayers : 1) ) {
+                return ErrorCode.InvalidLayer;
+            }
+
+            if (isCubemap && faceSlice >= numFaces) {
+                return ErrorCode.InvalidFace;
+            }
+
+            if ( numDimensions > 2 && faceSlice >= baseDepth) {
+                return ErrorCode.InvalidSlice;
+            }
+
+            if (mipLevel >= numLevels) {
+                return ErrorCode.InvalidLevel;
+            }
+            
             // TODO: Maybe do this somewhere more central
             TranscodeFormatHelper.Init();
 

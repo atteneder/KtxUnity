@@ -8,8 +8,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Added
 - Low-level API that gives finer control over the loading process (alternative to `TextureBase.LoadBytesRoutine`)
 - `ManagedNativeArray` wrapper for efficient access of managed `byte[]` from C# Jobs
+- Basis Universal texture Editor import
+- Support for loading any single image/layer/mipmap level of textures of any type (arrays, cubemaps, volumes)
+- Support for discarding mipmap level chain (and import just one mipmap level)
+- Support for importing Basis Universal texture types 2darray, 3d, video, cubemap (single images onlye at the moment)
+- Many property getters on `KtxTexture` (e.g. `needsTranscoding`,`hasAlpha`,`isCubemap`)
 ### Fixed
 - Textures with alpha channel are shown blended (with checkerboard background) in the inspector now (`alphaIsTransparency` is enabled; #64)
+- Avoid extra memcopy of input data by using `ManagedNativeArray` in `LoadFromStreamingAssets` and `LoadFromUrl`
 
 ## [1.2.3] - 2022-04-14
 ### Fixed

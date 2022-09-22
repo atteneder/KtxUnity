@@ -15,12 +15,14 @@
 /// TODO: Re-using transcoders does not work consistently. Fix and enable!
 // #define POOL_TRANSCODERS
 
+using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Profiling;
 using UnityEngine.Experimental.Rendering;
 using Unity.Jobs;
 using Unity.Collections;
+using UnityEngine.Assertions;
 
 namespace KtxUnity {
 
@@ -69,22 +71,24 @@ namespace KtxUnity {
             transcoderCountAvailable++;
         }
 
-        public static JobHandle LoadBytesJob(
+        internal static JobHandle LoadBytesJob(
             ref BasisUniversalJob job,
             BasisUniversalTranscoderInstance basis,
-            TranscodeFormat transF
+            TranscodeFormat transF,
+            bool mipChain = true
         ) {
             
             Profiler.BeginSample("BasisU.LoadBytesJob");
             
-            var numLevels = basis.GetLevelCount(job.imageIndex);
-            var sizes = new NativeArray<uint>((int)numLevels,KtxNativeInstance.defaultAllocator);
-            var offsets = new NativeArray<uint>((int)numLevels,KtxNativeInstance.defaultAllocator);
+            var numLevels = basis.GetLevelCount(job.layer);
+            var levelsNeeded = mipChain ? numLevels - job.mipLevel : 1;
+            var sizes = new NativeArray<uint>((int)levelsNeeded, KtxNativeInstance.defaultAllocator);
+            var offsets = new NativeArray<uint>((int)levelsNeeded, KtxNativeInstance.defaultAllocator);
             uint totalSize = 0;
-            for (uint i = 0; i < numLevels; i++)
-            {
+            for (var i = 0u; i<levelsNeeded; i++) {
+                var level = job.mipLevel + i;
                 offsets[(int)i] = totalSize;
-                var size = basis.GetImageTranscodedSize(job.imageIndex,i,transF);
+                var size = basis.GetImageTranscodedSize(job.layer, level, transF);
                 sizes[(int)i] = size;
                 totalSize += size;
             }

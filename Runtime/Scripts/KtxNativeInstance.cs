@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+using System;
 using System.Runtime.InteropServices;
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
@@ -39,75 +40,55 @@ namespace KtxUnity {
 
         public IntPtr nativeReference;
 
-        public bool valid {
-            get {
-                return nativeReference != System.IntPtr.Zero;
-            }
-        }
+        public bool valid => nativeReference != System.IntPtr.Zero;
 
-        public KtxClassId ktxClass {
-            get {
-                return ktx_get_classId(nativeReference);
-            }
-        }
+        public KtxClassId ktxClass => ktx_get_classId(nativeReference);
 
-        public bool needsTranscoding {
-            get {
-                return ktxTexture2_NeedsTranscoding(nativeReference);
-            }
-        }
+        public bool needsTranscoding => ktxTexture2_NeedsTranscoding(nativeReference);
 
-        public bool hasAlpha {
-            get {
-                // Valid for KTX 2.0 Basis Universal only!
-                // 1 = greyscale => no alpha
-                // 2 = RRRA => alpha
-                // 3 = RGB => no alpha
-                // 4 = RGBA => alpha
-                return ktxTexture2_GetNumComponents(nativeReference) % 2 == 0;
-            }
-        }
+        public bool hasAlpha =>
 
-        public bool isPowerOfTwo {
-            get {
-                return LevelInfo.IsPowerOfTwo(baseWidth) && LevelInfo.IsPowerOfTwo(baseHeight);
-            }
-        }
+            // Valid for KTX 2.0 Basis Universal only!
+            // 1 = greyscale => no alpha
+            // 2 = RRRA => alpha
+            // 3 = RGB => no alpha
+            // 4 = RGBA => alpha
+            ktxTexture2_GetNumComponents(nativeReference) % 2 == 0;
 
-        public bool isMultipleOfFour {
-            get {
-                return LevelInfo.IsMultipleOfFour(baseWidth) && LevelInfo.IsMultipleOfFour(baseHeight);
-            }
-        }
+        public bool isPowerOfTwo => LevelInfo.IsPowerOfTwo(baseWidth) && LevelInfo.IsPowerOfTwo(baseHeight);
 
-        public bool isSquare {
-            get {
-                return baseWidth==baseHeight;
-            }
-        }
+        public bool isMultipleOfFour => LevelInfo.IsMultipleOfFour(baseWidth) && LevelInfo.IsMultipleOfFour(baseHeight);
 
-        public uint baseWidth {
-            get {
-                return ktx_get_baseWidth(nativeReference);
-            }
-        }
+        public bool isSquare => baseWidth==baseHeight;
 
-        public uint baseHeight {
-            get {
-                return ktx_get_baseHeight(nativeReference);
-            }
-        }
-        public uint numLevels {
-            get {
-                return ktx_get_numLevels(nativeReference);
-            }
-        }
+        public uint baseWidth => ktx_get_baseWidth(nativeReference);
 
-        public TextureOrientation orientation {
-            get {
-                return (TextureOrientation) ktx_get_orientation(nativeReference);;
-            }
-        }
+        public uint baseHeight => ktx_get_baseHeight(nativeReference);
+        
+        public uint baseDepth => ktx_get_baseDepth(nativeReference);
+
+        public uint numLevels => ktx_get_numLevels(nativeReference);
+
+        public bool isArray => ktx_get_isArray (nativeReference);
+
+        public bool isCubemap => ktx_get_isCubemap (nativeReference);
+
+        public bool isCompressed => ktx_get_isCompressed (nativeReference);
+
+        public uint numDimensions => ktx_get_numDimensions (nativeReference);
+
+        /// <summary>
+        /// Specifies the number of array elements. If the texture is not an array texture, numLayers is 0.
+        /// </summary>
+        public uint numLayers => ktx_get_numLayers (nativeReference);
+
+        /// <summary>
+        /// faceCount specifies the number of cubemap faces.
+        /// For cubemaps and cubemap arrays this is 6. For non cubemaps this is 1
+        /// </summary>
+        public uint numFaces => ktx_get_numFaces (nativeReference);
+
+        public TextureOrientation orientation => (TextureOrientation) ktx_get_orientation(nativeReference);
 
         /*
         KtxClassId classId {
@@ -171,47 +152,6 @@ namespace KtxUnity {
             return ErrorCode.Success;
         }
 
-        public unsafe Texture2D LoadTextureData(GraphicsFormat gf) {
-            Profiler.BeginSample("LoadTextureData");
-            ktx_get_data(nativeReference,out var data,out var length);
-            var mipmap = numLevels>1;
-
-            Profiler.BeginSample("CreateTexture2D");
-            var texture = new Texture2D(
-                (int)baseWidth,
-                (int)baseHeight,
-                gf,
-                mipmap ? TextureCreationFlags.MipChain : TextureCreationFlags.None
-                );
-            Profiler.EndSample();
-
-            if(mipmap) {
-                Profiler.BeginSample("MipMapCopy");
-                var reorderedData = new NativeArray<byte>((int)length,Allocator.Temp);
-                var reorderedDataPtr = reorderedData.GetUnsafePtr();
-                var result = ktx_copy_data_levels_reverted(
-                    nativeReference,
-                    reorderedDataPtr,
-                    (uint)reorderedData.Length
-                    );
-                if (result != KtxErrorCode.KTX_SUCCESS) {
-                    return texture;
-                }
-                Profiler.BeginSample("LoadRawTextureData");
-                texture.LoadRawTextureData(reorderedData);
-                Profiler.EndSample();
-                reorderedData.Dispose();
-                Profiler.EndSample();
-            } else {
-                Profiler.BeginSample("LoadRawTextureData");
-                texture.LoadRawTextureData((IntPtr)data,(int)length);
-                Profiler.EndSample();
-            }
-            texture.Apply(false,true);
-            Profiler.EndSample();
-            return texture;
-        }
-
         public JobHandle LoadBytesJob(
             ref KtxTranscodeJob job,
             TranscodeFormat transF
@@ -226,6 +166,88 @@ namespace KtxUnity {
 
             UnityEngine.Profiling.Profiler.EndSample();
             return jobHandle;
+        }
+
+        public unsafe Texture2D LoadTextureData(
+            GraphicsFormat gf,
+            uint layer = 0,
+            uint mipLevel = 0,
+            uint faceSlice = 0,
+            bool mipChain = true
+            ) 
+        {
+            
+            Profiler.BeginSample("LoadTextureData");
+            var levelCount = numLevels;
+            var levelsNeeded = mipChain ? levelCount - mipLevel : 1;
+            var mipmap = levelsNeeded>1;
+
+            var width = baseWidth;
+            var height = baseHeight;
+            
+            if (mipLevel > 0) {
+                width = Math.Max(1u, width >> (int)mipLevel);
+                height = Math.Max(1u, height >> (int)mipLevel);
+            }
+            
+            Profiler.BeginSample("CreateTexture2D");
+            var texture = new Texture2D(
+                (int)width,
+                (int)height,
+                gf,
+                mipmap ? TextureCreationFlags.MipChain : TextureCreationFlags.None
+            );
+            Profiler.EndSample();
+
+            ktx_get_data(nativeReference,out var data,out var length);
+            
+            if(mipmap) {
+                Profiler.BeginSample("MipMapCopy");
+
+                for (var level = 0u; level < mipLevel; level++) {
+                    length -= ktx_get_image_size(nativeReference, level);
+                }
+                
+                var reorderedData = new NativeArray<byte>((int)length,Allocator.Temp);
+                var reorderedDataPtr = reorderedData.GetUnsafePtr();
+                var result = ktx_copy_data_levels_reverted(
+                    nativeReference,
+                    mipLevel,
+                    layer,
+                    faceSlice,
+                    reorderedDataPtr,
+                    (uint)reorderedData.Length
+                );
+                if (result != KtxErrorCode.KTX_SUCCESS) {
+                    return texture;
+                }
+                Profiler.BeginSample("LoadRawTextureData");
+                texture.LoadRawTextureData(reorderedData);
+                Profiler.EndSample();
+                reorderedData.Dispose();
+                Profiler.EndSample();
+            } else {
+                Profiler.BeginSample("LoadRawTextureData");
+                if (mipLevel > 0 || levelCount!=levelsNeeded || layer>0 || faceSlice>0) {
+                    var result = ktx_get_image_offset(
+                        nativeReference,
+                        mipLevel,
+                        layer,
+                        faceSlice,
+                        out var offset
+                        );
+                    if (result != KtxErrorCode.KTX_SUCCESS) {
+                        return null;
+                    }
+                    data += offset;
+                    length = ktx_get_image_size(nativeReference, mipLevel);
+                }
+                texture.LoadRawTextureData((IntPtr)data,(int)length);
+                Profiler.EndSample();
+            }
+            texture.Apply(false,true);
+            Profiler.EndSample();
+            return texture;
         }
 
         /// <summary>
@@ -250,6 +272,9 @@ namespace KtxUnity {
 
         [DllImport(INTERFACE_DLL)]
         static extern uint ktx_get_baseHeight ( System.IntPtr ktxTexture );
+        
+        [DllImport(INTERFACE_DLL)]
+        static extern uint ktx_get_baseDepth ( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
         static extern bool ktxTexture2_NeedsTranscoding( System.IntPtr ktxTexture );
@@ -262,8 +287,16 @@ namespace KtxUnity {
 
         [DllImport(INTERFACE_DLL)]
         unsafe static extern void ktx_get_data(System.IntPtr ktxTexture, out byte* data, out uint length);
+        
         [DllImport(INTERFACE_DLL)]
-        unsafe static extern KtxErrorCode ktx_copy_data_levels_reverted(System.IntPtr ktxTexture, void* destination, uint destinationLength);
+        unsafe static extern KtxErrorCode ktx_copy_data_levels_reverted(
+            IntPtr ktxTexture,
+            uint startLevel,
+            uint layer,
+            uint faceSlice,
+            void* destination,
+            uint destinationLength
+            );
 
         [DllImport(INTERFACE_DLL)]
         static extern void ktx_unload_ktx(System.IntPtr ktxTexture);
@@ -277,7 +310,6 @@ namespace KtxUnity {
         [DllImport(INTERFACE_DLL)]
         static extern KtxClassId ktx_get_classId ( System.IntPtr ktxTexture );
 
-        /*
         [DllImport(INTERFACE_DLL)]
         static extern bool ktx_get_isArray ( System.IntPtr ktxTexture );
 
@@ -296,11 +328,29 @@ namespace KtxUnity {
         [DllImport(INTERFACE_DLL)]
         static extern uint ktx_get_numFaces ( System.IntPtr ktxTexture );
 
+        /*
         [DllImport(INTERFACE_DLL)]
         static extern uint ktx_get_vkFormat ( System.IntPtr ktxTexture );
 
         [DllImport(INTERFACE_DLL)]
         static extern KtxSupercmpScheme ktx_get_supercompressionScheme ( System.IntPtr ktxTexture );
         //*/
+        
+        [DllImport(INTERFACE_DLL)]
+        static extern KtxErrorCode ktx_get_image_offset(
+            IntPtr ktxTexture,
+            uint level,
+            uint layer,
+            uint faceSlice,
+            out int pOffset
+            );
+        
+        [DllImport(INTERFACE_DLL)]
+        static extern uint ktx_get_image_size(
+            IntPtr ktxTexture,
+            uint level
+        );
+        
+        
     }
 } 
