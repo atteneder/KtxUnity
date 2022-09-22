@@ -25,11 +25,39 @@ namespace KtxUnity {
 
     // Source: basisu_transcoder.h -> basist::basis_texture_type
     public enum BasisUniversalTextureType {
-        Image2D = 0,		// An arbitrary array of 2D RGB or RGBA images with optional mipmaps, array size = # images, each image may have a different resolution and # of mipmap levels
-        Image2DArray = 1,	// An array of 2D RGB or RGBA images with optional mipmaps, array size = # images, each image has the same resolution and mipmap levels
-        CubemapArray = 2,	// an array of cubemap levels, total # of images must be divisable by 6, in X+, X-, Y+, Y-, Z+, Z- order, with optional mipmaps
-        VideoFrames = 3,	// An array of 2D video frames, with optional mipmaps, # frames = # images, each image has the same resolution and # of mipmap levels
-        Volume = 4,			// A 3D texture with optional mipmaps, Z dimension = # images, each image has the same resolution and # of mipmap levels
+        /// <summary>
+        /// An arbitrary array of 2D RGB or RGBA images with optional mipmaps,
+        /// array size = # images, each image may have a different resolution
+        /// and # of mipmap levels
+        /// </summary>
+        Image2D = 0,
+        
+        /// <summary>
+        /// An array of 2D RGB or RGBA images with optional mipmaps,
+        /// array size = # images, each image has the same resolution and
+        /// mipmap levels
+        /// </summary>
+        Image2DArray = 1,
+        
+        /// <summary>
+        /// An array of cubemap levels,
+        /// total # of images must be divisable by 6,
+        /// in X+, X-, Y+, Y-, Z+, Z- order, with optional mipmaps
+        /// </summary>
+        CubemapArray = 2,
+        
+        /// <summary>
+        /// An array of 2D video frames, with optional mipmaps,
+        /// # frames = # images, each image has the same resolution and # of
+        /// mipmap levels
+        /// </summary>
+        VideoFrames = 3,
+        
+        /// <summary>
+        /// A 3D texture with optional mipmaps, Z dimension = # images,
+        /// each image has the same resolution and # of mipmap levels
+        /// </summary>
+        Volume = 4,
     }
 
     public class BasisUniversalTranscoderInstance {
