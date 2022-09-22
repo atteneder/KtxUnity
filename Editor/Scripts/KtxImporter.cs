@@ -51,11 +51,12 @@ namespace KtxUnity
             });
             Profiler.EndSample();
 
-            if(result.texture) {
+            if (result.errorCode == ErrorCode.Success) {
                 result.texture.name = name;
                 result.texture.alphaIsTransparency = true;
                 ctx.AddObjectToAsset("result", result.texture);
                 ctx.SetMainObject(result.texture);
+                reportItems = new string[] { };
             } else {
                 var errorMessage = ErrorMessage.GetErrorMessage(result.errorCode);
                 reportItems = new[] { errorMessage };
