@@ -27,7 +27,9 @@ namespace KtxUnity {
 
         NativeArray<byte> m_NativeArray;
         GCHandle m_BufferHandle;
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
         AtomicSafetyHandle m_SafetyHandle;
+#endif
         bool m_Pinned;
 
         public unsafe ManagedNativeArray(byte[] original) {
@@ -35,10 +37,10 @@ namespace KtxUnity {
                 m_BufferHandle = GCHandle.Alloc(original,GCHandleType.Pinned);
                 fixed (void* bufferAddress = &original[0]) {
                     m_NativeArray = NativeArrayUnsafeUtility.ConvertExistingDataToNativeArray<byte>(bufferAddress, original.Length, Allocator.None);
-    #if ENABLE_UNITY_COLLECTIONS_CHECKS
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                     m_SafetyHandle = AtomicSafetyHandle.Create();
                     NativeArrayUnsafeUtility.SetAtomicSafetyHandle(array: ref m_NativeArray, m_SafetyHandle);
-    #endif
+#endif
                 }
 
                 m_Pinned = true;
@@ -52,9 +54,9 @@ namespace KtxUnity {
         
         public void Dispose() {
             if (m_Pinned) {
-    #if ENABLE_UNITY_COLLECTIONS_CHECKS
+#if ENABLE_UNITY_COLLECTIONS_CHECKS
                 AtomicSafetyHandle.Release(m_SafetyHandle);
-    #endif
+#endif
                 m_BufferHandle.Free();
             }
         }
