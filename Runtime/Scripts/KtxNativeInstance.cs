@@ -88,6 +88,53 @@ namespace KtxUnity {
         /// </summary>
         public uint numFaces => ktx_get_numFaces (nativeReference);
 
+        /// <summary>
+        /// Enqueues this texture for GPU upload in the KTX Native Unity Plugin
+        /// </summary>
+        internal void EnqueueForGpuUpload() {
+            Profiler.BeginSample("EnqueueForGpuUpload");
+            ktx_enqueue_upload(nativeReference);
+            GL.IssuePluginEvent(GetRenderEventFunc(), 1);
+            Profiler.EndSample();
+        }
+
+        /// <summary>
+        /// Checks if this texture, that was previously equeued for GPU upload
+        /// was successfully uploaded and creates a <see cref="Texture2D"/>
+        /// from it.
+        /// <param name="texture">Resulting texture or null, in case of errors</param>
+        /// <param name="success">True if the texture was successfully created</param>
+        /// <param name="graphicsFormat">Desired graphics format</param>
+        /// <returns>True if the native plugin finished processing the texture, regardless
+        /// of its success</returns>
+        /// </summary>
+        public bool TryCreateTexture(out Texture2D texture, out bool success, GraphicsFormat graphicsFormat) {
+            Profiler.BeginSample("TryCreateTexture");
+            if (ktx_dequeue_upload(nativeReference,out var nativeTexture, out var error)) {
+                if (error == 0) {
+                    texture = Texture2D.CreateExternalTexture(
+                        (int)baseWidth,
+                        (int)baseHeight,
+                        TranscodeFormatHelper.GetTextureFormat(graphicsFormat),
+                        numLevels>1,
+                        true,
+                        nativeTexture
+                        );
+                    success = true;
+                }
+                else {
+                    texture = null;
+                    success = false;
+                }
+                Profiler.EndSample();
+                return true;
+            }
+            texture = null;
+            success = false;
+            Profiler.EndSample();
+            return false;
+        }
+        
         public TextureOrientation orientation => (TextureOrientation) ktx_get_orientation(nativeReference);
 
         /*
@@ -351,6 +398,16 @@ namespace KtxUnity {
             uint level
         );
         
+        [DllImport(INTERFACE_DLL)]
+        static extern void ktx_enqueue_upload(IntPtr ktx);
+
+        // [DllImport(INTERFACE_DLL)]
+        // static extern IntPtr ktx_dequeue_upload(out IntPtr texture, out uint error);
         
+        [DllImport(INTERFACE_DLL)]
+        static extern bool ktx_dequeue_upload(IntPtr ktx, out IntPtr texture, out uint error);
+        
+        [DllImport(INTERFACE_DLL)]
+        static extern IntPtr GetRenderEventFunc();
     }
 } 

@@ -150,7 +150,7 @@ namespace KtxUnity {
             if (result.errorCode != ErrorCode.Success) return result;
             result.errorCode = await Transcode(linear,layer,faceSlice,mipLevel,mipChain);
             if (result.errorCode != ErrorCode.Success) return result;
-            result = CreateTexture(layer,faceSlice,mipLevel,mipChain);
+            result = await CreateTexture(layer,faceSlice,mipLevel,mipChain);
             Dispose();
             return result;
         }
@@ -204,7 +204,7 @@ namespace KtxUnity {
         /// <seealso cref="Dispose"/>
         /// </summary>
         /// <returns></returns>
-        public abstract TextureResult CreateTexture(
+        public abstract Task<TextureResult> CreateTexture(
             uint layer = 0,
             uint faceSlice = 0,
             uint mipLevel = 0,

@@ -71,7 +71,7 @@ namespace KtxUnity {
             return result;
         }
 
-        public override TextureResult CreateTexture(
+        public override Task<TextureResult> CreateTexture(
             uint layer = 0,
             uint faceSlice = 0,
             uint mipLevel = 0,
@@ -93,7 +93,7 @@ namespace KtxUnity {
             result.texture.LoadRawTextureData(m_TextureData);
             result.texture.Apply(false,true);
             Profiler.EndSample();
-            return result;
+            return Task.FromResult(result);
         }
 
         public override void Dispose() {

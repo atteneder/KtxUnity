@@ -18,6 +18,7 @@ using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
 using Unity.Collections;
 using UnityEngine.Assertions;
+using UnityEngine.Rendering;
 
 namespace KtxUnity {
     public class KtxTexture : TextureBase {
@@ -77,16 +78,39 @@ namespace KtxUnity {
         }
 
         /// <inheritdoc />
-        public override TextureResult CreateTexture(
+        public override async Task<TextureResult> CreateTexture(
             uint layer = 0,
             uint faceSlice = 0,
             uint mipLevel = 0,
             bool mipChain = true
             )
         {
-            TextureResult result;
             Assert.IsTrue(m_Ktx.valid);
-            Profiler.BeginSample("LoadBytesRoutineGpuUpload");
+            Profiler.BeginSample("CreateTexture");
+            
+            if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLCore
+                || SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES2
+                || SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3
+               )
+            {
+                m_Ktx.EnqueueForGpuUpload();
+                
+                Texture2D texture;
+                bool success;
+                while (!m_Ktx.TryCreateTexture(out texture, out success, m_Format)) {
+                    Profiler.EndSample();
+                    await Task.Yield();
+                }
+                
+                if (success) {
+                    return new TextureResult {
+                        texture = texture
+                    };
+                }
+                return new TextureResult(ErrorCode.LoadingFailed);
+            }
+    
+            TextureResult result;
             try {
                 var texture = m_Ktx.LoadTextureData(
                     m_Format,
