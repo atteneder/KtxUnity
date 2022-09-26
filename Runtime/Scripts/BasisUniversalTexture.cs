@@ -87,13 +87,12 @@ namespace KtxUnity {
             
             result.texture.LoadRawTextureData(m_TextureData);
             result.texture.Apply(false,true);
+            m_TextureData.Dispose();
             Profiler.EndSample();
             return result;
         }
 
-        public override void Dispose() {
-            m_TextureData.Dispose();
-        }
+        public override void Dispose() {}
 
         async Task<ErrorCode> Transcode(
             BasisUniversalTranscoderInstance transcoder,

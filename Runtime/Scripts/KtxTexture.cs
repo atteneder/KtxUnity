@@ -65,8 +65,6 @@ namespace KtxUnity {
                     if(m_Ktx.needsTranscoding) {
                         result.errorCode = await TranscodeInternal(m_Ktx,linear,layer,faceSlice,mipLevel);
                         // result.orientation = ktx.orientation;
-                    } else {
-                        result.errorCode = ErrorCode.NotSuperCompressed;
                     }
                 } else {
                     result.errorCode = ErrorCode.UnsupportedVersion;
