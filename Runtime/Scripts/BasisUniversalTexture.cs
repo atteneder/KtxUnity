@@ -27,12 +27,12 @@ namespace KtxUnity {
         MetaData m_MetaData;
         TextureOrientation m_Orientation;
         
-        public override ErrorCode Load(NativeSlice<byte> data) {
+        public override ErrorCode Open(NativeSlice<byte> data) {
             m_InputData = data;
             return ErrorCode.Success;
         }
 
-        public override async Task<ErrorCode> Transcode(
+        public override async Task<TextureResult> LoadTexture2D(
             bool linear = false,
             uint layer = 0,
             uint faceSlice = 0,
@@ -47,10 +47,10 @@ namespace KtxUnity {
                 transcoder = BasisUniversal.GetTranscoderInstance();
             }
 
-            ErrorCode result;
+            var result = new TextureResult();
 
             if(transcoder.Open(m_InputData)) {
-                result = await Transcode(
+                result.errorCode = await Transcode(
                     transcoder,
                     linear,
                     layer,
@@ -62,22 +62,13 @@ namespace KtxUnity {
                     // Regular basis files (no y_flip) seem to be 
                     m_Orientation |= TextureOrientation.Y_UP;
                 }
+                BasisUniversal.ReturnTranscoderInstance(transcoder);
             } else {
-                result = ErrorCode.LoadingFailed;
+                BasisUniversal.ReturnTranscoderInstance(transcoder);
+                result.errorCode = ErrorCode.LoadingFailed;
+                return result;
             }
 
-            BasisUniversal.ReturnTranscoderInstance(transcoder);
-
-            return result;
-        }
-
-        public override Task<TextureResult> CreateTexture(
-            uint layer = 0,
-            uint faceSlice = 0,
-            uint mipLevel = 0,
-            bool mipChain = true
-            )
-        {
             Profiler.BeginSample("LoadBytesRoutineGpuUpload");
             
             m_MetaData.GetSize(out var width,out var height,layer,mipLevel);
@@ -86,14 +77,18 @@ namespace KtxUnity {
                 flags |= TextureCreationFlags.MipChain;
             }
 
-            var result = new TextureResult {
-                texture = new Texture2D((int)width,(int)height,m_Format,flags),
-                orientation = m_Orientation
-            };
+            result.texture = new Texture2D((int)width, (int)height, m_Format, flags);
+            result.orientation = m_Orientation;
+            
+#if KTX_UNITY_GPU_UPLOAD
+            // TODO: native GPU upload
+#else
+#endif
+            
             result.texture.LoadRawTextureData(m_TextureData);
             result.texture.Apply(false,true);
             Profiler.EndSample();
-            return Task.FromResult(result);
+            return result;
         }
 
         public override void Dispose() {
@@ -117,7 +112,7 @@ namespace KtxUnity {
 
             if(formats.HasValue) {
 #if KTX_VERBOSE
-                Debug.LogFormat("Transcode to GraphicsFormat {0} ({1})",formats.Value.format,formats.Value.transcodeFormat);
+                Debug.LogFormat("LoadTexture2D to GraphicsFormat {0} ({1})",formats.Value.format,formats.Value.transcodeFormat);
 #endif
                 Profiler.BeginSample("BasisUniversalJob");
                 m_Format = formats.Value.format;

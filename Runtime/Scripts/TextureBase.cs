@@ -41,6 +41,9 @@ namespace KtxUnity {
         /// the highest resolution). Lower mipmap levels (of higher resolution)
         /// are being discarded. Useful to limit texture resolution.</param>
         /// <param name="mipChain">If true, a mipmap chain (if present) is imported.</param>
+        /// <returns>A <see cref="TextureResult"/> that contains an
+        /// <see cref="ErrorCode"/>, the resulting texture and its orientation.
+        /// </returns>
         public async Task<TextureResult> LoadFromStreamingAssets(
             string filePath,
             bool linear = false,
@@ -66,6 +69,9 @@ namespace KtxUnity {
         /// the highest resolution). Lower mipmap levels (of higher resolution)
         /// are being discarded. Useful to limit texture resolution.</param>
         /// <param name="mipChain">If true, a mipmap chain (if present) is imported.</param>
+        /// <returns>A <see cref="TextureResult"/> that contains an
+        /// <see cref="ErrorCode"/>, the resulting texture and its orientation.
+        /// </returns>
         public async Task<TextureResult> LoadFromUrl(
             string url,
             bool linear = false,
@@ -79,7 +85,7 @@ namespace KtxUnity {
         }
 
         /// <summary>
-        /// Load a KTX or Basis Universal texture from a buffer
+        /// Loads a KTX or Basis Universal texture from a buffer
         /// </summary>
         /// <param name="data">Native buffer that holds the ktx/basis file</param>
         /// <param name="linear">Depicts if texture is sampled in linear or
@@ -90,6 +96,9 @@ namespace KtxUnity {
         /// the highest resolution). Lower mipmap levels (of higher resolution)
         /// are being discarded. Useful to limit texture resolution.</param>
         /// <param name="mipChain">If true, a mipmap chain (if present) is imported.</param>
+        /// <returns>A <see cref="TextureResult"/> that contains an
+        /// <see cref="ErrorCode"/>, the resulting texture and its orientation.
+        /// </returns>
         public async Task<TextureResult> LoadFromBytes(
             NativeSlice<byte> data,
             bool linear = false,
@@ -126,21 +135,22 @@ namespace KtxUnity {
         /// Loads a texture from memory. 
         /// Part of the low-level API that provides finer control over the
         /// loading process.
-        /// <seealso cref="Transcode"/>
-        /// <seealso cref="CreateTexture"/>
+        /// <seealso cref="LoadTexture2D"/>
         /// <seealso cref="Dispose"/>
         /// </summary>
         /// <param name="data">Input texture data</param>
         /// <returns><see cref="ErrorCode.Success"/> if loading was successful
         /// or an error specific code otherwise.</returns>
-        public abstract ErrorCode Load(NativeSlice<byte> data);
+        public abstract ErrorCode Open(NativeSlice<byte> data);
         
         /// <summary>
-        /// Transcodes or decodes the texture into a GPU compatible format.
+        /// Creates a <see cref="Texture2D"/> from the previously opened
+        /// texture.
+        /// Transcodes or decodes the texture into a GPU compatible format
+        /// (if required) and uploads it to GPU memory.
         /// Part of the low-level API that provides finer control over the
         /// loading process.
-        /// <seealso cref="Load"/>
-        /// <seealso cref="CreateTexture"/>
+        /// <seealso cref="Open"/>
         /// <seealso cref="Dispose"/>
         /// </summary>
         /// <param name="linear">Depicts if texture is sampled in linear or
@@ -151,39 +161,23 @@ namespace KtxUnity {
         /// the highest resolution). Lower mipmap levels (of higher resolution)
         /// are being discarded. Useful to limit texture resolution.</param>
         /// <param name="mipChain">If true, a mipmap chain (if present) is imported.</param> 
-        /// <returns><see cref="ErrorCode.Success"/> if loading was successful
-        /// or an error specific code otherwise.</returns>
-        public abstract Task<ErrorCode> Transcode(
+        /// <returns>A <see cref="TextureResult"/> that contains an
+        /// <see cref="ErrorCode"/>, the resulting texture and its orientation.
+        /// </returns>
+        public abstract Task<TextureResult> LoadTexture2D(
             bool linear = false,
             uint layer = 0,
             uint faceSlice = 0,
             uint mipLevel = 0,
             bool mipChain = true
             );
-        
-        /// <summary>
-        /// Tries to create a <see cref="Texture2D"/> from the previously
-        /// decoded texture.
-        /// Part of the low-level API that provides finer control over the
-        /// loading process.
-        /// <seealso cref="Load"/>
-        /// <seealso cref="Transcode"/>
-        /// <seealso cref="Dispose"/>
-        /// </summary>
-        /// <returns></returns>
-        public abstract Task<TextureResult> CreateTexture(
-            uint layer = 0,
-            uint faceSlice = 0,
-            uint mipLevel = 0,
-            bool mipChain = true
-            );
-        
+
         /// <summary>
         /// Releases all resources.
         /// Part of the low-level API that provides finer control over the
         /// loading process.
-        /// <seealso cref="Load"/>
-        /// <seealso cref="Transcode"/>
+        /// <seealso cref="Open"/>
+        /// <seealso cref="LoadTexture2D"/>
         /// <seealso cref="Dispose"/>
         /// </summary>
         public abstract void Dispose();
@@ -239,8 +233,9 @@ namespace KtxUnity {
         /// the highest resolution). Lower mipmap levels (of higher resolution)
         /// are being discarded. Useful to limit texture resolution.</param>
         /// <param name="mipChain">If true, a mipmap chain (if present) is imported.</param>
-        /// <returns><see cref="TextureResult"/> containing the result and
-        /// (if loading failed) an <see cref="ErrorCode"/></returns>
+        /// <returns>A <see cref="TextureResult"/> that contains an
+        /// <see cref="ErrorCode"/>, the resulting texture and its orientation.
+        /// </returns>
         async Task<TextureResult> LoadBytesRoutine(
             NativeSlice<byte> data, 
             bool linear = false,
@@ -251,12 +246,10 @@ namespace KtxUnity {
         )
         {
             var result = new TextureResult {
-                errorCode = Load(data)
+                errorCode = Open(data)
             };
             if (result.errorCode != ErrorCode.Success) return result;
-            result.errorCode = await Transcode(linear,layer,faceSlice,mipLevel,mipChain);
-            if (result.errorCode != ErrorCode.Success) return result;
-            result = await CreateTexture(layer,faceSlice,mipLevel,mipChain);
+            result = await LoadTexture2D(linear,layer,faceSlice,mipLevel,mipChain);
             Dispose();
             return result;
         }

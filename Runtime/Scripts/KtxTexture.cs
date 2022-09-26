@@ -26,7 +26,7 @@ namespace KtxUnity {
         KtxNativeInstance m_Ktx;
 
         /// <inheritdoc />
-        public override ErrorCode Load(NativeSlice<byte> data) {
+        public override ErrorCode Open(NativeSlice<byte> data) {
             m_Ktx = new KtxNativeInstance();
             return m_Ktx.Load(data);
         }
@@ -49,7 +49,7 @@ namespace KtxUnity {
         public TextureOrientation orientation => m_Ktx.orientation;
         
         /// <inheritdoc />
-        public override async Task<ErrorCode> Transcode(
+        public override async Task<TextureResult> LoadTexture2D(
             bool linear = false,
             uint layer = 0,
             uint faceSlice = 0,
@@ -58,37 +58,27 @@ namespace KtxUnity {
             )
         {
 
-            ErrorCode result;
+            var result = new TextureResult();
 
             if(m_Ktx.valid) {
                 if(m_Ktx.ktxClass==KtxClassId.ktxTexture2_c) {
                     if(m_Ktx.needsTranscoding) {
-                        result = await TranscodeInternal(m_Ktx,linear,layer,faceSlice,mipLevel);
+                        result.errorCode = await TranscodeInternal(m_Ktx,linear,layer,faceSlice,mipLevel);
                         // result.orientation = ktx.orientation;
                     } else {
-                        result = ErrorCode.NotSuperCompressed;
+                        result.errorCode = ErrorCode.NotSuperCompressed;
                     }
                 } else {
-                    result = ErrorCode.UnsupportedVersion;
+                    result.errorCode = ErrorCode.UnsupportedVersion;
                 }
             } else {
-                result = ErrorCode.LoadingFailed;
+                result.errorCode = ErrorCode.LoadingFailed;
             }
-            return result;
-        }
 
-        /// <inheritdoc />
-#if KTX_UNITY_GPU_UPLOAD
-        public override async Task<TextureResult> CreateTexture(
-#else
-        public override Task<TextureResult> CreateTexture(
-#endif
-            uint layer = 0,
-            uint faceSlice = 0,
-            uint mipLevel = 0,
-            bool mipChain = true
-            )
-        {
+            if (result.errorCode != ErrorCode.Success) {
+                return result;
+            }
+        
             Assert.IsTrue(m_Ktx.valid);
             Profiler.BeginSample("CreateTexture");
             
@@ -116,7 +106,6 @@ namespace KtxUnity {
             }
 #endif
 
-            TextureResult result;
             try {
                 var texture = m_Ktx.LoadTextureData(
                     m_Format,
@@ -125,20 +114,14 @@ namespace KtxUnity {
                     faceSlice,
                     mipChain
                     );
-                result = new TextureResult {
-                    texture = texture
-                };
+                result.texture = texture;
             }
             catch (UnityException) {
-                result = new TextureResult(ErrorCode.LoadingFailed);
+                result.errorCode = ErrorCode.LoadingFailed;
             }
             
             Profiler.EndSample();
-#if KTX_UNITY_GPU_UPLOAD
             return result;
-#else
-            return Task.FromResult(result);
-#endif
         }
         
         /// <inheritdoc />
