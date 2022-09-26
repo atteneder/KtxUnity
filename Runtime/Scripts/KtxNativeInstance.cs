@@ -112,12 +112,13 @@ namespace KtxUnity {
             Profiler.BeginSample("TryCreateTexture");
             if (ktx_dequeue_upload(nativeReference,out var nativeTexture, out var error)) {
                 if (error == 0) {
+                    var format = TranscodeFormatHelper.GetTextureFormat(graphicsFormat, out var linear);
                     texture = Texture2D.CreateExternalTexture(
                         (int)baseWidth,
                         (int)baseHeight,
-                        TranscodeFormatHelper.GetTextureFormat(graphicsFormat),
+                        format,
                         numLevels>1,
-                        true,
+                        linear,
                         nativeTexture
                         );
                     success = true;
