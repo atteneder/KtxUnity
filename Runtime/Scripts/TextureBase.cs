@@ -119,42 +119,9 @@ namespace KtxUnity {
 
             return path;
         }
-        
-        /// <summary>
-        /// Loads, transcodes and creates a <see cref="Texture2D"/> from a
-        /// texture in memory.
-        /// </summary>
-        /// <param name="data">Input texture data</param>
-        /// <param name="linear">Depicts if texture is sampled in linear or
-        /// sRGB gamma color space.</param>
-        /// <param name="layer">Texture array layer to import</param>
-        /// <param name="faceSlice">Cubemap face or 3D/volume texture slice to import.</param>
-        /// <param name="mipLevel">Lowest mipmap level to import (where 0 is
-        /// the highest resolution). Lower mipmap levels (of higher resolution)
-        /// are being discarded. Useful to limit texture resolution.</param>
-        /// <param name="mipChain">If true, a mipmap chain (if present) is imported.</param>
-        /// <returns><see cref="TextureResult"/> containing the result and
-        /// (if loading failed) an <see cref="ErrorCode"/></returns>
-        async Task<TextureResult> LoadBytesRoutine(
-            NativeSlice<byte> data, 
-            bool linear = false,
-            uint layer = 0,
-            uint faceSlice = 0,
-            uint mipLevel = 0,
-            bool mipChain = true
-            )
-        {
-            var result = new TextureResult {
-                errorCode = Load(data)
-            };
-            if (result.errorCode != ErrorCode.Success) return result;
-            result.errorCode = await Transcode(linear,layer,faceSlice,mipLevel,mipChain);
-            if (result.errorCode != ErrorCode.Success) return result;
-            result = await CreateTexture(layer,faceSlice,mipLevel,mipChain);
-            Dispose();
-            return result;
-        }
-        
+
+#region LowLevelAPI
+
         /// <summary>
         /// Loads a texture from memory. 
         /// Part of the low-level API that provides finer control over the
@@ -221,6 +188,8 @@ namespace KtxUnity {
         /// </summary>
         public abstract void Dispose();
 
+#endregion
+
         async Task<TextureResult> LoadFile(
             string url,
             bool linear = false,
@@ -255,6 +224,41 @@ namespace KtxUnity {
                     mipChain
                     );
             }
+        }
+        
+        /// <summary>
+        /// Loads, transcodes and creates a <see cref="Texture2D"/> from a
+        /// texture in memory.
+        /// </summary>
+        /// <param name="data">Input texture data</param>
+        /// <param name="linear">Depicts if texture is sampled in linear or
+        /// sRGB gamma color space.</param>
+        /// <param name="layer">Texture array layer to import</param>
+        /// <param name="faceSlice">Cubemap face or 3D/volume texture slice to import.</param>
+        /// <param name="mipLevel">Lowest mipmap level to import (where 0 is
+        /// the highest resolution). Lower mipmap levels (of higher resolution)
+        /// are being discarded. Useful to limit texture resolution.</param>
+        /// <param name="mipChain">If true, a mipmap chain (if present) is imported.</param>
+        /// <returns><see cref="TextureResult"/> containing the result and
+        /// (if loading failed) an <see cref="ErrorCode"/></returns>
+        async Task<TextureResult> LoadBytesRoutine(
+            NativeSlice<byte> data, 
+            bool linear = false,
+            uint layer = 0,
+            uint faceSlice = 0,
+            uint mipLevel = 0,
+            bool mipChain = true
+        )
+        {
+            var result = new TextureResult {
+                errorCode = Load(data)
+            };
+            if (result.errorCode != ErrorCode.Success) return result;
+            result.errorCode = await Transcode(linear,layer,faceSlice,mipLevel,mipChain);
+            if (result.errorCode != ErrorCode.Success) return result;
+            result = await CreateTexture(layer,faceSlice,mipLevel,mipChain);
+            Dispose();
+            return result;
         }
 
         protected virtual TranscodeFormatTuple? GetFormat( IMetaData meta, ILevelInfo li, bool linear = false ) {
