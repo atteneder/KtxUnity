@@ -78,7 +78,11 @@ namespace KtxUnity {
         }
 
         /// <inheritdoc />
+#if KTX_UNITY_GPU_UPLOAD
         public override async Task<TextureResult> CreateTexture(
+#else
+        public override Task<TextureResult> CreateTexture(
+#endif
             uint layer = 0,
             uint faceSlice = 0,
             uint mipLevel = 0,
@@ -88,6 +92,7 @@ namespace KtxUnity {
             Assert.IsTrue(m_Ktx.valid);
             Profiler.BeginSample("CreateTexture");
             
+#if KTX_UNITY_GPU_UPLOAD
             if (SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLCore
                 || SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES2
                 || SystemInfo.graphicsDeviceType == GraphicsDeviceType.OpenGLES3
@@ -109,7 +114,8 @@ namespace KtxUnity {
                 }
                 return new TextureResult(ErrorCode.LoadingFailed);
             }
-    
+#endif
+
             TextureResult result;
             try {
                 var texture = m_Ktx.LoadTextureData(
@@ -128,7 +134,11 @@ namespace KtxUnity {
             }
             
             Profiler.EndSample();
+#if KTX_UNITY_GPU_UPLOAD
             return result;
+#else
+            return Task.FromResult(result);
+#endif
         }
         
         /// <inheritdoc />

@@ -329,6 +329,8 @@ namespace KtxUnity {
             return (required & provided) == required;
         }
 
+        
+#if KTX_UNITY_GPU_UPLOAD
         /// <summary>
         /// Returns a fitting <see cref="TextureFormat"/> for a given
         /// <see cref="GraphicsFormat"/>
@@ -653,6 +655,7 @@ namespace KtxUnity {
                     throw new ArgumentOutOfRangeException(nameof(graphicsFormat), graphicsFormat, null);
             }
         }
+#endif // KTX_UNITY_GPU_UPLOAD
 
 #if KTX_VERBOSE
         public static void CheckTextureSupport () {

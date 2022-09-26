@@ -88,6 +88,7 @@ namespace KtxUnity {
         /// </summary>
         public uint numFaces => ktx_get_numFaces (nativeReference);
 
+#if KTX_UNITY_GPU_UPLOAD
         /// <summary>
         /// Enqueues this texture for GPU upload in the KTX Native Unity Plugin
         /// </summary>
@@ -135,7 +136,8 @@ namespace KtxUnity {
             Profiler.EndSample();
             return false;
         }
-        
+#endif // KTX_UNITY_GPU_UPLOAD
+
         public TextureOrientation orientation => (TextureOrientation) ktx_get_orientation(nativeReference);
 
         /*
@@ -398,17 +400,16 @@ namespace KtxUnity {
             IntPtr ktxTexture,
             uint level
         );
-        
+
+#if KTX_UNITY_GPU_UPLOAD
         [DllImport(INTERFACE_DLL)]
         static extern void ktx_enqueue_upload(IntPtr ktx);
-
-        // [DllImport(INTERFACE_DLL)]
-        // static extern IntPtr ktx_dequeue_upload(out IntPtr texture, out uint error);
         
         [DllImport(INTERFACE_DLL)]
         static extern bool ktx_dequeue_upload(IntPtr ktx, out IntPtr texture, out uint error);
-        
+
         [DllImport(INTERFACE_DLL)]
         static extern IntPtr GetRenderEventFunc();
+#endif
     }
 } 
