@@ -312,7 +312,7 @@ namespace KtxUnity {
                     if (!FormatIsMatch(features,formatInfo.features)) {
                         continue;
                     }
-                    var supported = SystemInfo.IsFormatSupported(formatInfo.formats.format ,FormatUsage.Sample);
+                    var supported = SystemInfo.IsFormatSupported(formatInfo.formats.format ,isLinear ? FormatUsage.Linear : FormatUsage.Sample);
                     if (supported) {
                         formatCache[features] = formatInfo.formats;
                         return formatInfo.formats;
