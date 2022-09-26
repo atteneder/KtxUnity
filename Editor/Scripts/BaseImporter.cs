@@ -69,17 +69,16 @@ namespace KtxUnity
             Profiler.BeginSample("Load Texture");
             var result = AsyncHelpers.RunSync(() =>
             {
-                var alloc = new NativeArray<byte>(File.ReadAllBytes(assetPath), Allocator.Persistent);
-                var data = texture.LoadFromBytes(
-                    alloc,
-                    linear,
-                    layer,
-                    faceSlice,
-                    levelLowerLimit,
-                    importLevelChain
-                    );
-                alloc.Dispose();
-                return data;
+                using (var alloc = new ManagedNativeArray(File.ReadAllBytes(assetPath))) {
+                    return texture.LoadFromBytes(
+                        alloc.nativeArray,
+                        linear,
+                        layer,
+                        faceSlice,
+                        levelLowerLimit,
+                        importLevelChain
+                        );
+                }
             });
             Profiler.EndSample();
 
