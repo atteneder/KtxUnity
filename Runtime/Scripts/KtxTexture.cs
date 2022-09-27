@@ -64,7 +64,7 @@ namespace KtxUnity {
                 if(m_Ktx.ktxClass==KtxClassId.ktxTexture2_c) {
                     if(m_Ktx.needsTranscoding) {
                         result.errorCode = await TranscodeInternal(m_Ktx,linear,layer,faceSlice,mipLevel);
-                        // result.orientation = ktx.orientation;
+                        result.orientation = m_Ktx.orientation;
                     }
                 } else {
                     result.errorCode = ErrorCode.UnsupportedVersion;
