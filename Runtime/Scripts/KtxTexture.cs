@@ -66,6 +66,17 @@ namespace KtxUnity {
                         result.errorCode = await TranscodeInternal(m_Ktx,linear,layer,faceSlice,mipLevel);
                         result.orientation = m_Ktx.orientation;
                     }
+                    else {
+                        if (m_Format == GraphicsFormat.None) {
+                            m_Format = m_Ktx.graphicsFormat;
+                            if (m_Format == GraphicsFormat.None) {
+                                result.errorCode = ErrorCode.UnsupportedFormat;
+                            } else
+                            if(!SystemInfo.IsFormatSupported(m_Format ,linear ? FormatUsage.Linear : FormatUsage.Sample)) {
+                                result.errorCode = ErrorCode.FormatUnsupportedBySystem;
+                            }
+                        }
+                    }
                 } else {
                     result.errorCode = ErrorCode.UnsupportedVersion;
                 }

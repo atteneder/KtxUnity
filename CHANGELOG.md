@@ -13,6 +13,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Support for discarding mipmap level chain (and import just one mipmap level)
 - Support for importing Basis Universal texture types 2darray, 3d, video, cubemap (single images onlye at the moment)
 - Many property getters on `KtxTexture` (e.g. `needsTranscoding`,`hasAlpha`,`isCubemap`)
+- Experimental support for importing uncompressed KTX 2.0 textures (limited set of formats for now; #47)
 ### Changed
 - De-prioritized texture formats `RGBA4444` and `BGR565` to avoid incorrect channel usage or low quality. Transcoding to `RGBA32` instead.
 ### Fixed

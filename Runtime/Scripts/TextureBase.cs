@@ -26,7 +26,7 @@ using Unity.Collections;
 namespace KtxUnity {
     public abstract class TextureBase
     {
-        protected GraphicsFormat m_Format;
+        protected GraphicsFormat m_Format = GraphicsFormat.None;
         
         /// <summary>
         /// Loads a KTX or Basis Universal texture from the StreamingAssets folder
