@@ -108,7 +108,13 @@ namespace KtxUnity {
             bool mipChain = true
             )
         {
-            return await LoadBytesRoutine(data,linear,layer,faceSlice,mipLevel,mipChain);
+            var result = new TextureResult {
+                errorCode = Open(data)
+            };
+            if (result.errorCode != ErrorCode.Success) return result;
+            result = await LoadTexture2D(linear,layer,faceSlice,mipLevel,mipChain);
+            Dispose();
+            return result;
         }
 
         /// <summary>
@@ -209,7 +215,7 @@ namespace KtxUnity {
             var buffer = webRequest.downloadHandler.data;
             
             using (var bufferWrapped = new ManagedNativeArray(buffer)) {
-                return await LoadBytesRoutine(
+                return await LoadFromBytes(
                     bufferWrapped.nativeArray,
                     linear,
                     layer,
@@ -223,6 +229,7 @@ namespace KtxUnity {
         /// <summary>
         /// Loads, transcodes and creates a <see cref="Texture2D"/> from a
         /// texture in memory.
+        /// Obsolete. Use <see cref="LoadFromBytes"/> instead.
         /// </summary>
         /// <param name="data">Input texture data</param>
         /// <param name="linear">Depicts if texture is sampled in linear or
@@ -236,22 +243,17 @@ namespace KtxUnity {
         /// <returns>A <see cref="TextureResult"/> that contains an
         /// <see cref="ErrorCode"/>, the resulting texture and its orientation.
         /// </returns>
-        async Task<TextureResult> LoadBytesRoutine(
+        [System.Obsolete("Use LoadFromBytes instead.")]
+        public async Task<TextureResult> LoadBytesRoutine(
             NativeSlice<byte> data, 
             bool linear = false,
             uint layer = 0,
             uint faceSlice = 0,
             uint mipLevel = 0,
             bool mipChain = true
-        )
+            )
         {
-            var result = new TextureResult {
-                errorCode = Open(data)
-            };
-            if (result.errorCode != ErrorCode.Success) return result;
-            result = await LoadTexture2D(linear,layer,faceSlice,mipLevel,mipChain);
-            Dispose();
-            return result;
+            return await LoadFromBytes(data,linear,layer,faceSlice,mipLevel,mipChain);
         }
 
         protected virtual TranscodeFormatTuple? GetFormat( IMetaData meta, ILevelInfo li, bool linear = false ) {
