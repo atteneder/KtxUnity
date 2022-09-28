@@ -4,6 +4,24 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.1] - 2022-11-28
+### Added
+- Low-level API that gives finer control over the loading process (alternative to `TextureBase.LoadBytesRoutine`)
+- `ManagedNativeArray` wrapper for efficient access of managed `byte[]` from C# Jobs
+- Basis Universal texture (.basis) Editor import
+- Support for loading any single image/layer/mipmap level of textures of any type (arrays, cubemaps, volumes)
+- Support for discarding mipmap level chain (and import just one mipmap level)
+- Support for importing Basis Universal texture types 2darray, 3d, video, cubemap (single images only at the moment)
+- Many property getters on `KtxTexture` (e.g. `needsTranscoding`,`hasAlpha`,`isCubemap`)
+- Experimental support for importing uncompressed KTX 2.0 textures (limited set of formats for now; #47)
+### Changed
+- De-prioritized texture formats `RGBA4444` and `BGR565` to avoid incorrect channel usage or low quality. Transcoding to `RGBA32` instead.
+- Bumped minimum required Unity version to 2019.4 LTS
+### Fixed
+- Textures with alpha channel are shown blended (with checkerboard background) in the inspector now (`alphaIsTransparency` is enabled; #64)
+- Avoid extra memcopy of input data by using `ManagedNativeArray` in `LoadFromStreamingAssets` and `LoadFromUrl`
+- Improved texture format usage detection (linear vs. sRGB sampling)
+
 ## [2.1.2] - 2022-04-14
 ### Fixed
 - Fix undefined variable error when building project
