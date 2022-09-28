@@ -16,6 +16,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Experimental support for importing uncompressed KTX 2.0 textures (limited set of formats for now; #47)
 ### Changed
 - De-prioritized texture formats `RGBA4444` and `BGR565` to avoid incorrect channel usage or low quality. Transcoding to `RGBA32` instead.
+- Bumped minimum required Unity version to 2019.4 LTS
 ### Fixed
 - Textures with alpha channel are shown blended (with checkerboard background) in the inspector now (`alphaIsTransparency` is enabled; #64)
 - Avoid extra memcopy of input data by using `ManagedNativeArray` in `LoadFromStreamingAssets` and `LoadFromUrl`
