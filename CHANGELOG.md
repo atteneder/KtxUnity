@@ -21,6 +21,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Textures with alpha channel are shown blended (with checkerboard background) in the inspector now (`alphaIsTransparency` is enabled; #64)
 - Avoid extra memcopy of input data by using `ManagedNativeArray` in `LoadFromStreamingAssets` and `LoadFromUrl`
 - Improved texture format usage detection (linear vs. sRGB sampling)
+- Loading of native library on Linux (thanks [@Blackclaws][Blackclaws] for #60)
 
 ## [2.1.2] - 2022-04-14
 ### Fixed
@@ -195,4 +196,5 @@ Ported changes from 1.2.0
 ### Added
 - Changelog. All previous work was not versioned.
 
+[Blackclaws]: https://github.com/Blackclaws
 [hybridherbst]: https://github.com/hybridherbst
