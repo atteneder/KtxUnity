@@ -4,6 +4,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.2.2] - 2022-11-29
+### Changed
+- Marked `TextureBase.LoadBytesRoutine` obsolete in favor of `TextureBase.LoadFromBytes`
+### Fixed
+- Made `TextureBase.LoadBytesRoutine` public again to preserve API compatibility
+
 ## [2.2.1] - 2022-11-28
 ### Added
 - Low-level API that gives finer control over the loading process (alternative to `TextureBase.LoadBytesRoutine`)
