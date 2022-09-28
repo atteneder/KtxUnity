@@ -192,17 +192,7 @@ namespace KtxUnity {
                     GraphicsFormat.R5G6B5_UNormPack16,
                     TranscodeFormat.RGB565));
 
-                allFormats.Add( new FormatInfo(
-                    TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
-                    GraphicsFormat.B5G6R5_UNormPack16,
-                    TranscodeFormat.BGR565));
-
                 // Uncompressed with alpha channel
-                allFormats.Add( new FormatInfo(
-                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
-                    GraphicsFormat.R4G4B4A4_UNormPack16,
-                    TranscodeFormat.RGBA4444));
-
                 allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare,
                     GraphicsFormat.R8G8B8A8_SRGB, // Also supports SNorm, UInt, SInt
@@ -213,8 +203,18 @@ namespace KtxUnity {
                     GraphicsFormat.R8G8B8A8_UNorm, // Also supports SNorm, UInt, SInt
                     TranscodeFormat.RGBA32));
 
+                allFormats.Add( new FormatInfo(
+                    TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    GraphicsFormat.R4G4B4A4_UNormPack16,
+                    TranscodeFormat.RGBA4444));
+                
                 // Need to extend TextureFeatures to request single/dual channel texture formats.
                 // Until then, those formats are at the end of the list
+                allFormats.Add( new FormatInfo(
+                    TextureFeatures.NonPowerOfTwo | TextureFeatures.NonMultipleOfFour | TextureFeatures.NonSquare | TextureFeatures.Linear,
+                    GraphicsFormat.B5G6R5_UNormPack16,
+                    TranscodeFormat.BGR565));
+                
                 allFormats.Add( new FormatInfo(
                     TextureFeatures.AlphaChannel | TextureFeatures.NonPowerOfTwo | TextureFeatures.NonSquare | TextureFeatures.Linear,
                     GraphicsFormat.R_EAC_UNorm, // Also supports SNorm
@@ -312,7 +312,7 @@ namespace KtxUnity {
                     if (!FormatIsMatch(features,formatInfo.features)) {
                         continue;
                     }
-                    var supported = SystemInfo.IsFormatSupported(formatInfo.formats.format ,FormatUsage.Sample);
+                    var supported = SystemInfo.IsFormatSupported(formatInfo.formats.format ,isLinear ? FormatUsage.Linear : FormatUsage.Sample);
                     if (supported) {
                         formatCache[features] = formatInfo.formats;
                         return formatInfo.formats;

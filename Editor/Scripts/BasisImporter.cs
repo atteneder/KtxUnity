@@ -22,11 +22,10 @@ using UnityEditor.Experimental.AssetImporters;
 
 namespace KtxUnity
 {
-    [ScriptedImporter(0, new []{ ".ktx2" })]
-    public class KtxImporter : TextureImporter {
-        
+    [ScriptedImporter(0, new []{ ".basis" })]
+    public class BasisImporter : TextureImporter {
         protected override TextureBase CreateTextureBase() {
-            return new KtxTexture();
+            return new BasisUniversalTexture();
         }
     }
 }

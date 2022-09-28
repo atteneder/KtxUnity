@@ -13,7 +13,6 @@
 // limitations under the License.
 
 using System.Threading.Tasks;
-    
 using UnityEngine;
 using UnityEngine.Experimental.Rendering;
 using UnityEngine.Profiling;
@@ -21,10 +20,26 @@ using Unity.Collections;
 
 namespace KtxUnity {
 
-    public class BasisUniversalTexture : TextureBase
-    {
-        public override async Task<TextureResult> LoadBytesRoutine(NativeSlice<byte> data, bool linear = false) {
+    public class BasisUniversalTexture : TextureBase {
 
+        NativeSlice<byte> m_InputData;
+        NativeArray<byte> m_TextureData;
+        MetaData m_MetaData;
+        TextureOrientation m_Orientation;
+        
+        public override ErrorCode Open(NativeSlice<byte> data) {
+            m_InputData = data;
+            return ErrorCode.Success;
+        }
+
+        public override async Task<TextureResult> LoadTexture2D(
+            bool linear = false,
+            uint layer = 0,
+            uint faceSlice = 0,
+            uint mipLevel = 0,
+            bool mipChain = true
+            ) 
+        {
             var transcoder = BasisUniversal.GetTranscoderInstance();
 
             while(transcoder==null) {
@@ -32,61 +47,88 @@ namespace KtxUnity {
                 transcoder = BasisUniversal.GetTranscoderInstance();
             }
 
-            TextureResult result;
+            var result = new TextureResult();
 
-            if(transcoder.Open(data)) {
-                var textureType = transcoder.GetTextureType();
-                if(textureType == BasisUniversalTextureType.Image2D) {
-                    result = await TranscodeImage2D(transcoder,data,linear);
-                    result.orientation = TextureOrientation.KTX_DEFAULT;
-                    if(!transcoder.GetYFlip()) {
-                        // Regular basis files (no y_flip) seem to be 
-                        result.orientation |= TextureOrientation.Y_UP;
-                    }
-                } else {
-#if DEBUG
-                    Debug.LogErrorFormat("Basis Universal texture type {0} is not supported",textureType);
-#endif
-                    result = new TextureResult(ErrorCode.UnsupportedFormat);
+            if(transcoder.Open(m_InputData)) {
+                result.errorCode = await Transcode(
+                    transcoder,
+                    linear,
+                    layer,
+                    mipLevel,
+                    mipChain
+                    );
+                m_Orientation = TextureOrientation.KTX_DEFAULT;
+                if(!transcoder.GetYFlip()) {
+                    // Regular basis files (no y_flip) seem to be 
+                    m_Orientation |= TextureOrientation.Y_UP;
                 }
+                BasisUniversal.ReturnTranscoderInstance(transcoder);
             } else {
-                result = new TextureResult(ErrorCode.LoadingFailed);
+                BasisUniversal.ReturnTranscoderInstance(transcoder);
+                result.errorCode = ErrorCode.LoadingFailed;
+                return result;
             }
 
-            BasisUniversal.ReturnTranscoderInstance(transcoder);
+            Profiler.BeginSample("LoadBytesRoutineGpuUpload");
+            
+            m_MetaData.GetSize(out var width,out var height,layer,mipLevel);
+            var flags = TextureCreationFlags.None;
+            if(mipChain && m_MetaData.images[layer].levels.Length-mipLevel>1) {
+                flags |= TextureCreationFlags.MipChain;
+            }
 
+            result.texture = new Texture2D((int)width, (int)height, m_Format, flags);
+            result.orientation = m_Orientation;
+            
+#if KTX_UNITY_GPU_UPLOAD
+            // TODO: native GPU upload
+#else
+#endif
+            
+            result.texture.LoadRawTextureData(m_TextureData);
+            result.texture.Apply(false,true);
+            m_TextureData.Dispose();
+            Profiler.EndSample();
             return result;
         }
 
-        async Task<TextureResult> TranscodeImage2D(BasisUniversalTranscoderInstance transcoder, NativeSlice<byte> data, bool linear) {
-            
-            TextureResult result = null;
-            
-            // Can turn to parameter in future
-            uint imageIndex = 0;
+        public override void Dispose() {}
 
-            var meta = transcoder.LoadMetaData();
+        async Task<ErrorCode> Transcode(
+            BasisUniversalTranscoderInstance transcoder,
+            bool linear,
+            uint layer,
+            uint mipLevel,
+            bool mipChain
+            )
+        {
+            
+            var result = ErrorCode.Success;
 
-            var formats = GetFormat( meta, meta.images[imageIndex].levels[0], linear );
+            m_MetaData = transcoder.LoadMetaData();
+
+            var formats = GetFormat( m_MetaData, m_MetaData.images[layer].levels[0], linear );
 
             if(formats.HasValue) {
 #if KTX_VERBOSE
-                Debug.LogFormat("Transcode to GraphicsFormat {0} ({1})",formats.Value.format,formats.Value.transcodeFormat);
+                Debug.LogFormat("LoadTexture2D to GraphicsFormat {0} ({1})",formats.Value.format,formats.Value.transcodeFormat);
 #endif
                 Profiler.BeginSample("BasisUniversalJob");
-                var job = new BasisUniversalJob();
-
-                job.imageIndex = imageIndex;
-
-                job.result = new NativeArray<bool>(1,KtxNativeInstance.defaultAllocator);
+                m_Format = formats.Value.format;
+                var job = new BasisUniversalJob {
+                    layer = layer,
+                    mipLevel = mipLevel,
+                    result = new NativeArray<bool>(1,KtxNativeInstance.defaultAllocator)
+                };
 
                 var jobHandle = BasisUniversal.LoadBytesJob(
                     ref job,
                     transcoder,
-                    data,
-                    formats.Value.transcodeFormat
+                    formats.Value.transcodeFormat,
+                    mipChain
                     );
 
+                m_TextureData = job.textureData;
                 Profiler.EndSample();
                 
                 while(!jobHandle.IsCompleted) {
@@ -94,31 +136,15 @@ namespace KtxUnity {
                 }
                 jobHandle.Complete();
 
-                if(job.result[0]) {
-                    Profiler.BeginSample("LoadBytesRoutineGPUupload");
-                    uint width;
-                    uint height;
-                    meta.GetSize(out width,out height);
-                    var flags = TextureCreationFlags.None;
-                    if(meta.images[imageIndex].levels.Length>1) {
-                        flags |= TextureCreationFlags.MipChain;
-                    }
-
-                    result = new TextureResult {
-                        texture = new Texture2D((int)width,(int)height,formats.Value.format,flags)
-                    };
-                    result.texture.LoadRawTextureData(job.textureData);
-                    result.texture.Apply(false,true);
-                    Profiler.EndSample();
-                } else {
-                    result = new TextureResult(ErrorCode.TranscodeFailed);
+                if(!job.result[0]) {
+                    m_TextureData.Dispose();
+                    result = ErrorCode.TranscodeFailed;
                 }
                 job.sizes.Dispose();
                 job.offsets.Dispose();
-                job.textureData.Dispose();
                 job.result.Dispose();
             } else {
-                result = new TextureResult(ErrorCode.UnsupportedFormat);
+                result = ErrorCode.UnsupportedFormat;
             }
 
             return result;

@@ -21,10 +21,15 @@ namespace KtxUnity {
         Success,
         UnsupportedVersion,
         UnsupportedFormat,
+        FormatUnsupportedBySystem,
         NotSuperCompressed,
         OpenUriFailed,
         LoadingFailed,
         TranscodeFailed,
+        InvalidLayer,
+        InvalidLevel,
+        InvalidFace,
+        InvalidSlice,
     }
 
     public static class ErrorMessage {
@@ -33,10 +38,15 @@ namespace KtxUnity {
             { ErrorCode.Success, "OK" },
             { ErrorCode.UnsupportedVersion, "Only KTX 2.0 is supported" },
             { ErrorCode.UnsupportedFormat, "Unsupported format" },
+            { ErrorCode.FormatUnsupportedBySystem, "Format not supported by system" },
             { ErrorCode.NotSuperCompressed, "Only super-compressed KTX is supported" },
-            { ErrorCode.OpenUriFailed, "Loading URI failed!" },
-            { ErrorCode.LoadingFailed, "Loading failed!" },
-            { ErrorCode.TranscodeFailed, "Transcoding failed!" },
+            { ErrorCode.OpenUriFailed, "Loading URI failed" },
+            { ErrorCode.LoadingFailed, "Loading failed" },
+            { ErrorCode.TranscodeFailed, "Transcoding failed" },
+            { ErrorCode.InvalidLayer, "Invalid ImageIndex" },
+            { ErrorCode.InvalidLevel, "Invalid MipMapLevel" },
+            { ErrorCode.InvalidFace, "Invalid Face" },
+            { ErrorCode.InvalidSlice, "Invalid Slice" },
         };
 
         public static string GetErrorMessage(ErrorCode code) {

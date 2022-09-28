@@ -29,6 +29,24 @@ Ported changes from 1.2.0
 - WebGL library is built with Emscripten 2.0.19 now
 - Minimum required version is Unity 2021.2
 
+## [1.3.0] - 2022-11-28
+### Added
+- Low-level API that gives finer control over the loading process (alternative to `TextureBase.LoadBytesRoutine`)
+- `ManagedNativeArray` wrapper for efficient access of managed `byte[]` from C# Jobs
+- Basis Universal texture (.basis) Editor import
+- Support for loading any single image/layer/mipmap level of textures of any type (arrays, cubemaps, volumes)
+- Support for discarding mipmap level chain (and import just one mipmap level)
+- Support for importing Basis Universal texture types 2darray, 3d, video, cubemap (single images only at the moment)
+- Many property getters on `KtxTexture` (e.g. `needsTranscoding`,`hasAlpha`,`isCubemap`)
+- Experimental support for importing uncompressed KTX 2.0 textures (limited set of formats for now; #47)
+### Changed
+- De-prioritized texture formats `RGBA4444` and `BGR565` to avoid incorrect channel usage or low quality. Transcoding to `RGBA32` instead.
+- Bumped minimum required Unity version to 2019.4 LTS
+### Fixed
+- Textures with alpha channel are shown blended (with checkerboard background) in the inspector now (`alphaIsTransparency` is enabled; #64)
+- Avoid extra memcopy of input data by using `ManagedNativeArray` in `LoadFromStreamingAssets` and `LoadFromUrl`
+- Improved texture format usage detection (linear vs. sRGB sampling)
+
 ## [1.2.3] - 2022-04-14
 ### Fixed
 - Fix undefined variable error when building project

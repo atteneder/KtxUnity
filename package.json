@@ -1,8 +1,8 @@
 {
   "name": "com.atteneder.ktx",
   "version": "2.1.2",
-  "displayName": "KTX/Basis Texture",
-  "description": "Load KTX and Basis Universal textures at runtime.",
+  "displayName": "KTX/Basis Universal Texture",
+  "description": "Load KTX 2.0 and Basis Universal textures at runtime and in the Editor.",
   "unity": "2021.2",
   "dependencies": {
     "com.unity.modules.unitywebrequest": "1.0.0"
