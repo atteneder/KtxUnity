@@ -48,6 +48,12 @@ Ported changes from 1.2.0
 - WebGL library is built with Emscripten 2.0.19 now
 - Minimum required version is Unity 2021.2
 
+## [1.3.1] - 2022-11-29
+### Changed
+- Marked `TextureBase.LoadBytesRoutine` obsolete in favor of `TextureBase.LoadFromBytes`
+### Fixed
+- Made `TextureBase.LoadBytesRoutine` public again to preserve API compatibility
+
 ## [1.3.0] - 2022-11-28
 ### Added
 - Low-level API that gives finer control over the loading process (alternative to `TextureBase.LoadBytesRoutine`)
