@@ -57,6 +57,11 @@ namespace KtxUnity
         /// in linear color space (sRGB otherwise)
         /// </summary>
         public bool linear;
+
+        /// <summary>
+        /// If true, an additional sprite asset will be generated.
+        /// </summary>
+        public bool importAsSprite;
         
         // ReSharper disable once NotAccessedField.Local
         [SerializeField][HideInInspector]
@@ -85,8 +90,15 @@ namespace KtxUnity
             if (result.errorCode == ErrorCode.Success) {
                 result.texture.name = name;
                 result.texture.alphaIsTransparency = true;
-                ctx.AddObjectToAsset("result", result.texture);
+                ctx.AddObjectToAsset("result", result.texture, result.texture);
                 ctx.SetMainObject(result.texture);
+
+                if (importAsSprite) {
+                    var sprite = Sprite.Create(result.texture, new Rect(0, 0, result.texture.width, result.texture.height), new Vector2(50, 50), 100, 0, SpriteMeshType.FullRect);
+                    sprite.name =  result.texture.name;
+                    ctx.AddObjectToAsset("sprite", sprite);
+                }
+                
                 reportItems = new string[] { };
             } else {
                 var errorMessage = ErrorMessage.GetErrorMessage(result.errorCode);
