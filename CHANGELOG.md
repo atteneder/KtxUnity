@@ -8,13 +8,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 - WebGL build errors (unresolved symbols during linking) due to outdated native library
 
-## [2.2.2] - 2022-11-29
+## [2.2.2] - 2022-09-29
 ### Changed
 - Marked `TextureBase.LoadBytesRoutine` obsolete in favor of `TextureBase.LoadFromBytes`
 ### Fixed
 - Made `TextureBase.LoadBytesRoutine` public again to preserve API compatibility
 
-## [2.2.1] - 2022-11-28
+## [2.2.1] - 2022-09-28
 ### Added
 - Low-level API that gives finer control over the loading process (alternative to `TextureBase.LoadBytesRoutine`)
 - `ManagedNativeArray` wrapper for efficient access of managed `byte[]` from C# Jobs
