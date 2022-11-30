@@ -12,7 +12,9 @@
     "overrideReferences": false,
     "precompiledReferences": [],
     "autoReferenced": false,
-    "defineConstraints": [],
+    "defineConstraints": [
+        "!DISABLE_KTX_PACKAGE"
+    ],
     "versionDefines": [],
     "noEngineReferences": false
 }
