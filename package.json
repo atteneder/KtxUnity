@@ -1,9 +1,10 @@
 {
-  "name": "com.atteneder.ktx",
-  "version": "1.3.1",
-  "displayName": "KTX/Basis Universal Texture",
-  "description": "Load KTX 2.0 and Basis Universal textures at runtime and in the Editor.",
+  "name": "thirdparty.com.atteneder.ktx",
+  "version": "1.0.0",
+  "displayName": "ThirdParty KTX/Basis Universal Texture",
+  "description": "Fork of ktx-1 branch version 1.3.1 of com.atteneder.ktx. Provides functionality to load KTX 2.0 and Basis Universal textures at runtime and in the Editor.",
   "unity": "2019.4",
+  "license": "SEE LICENSE IN LICENSE.md",
   "dependencies": {
     "com.unity.modules.unitywebrequest": "1.0.0"
   },
@@ -20,8 +21,15 @@
     "glTF"
   ],
   "author": {
-    "name": "Andreas Atteneder",
-    "email": "andreas.atteneder@gmail.com",
-    "url": "https://pixel.engineer"
-  } 
+    "name": "Daniel Wynne-Powell",
+    "email": "daniel.wynne-powell@magnopus.com"
+  },
+  "homepage": "https://github.com/atteneder/KtxUnity/tree/ktx-1",
+  "publishConfig": {
+    "registry": "http://packages.magnopus.local:8081/artifactory/api/npm/unitynpm"
+  },  
+  "repository": {
+    "url": "https://github.com/magnopus/KtxUnity.git",
+    "type": "git"
+  }
 }
