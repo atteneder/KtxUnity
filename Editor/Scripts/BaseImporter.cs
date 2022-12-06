@@ -90,7 +90,7 @@ namespace KtxUnity
             if (result.errorCode == ErrorCode.Success) {
                 result.texture.name = name;
                 result.texture.alphaIsTransparency = true;
-                ctx.AddObjectToAsset("result", result.texture, result.texture);
+                ctx.AddObjectToAsset("result", result.texture);
                 ctx.SetMainObject(result.texture);
 
                 if (importAsSprite) {
