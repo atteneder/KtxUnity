@@ -34,7 +34,7 @@ Thanks to [Khronos][khronos], [Binomial][binomial] and everyone involved in maki
 
 ## Installing
 
-The easiest way to install is to download and open the [Installer Package](https://package-installer.glitch.me/v1/installer/Atteneder/com.atteneder.ktx?registry=https%3A%2F%2Fpackage.openupm.com&scope=com.atteneder)
+The easiest way to install is to download and open the [Installer Package](https://package-installer.glitch.me/v1/installer/OpenUPM/com.atteneder.ktx?registry=https%3A%2F%2Fpackage.openupm.com&scope=com.atteneder)
 
 It runs a script that installs KtxUnity via a [scoped registry][scoped]. After that it is listed in the *Package Manager* and can be updated from there.
 
