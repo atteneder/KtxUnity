@@ -58,6 +58,10 @@ Ported changes from 1.2.0
 - WebGL library is built with Emscripten 2.0.19 now
 - Minimum required version is Unity 2021.2
 
+## [1.3.2] - 2023-04-11
+### Fixed
+- Apple Silicon Unity Editor decoding
+
 ## [1.3.1] - 2022-11-29
 ### Changed
 - Marked `TextureBase.LoadBytesRoutine` obsolete in favor of `TextureBase.LoadFromBytes`
