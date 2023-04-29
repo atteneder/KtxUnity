@@ -22,7 +22,7 @@ using UnityEditor.Experimental.AssetImporters;
 
 namespace KtxUnity
 {
-    [ScriptedImporter(0, new []{ ".ktx2" })]
+    [ScriptedImporter(1, new []{ ".ktx2" })]
     public class KtxImporter : TextureImporter {
         
         protected override TextureBase CreateTextureBase() {
