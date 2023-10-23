@@ -237,6 +237,6 @@ limitations under the License.
 [khronos]: https://www.khronos.org
 [kofi]: https://ko-fi.com/C0C3BW7G
 [ktxsoftware]: https://github.com/KhronosGroup/KTX-Software
-[ktx]: http://github.khronos.org/KTX-Specification
+[ktx]: https://registry.khronos.org/KTX/specs/2.0/ktxspec.v2.html
 [scoped]: https://docs.unity3d.com/Manual/upm-scoped.html
 [unity]: https://unity.com
