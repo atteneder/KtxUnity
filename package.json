@@ -1,5 +1,5 @@
 {
-  "name": "com.atteneder.ktx",
+  "name": "net.vectorworks.ktx",
   "version": "2.2.3",
   "displayName": "KTX/Basis Universal Texture",
   "description": "Load KTX 2.0 and Basis Universal textures at runtime and in the Editor.",
