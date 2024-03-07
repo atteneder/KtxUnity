@@ -1,0 +1,338 @@
+name: build
+
+on:
+  # Trigger the workflow on pull request,
+  # but only for the main branch
+  pull_request:
+    branches:
+      - main
+  # Also trigger on release created events
+  release:
+    types:
+      - created
+  workflow_dispatch:
+
+env:
+  # Emscripten version for Unity 2022.2 or newer
+  EM_3_VERSION: 3.1.8
+  EM_3_CACHE_FOLDER: 'emsdk-3-cache'
+  # Emscripten version that comes with Unity 2021.2
+  EM_2_VERSION: 2.0.19
+  EM_2_CACHE_FOLDER: 'emsdk-2-cache'
+  # Emscripten version that comes with older Unity versions
+  EM_1_VERSION: 1.38.48-fastcomp
+  EM_1_CACHE_FOLDER: 'emsdk-1-cache'
+
+jobs:
+  mac:
+    runs-on: macos-11
+
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+        lfs: true
+
+    - name: configure_mac
+      run: cmake . -Bbuild_mac -DCMAKE_BUILD_TYPE=MinSizeRel -DCMAKE_OSX_ARCHITECTURES="x86_64;arm64"
+    - name: build_mac
+      run: cmake --build build_mac --config MinSizeRel --target ktx_unity -- ONLY_ACTIVE_ARCH=NO
+
+    - name: configure_ios
+      run: cmake -B build_ios -G Xcode -DCMAKE_SYSTEM_NAME=iOS -DKTX_EMBED_BITCODE=ON
+    - name: build_ios
+      run: cmake --build build_ios --config MinSizeRel --target ktx_unity -- ONLY_ACTIVE_ARCH=NO
+    - name: build_ios_simulator
+      run: cmake --build build_ios --config MinSizeRel --target ktx_unity -- ONLY_ACTIVE_ARCH=NO -sdk iphonesimulator
+
+    - name: package_apple
+      run: |
+        mkdir ktx_unity_apple
+        mkdir ktx_unity_apple/x86_64
+        mv build_mac/ktx_unity.bundle ktx_unity_apple/x86_64
+        mkdir -p ktx_unity_apple/iOS/simulator
+        mv build_ios/MinSizeRel-iphoneos/libktx_unity.a ktx_unity_apple/iOS
+        mv build_ios/KTX-Software/MinSizeRel-iphoneos/libktx_read.a ktx_unity_apple/iOS
+        mv build_ios/KTX-Software/interface/basisu_c_binding/MinSizeRel-iphoneos/libobj_basisu_cbind.a ktx_unity_apple/iOS
+        mv build_ios/MinSizeRel-iphonesimulator/libktx_unity.a ktx_unity_apple/iOS/simulator
+        mv build_ios/KTX-Software/MinSizeRel-iphonesimulator/libktx_read.a ktx_unity_apple/iOS/simulator
+        mv build_ios/KTX-Software/interface/basisu_c_binding/MinSizeRel-iphonesimulator/libobj_basisu_cbind.a ktx_unity_apple/iOS/simulator
+    - uses: actions/upload-artifact@v3
+      with:
+        name: ktx_unity_apple
+        path: ktx_unity_apple
+
+  windows:
+    runs-on: windows-2022
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+        lfs: true
+
+    - name: configure_win_64
+      run: cmake . -G "Visual Studio 17 2022" -A x64 -Bbuild_win_64
+    - name: build_win_64
+      run: cmake --build build_win_64 --config MinSizeRel --target ktx_unity
+    # Tests don't work / are not built yet
+    # - name: test_win
+    #   run: cmake --build build_win_64 --target test
+
+    # Universal Windows Platform
+    - name: configure_uwp_arm64
+      run: cmake . -G "Visual Studio 17 2022" -A ARM64 -Bbuild_uwp_arm64 -DCMAKE_SYSTEM_NAME:String=WindowsStore -DCMAKE_SYSTEM_VERSION:String="10.0"
+    - name: build_uwp_arm64
+      run: cmake --build build_uwp_arm64 --config MinSizeRel --target ktx_unity
+
+    - name: configure_uwp_arm
+      run: cmake . -G "Visual Studio 17 2022" -A ARM -Bbuild_uwp_arm -DCMAKE_SYSTEM_NAME:String=WindowsStore -DCMAKE_SYSTEM_VERSION:String="10.0"
+    - name: build_uwp_arm
+      run: cmake --build build_uwp_arm --config MinSizeRel --target ktx_unity
+
+    - name: configure_uwp_x64
+      run: cmake . -G "Visual Studio 17 2022" -A x64 -Bbuild_uwp_x64 -DCMAKE_SYSTEM_NAME:String=WindowsStore -DCMAKE_SYSTEM_VERSION:String="10.0"
+    - name: build_uwp_x64
+      run: cmake --build build_uwp_x64 --config MinSizeRel --target ktx_unity
+
+    - name: configure_uwp_x86
+      run: cmake . -G "Visual Studio 17 2022" -A Win32 -Bbuild_uwp_x86 -DCMAKE_SYSTEM_NAME:String=WindowsStore -DCMAKE_SYSTEM_VERSION:String="10.0"
+    - name: build_uwp_x86
+      run: cmake --build build_uwp_x86 --config MinSizeRel --target ktx_unity
+
+    - name: package_win
+      run: |
+        mkdir ktx_unity_win/x86_64
+        mkdir ktx_unity_win/WSA/ARM64
+        mkdir ktx_unity_win/WSA/ARM
+        mkdir ktx_unity_win/WSA/x64
+        mkdir ktx_unity_win/WSA/x86
+        mv build_win_64\MinSizeRel\ktx_unity.dll ktx_unity_win/x86_64
+        mv build_uwp_arm64\MinSizeRel\ktx_unity.dll ktx_unity_win/WSA/ARM64
+        mv build_uwp_arm\MinSizeRel\ktx_unity.dll ktx_unity_win/WSA/ARM
+        mv build_uwp_x64\MinSizeRel\ktx_unity.dll ktx_unity_win/WSA/x64
+        mv build_uwp_x86\MinSizeRel\ktx_unity.dll ktx_unity_win/WSA/x86
+    - uses: actions/upload-artifact@v3
+      with:
+        name: ktx_unity_win
+        path: ktx_unity_win
+
+    ## No 32 bit support, since KTX-Software does not provide it
+    # - name: configure_win_32
+    #   run: cmake . -G "Visual Studio 17 2022" -A Win32 -Bbuild_win_32
+    # - name: build_win_32
+    #   run: cmake --build build_win_32 --config MinSizeRel --target ktx_unity
+    # - uses: actions/upload-artifact@v3
+    #   with:
+    #     name: ktx_unity_win_32
+    #     path: build_win_32\MinSizeRel\ktx_unity.dll
+
+  linux:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+        lfs: true
+
+    - name: apt_install
+      run: |
+        sudo apt-get -qq update
+        sudo apt-get -qq install libzstd-dev ninja-build
+    - name: configure_linux_64
+      run: cmake . -G Ninja -Bbuild_linux_64 -DCMAKE_BUILD_TYPE=MinSizeRel
+    - name: build_linux_64
+      run: cmake --build build_linux_64 --target ktx_unity
+
+    # - name: install_i386_env
+    #   run: |
+    #     sudo apt-get update
+    #     sudo apt install build-essential gcc-multilib g++-multilib libzstd-dev:i386
+    # - name: configure_linux_32
+    #   run: cmake . -G Ninja -Bbuild_linux_32 -DCMAKE_TOOLCHAIN_FILE=cmake/linux_i686.toolchain.cmake -DCMAKE_BUILD_TYPE=MinSizeRel
+    # - name: build_linux_32
+    #   run: cmake --build build_linux_32 --target ktx_unity
+
+    # Emscripten
+    - name: Setup cache
+      id: cache-system-libraries
+      uses: actions/cache@v3
+      with:
+        path: ${{env.EM_2_CACHE_FOLDER}}
+        key: ${{env.EM_2_VERSION}}-${{ runner.os }}
+    - name: setup Emscripten
+      uses: mymindstorm/setup-emsdk@v12
+      with:
+        version: ${{env.EM_2_VERSION}}
+        actions-cache-folder: ${{env.EM_2_CACHE_FOLDER}}
+    - name: configure_wasm
+      run: emcmake cmake -B build_web -DCMAKE_BUILD_TYPE=MinSizeRel
+    - name: build_wasm
+      run: cmake --build build_web --target ktx_unity
+
+
+    # Android
+    - name: install Android NDK
+      uses: nttld/setup-ndk@v1
+      id: setup-ndk
+      with:
+        ndk-version: r21e
+        add-to-path: false
+
+    - name: configure_android_arm64-v8a
+      run: >
+        cmake -B build_android_arm64-v8a
+        -DANDROID_ABI=arm64-v8a
+        -DCMAKE_BUILD_TYPE=MinSizeRel
+        -DANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }}
+        -DCMAKE_TOOLCHAIN_FILE="${{ steps.setup-ndk.outputs.ndk-path }}/build/cmake/android.toolchain.cmake"
+    - name: build_android_arm64-v8a
+      run: cmake --build build_android_arm64-v8a --target ktx_unity
+
+    - name: configure_android_armeabi-v7a
+      run: >
+        cmake -B build_android_armeabi-v7a
+        -DANDROID_ABI=armeabi-v7a
+        -DCMAKE_BUILD_TYPE=MinSizeRel
+        -DANDROID_NDK=${{ steps.setup-ndk.outputs.ndk-path }}
+        -DCMAKE_TOOLCHAIN_FILE="${{ steps.setup-ndk.outputs.ndk-path }}/build/cmake/android.toolchain.cmake"
+    - name: build_android_armeabi-v7a
+      run: cmake --build build_android_armeabi-v7a --target ktx_unity
+
+    # Linux, WebGL and Android artifact 
+    - name: package_linux
+      run: |
+        mkdir -p ktx_unity_linux/x86_64
+        mv build_linux_64/libktx_unity.so ktx_unity_linux/x86_64
+        mkdir -p ktx_unity_linux/WebGL
+        mv build_web/libktx_unity.a ktx_unity_linux/WebGL
+        mv build_web/KTX-Software/libktx_read.a ktx_unity_linux/WebGL
+        mv build_web/KTX-Software/interface/basisu_c_binding/libobj_basisu_cbind.a ktx_unity_linux/WebGL
+        mkdir -p ktx_unity_linux/Android/libs/arm64-v8a
+        mkdir -p ktx_unity_linux/Android/libs/armeabi-v7a
+        mv build_android_arm64-v8a/libktx_unity.so ktx_unity_linux/Android/libs/arm64-v8a
+        mv build_android_armeabi-v7a/libktx_unity.so ktx_unity_linux/Android/libs/armeabi-v7a
+        # mkdir -p ktx_unity_linux/x86
+        # mv build_linux_32/libktx_unity.so ktx_unity_linux/x86
+    - uses: actions/upload-artifact@v3
+      with:
+        name: ktx_unity_linux
+        path: ktx_unity_linux
+
+
+
+  linux_emscripten_3:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+        lfs: true
+    - name: Setup cache
+      id: cache-system-libraries
+      uses: actions/cache@v3
+      with:
+        path: ${{env.EM_3_CACHE_FOLDER}}
+        key: ${{env.EM_3_VERSION}}-${{ runner.os }}
+
+    # Emscripten 3
+    - name: setup Emscripten
+      uses: mymindstorm/setup-emsdk@v12
+      with:
+        version: ${{env.EM_3_VERSION}}
+        actions-cache-folder: ${{env.EM_3_CACHE_FOLDER}}
+    - name: configure_wasm
+      run: emcmake cmake -B build_web -DCMAKE_BUILD_TYPE=MinSizeRel
+    - name: build_wasm
+      run: cmake --build build_web --target ktx_unity
+
+    # linux_emscripten_3 artifact 
+    - name: package_linux_emscripten_3
+      run: |
+        mkdir -p ktx_unity_emscripten_3/WebGL
+        mv build_web/libktx_unity.a ktx_unity_emscripten_3/WebGL/libktx_unity_3.a
+        mv build_web/KTX-Software/libktx_read.a ktx_unity_emscripten_3/WebGL/libktx_read_3.a
+        mv build_web/KTX-Software/interface/basisu_c_binding/libobj_basisu_cbind.a ktx_unity_emscripten_3/WebGL/libobj_basisu_cbind_3.a
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: ktx_unity_emscripten_3
+        path: ktx_unity_emscripten_3
+
+
+
+  linux_legacy:
+    runs-on: ubuntu-20.04
+    steps:
+    - uses: actions/checkout@v3
+      with:
+        submodules: true
+        lfs: true
+
+    # Emscripten legacy
+    - name: Setup cache
+      id: cache-system-libraries
+      uses: actions/cache@v3
+      with:
+        path: ${{env.EM_1_CACHE_FOLDER}}
+        key: ${{env.EM_1_VERSION}}-${{ runner.os }}
+    - name: setup Emscripten 1
+      uses: numworks/setup-emscripten@latest
+      with:
+        sdk: ${{env.EM_1_VERSION}}
+    - name: configure_wasm
+      run: emcmake cmake -B build_web -DEMSCRIPTEN_GENERATE_BITCODE_STATIC_LIBRARIES=1 -DCMAKE_BUILD_TYPE=MinSizeRel
+    - name: build_wasm
+      run: cmake --build build_web --target ktx_unity
+
+    # Linux legacy artifact 
+    - name: package_linux_legacy
+      run: |
+        mkdir -p ktx_unity_linux_legacy/WebGL
+        mv build_web/libktx_unity.bc ktx_unity_linux_legacy/WebGL
+        mv build_web/KTX-Software/libktx_read.bc ktx_unity_linux_legacy/WebGL
+        mv build_web/KTX-Software/interface/basisu_c_binding/libobj_basisu_cbind.bc ktx_unity_linux_legacy/WebGL
+
+    - uses: actions/upload-artifact@v3
+      with:
+        name: ktx_unity_linux_legacy
+        path: ktx_unity_linux_legacy
+
+  combine:
+    name: combine artifacts
+    runs-on: ubuntu-20.04
+    needs: [mac, windows, linux, linux_emscripten_3, linux_legacy]
+    steps:
+      - name: download artifacts
+        uses: actions/download-artifact@v3
+        with:
+          path: artifacts
+      - name: Display structure of downloaded files
+        run: ls -R
+        working-directory: artifacts
+      - name: combine
+        run: |
+          mkdir ktx_unity
+          cp -r artifacts/ktx_unity_apple/* ktx_unity
+          cp -r artifacts/ktx_unity_win/* ktx_unity
+          cp -r artifacts/ktx_unity_linux/* ktx_unity
+          cp -r artifacts/ktx_unity_emscripten_3/* ktx_unity
+          cp -r artifacts/ktx_unity_linux_legacy/* ktx_unity
+      - name: zip
+        run: zip -r ktx_unity.zip ktx_unity
+      - uses: AButler/upload-release-assets@v2.0
+        if: github.event_name == 'release' && github.event.action == 'created'
+        with:
+          files: ktx_unity.zip
+          repo-token: ${{ secrets.GITHUB_TOKEN }}
+      - uses: actions/upload-artifact@v3
+        with:
+          name: ktx_unity.zip
+          path: ktx_unity.zip
+      - uses: geekyeggo/delete-artifact@v2
+        with:
+          name: |
+            ktx_unity_apple
+            ktx_unity_win
+            ktx_unity_linux
+            ktx_unity_emscripten_3
+            ktx_unity_linux_legacy
